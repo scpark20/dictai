@@ -8,6 +8,55 @@ const currentPath = document.querySelector("#currentPath");
 const itemCount = document.querySelector("#itemCount");
 const courseList = document.querySelector("#courseList");
 
+const books = Object.freeze({
+  A1: [
+    { title: "Harry Potter", note: "Chapter 3 · 641 sentences", mark: "HP", color: "#365486", href: "https://192.168.0.68:8771/" },
+    { title: "Wonder", note: "Coming soon", mark: "W", color: "#e6953b" },
+    { title: "Matilda", note: "Coming soon", mark: "M", color: "#a95183" },
+    { title: "The Little Prince", note: "Coming soon", mark: "LP", color: "#4b91a8" },
+  ],
+  A2: [
+    { title: "Charlotte’s Web", note: "Coming soon", mark: "CW", color: "#588157" },
+    { title: "Coraline", note: "Coming soon", mark: "C", color: "#645985" },
+    { title: "The Giver", note: "Coming soon", mark: "TG", color: "#457b9d" },
+    { title: "Holes", note: "Coming soon", mark: "H", color: "#bc6c25" },
+  ],
+  B1: [
+    { title: "Percy Jackson", note: "Coming soon", mark: "PJ", color: "#277da1" },
+    { title: "The Hobbit", note: "Coming soon", mark: "TH", color: "#6a994e" },
+    { title: "The Book Thief", note: "Coming soon", mark: "BT", color: "#6c584c" },
+    { title: "Animal Farm", note: "Coming soon", mark: "AF", color: "#bc4749" },
+  ],
+  B2: [
+    { title: "1984", note: "Coming soon", mark: "84", color: "#495057" },
+    { title: "The Great Gatsby", note: "Coming soon", mark: "GG", color: "#007f5f" },
+    { title: "Jane Eyre", note: "Coming soon", mark: "JE", color: "#9d4edd" },
+    { title: "Frankenstein", note: "Coming soon", mark: "F", color: "#386641" },
+  ],
+  C1: [
+    { title: "Pride and Prejudice", note: "Coming soon", mark: "PP", color: "#9c6644" },
+    { title: "Wuthering Heights", note: "Coming soon", mark: "WH", color: "#577590" },
+    { title: "Crime and Punishment", note: "Coming soon", mark: "CP", color: "#8d0801" },
+    { title: "The Picture of Dorian Gray", note: "Coming soon", mark: "DG", color: "#7b2cbf" },
+  ],
+});
+
+function bookRow(book) {
+  const action = book.href
+    ? `<a class="open-course" href="${book.href}">Open →</a>`
+    : `<span class="soon">Soon</span>`;
+  return `
+    <article class="course">
+      <span class="book-cover" style="--cover:${book.color}" aria-hidden="true">${book.mark}</span>
+      <div class="course-copy">
+        <small>BOOK · ${state.level}</small>
+        <strong>${book.title}</strong>
+        <span>${book.note}</span>
+      </div>
+      ${action}
+    </article>`;
+}
+
 function render() {
   document.body.dataset.level = state.level;
   levels.forEach((button) => {
@@ -24,17 +73,10 @@ function render() {
   currentLevel.textContent = state.level;
   currentPath.textContent = state.path === "book" ? "Book" : "Conversation";
 
-  if (state.level === "A1" && state.path === "book") {
-    itemCount.textContent = "1 course";
-    courseList.innerHTML = `
-      <article class="course">
-        <div class="course-copy">
-          <small>BOOK · A1</small>
-          <strong>Harry Potter</strong>
-          <span>Chapter 3 · 641 sentences</span>
-        </div>
-        <a class="open-course" href="https://192.168.0.68:8771/">Open →</a>
-      </article>`;
+  if (state.path === "book") {
+    const list = books[state.level];
+    itemCount.textContent = `${list.length} books`;
+    courseList.innerHTML = list.map(bookRow).join("");
   } else {
     itemCount.textContent = "Coming soon";
     courseList.innerHTML = `<div class="empty">No courses yet.</div>`;
