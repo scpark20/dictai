@@ -412,57 +412,42 @@ def practice_static(name: str, request: Request) -> FileResponse:
   const compact = transcript.normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
   if (!compact || (!endpoint && compact === state.voiceLastTranscript)) return;
   showRecognizedVoiceWord(transcript);
-  let cursor = 0;
-  let matched = 0;
+  const distance = (left, right) => {
+    const row = Array.from({ length: right.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= left.length; i += 1) {
+      let diagonal = row[0];
+      row[0] = i;
+      for (let j = 1; j <= right.length; j += 1) {
+        const above = row[j];
+        row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (left[i - 1] === right[j - 1] ? 0 : 1));
+        diagonal = above;
+      }
+    }
+    return row[right.length];
+  };
   state.problem.answerWords.forEach((answer, index) => {
     if (state.completing || state.solved.has(index)) return;
     const expected = String(answer || "").normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
     if (!expected) return;
-    const found = compact.indexOf(expected, cursor);
-    if (found < 0) return;
-    cursor = found + expected.length;
-    flashVoiceCandidate([index]);
-    showRecognizedVoiceWord(state.problem.displayWords[index]);
-    markSolved([index], false);
-    matched += 1;
-  });
-  if (!matched && !state.completing) {
-    const distance = (left, right) => {
-      const row = Array.from({ length: right.length + 1 }, (_, i) => i);
-      for (let i = 1; i <= left.length; i += 1) {
-        let diagonal = row[0];
-        row[0] = i;
-        for (let j = 1; j <= right.length; j += 1) {
-          const above = row[j];
-          row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (left[i - 1] === right[j - 1] ? 0 : 1));
-          diagonal = above;
-        }
-      }
-      return row[right.length];
-    };
-    state.problem.answerWords.some((answer, index) => {
-      if (state.solved.has(index)) return false;
-      const expected = String(answer || "").normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
-      if (expected.length < 3) return false;
-      const allowance = Math.max(1, Math.floor(expected.length * 0.28));
-      for (let size = Math.max(2, expected.length - allowance); size <= expected.length + allowance; size += 1) {
+    let accepted = compact.includes(expected);
+    if (!accepted && expected.length >= 2) {
+      const allowance = Math.max(1, Math.floor(expected.length * 0.45));
+      for (let size = Math.max(1, expected.length - allowance); !accepted && size <= expected.length + allowance; size += 1) {
         for (let start = 0; start + size <= compact.length; start += 1) {
-          if (distance(expected, compact.slice(start, start + size)) <= allowance) {
-            flashVoiceCandidate([index]);
-            showRecognizedVoiceWord(state.problem.displayWords[index]);
-            markSolved([index], false);
-            return true;
-          }
+          if (distance(expected, compact.slice(start, start + size)) <= allowance) { accepted = true; break; }
         }
       }
-      return false;
-    });
-  }
+    }
+    if (!accepted) return;
+    flashVoiceCandidate([index]);
+    markSolved([index], false);
+  });
   state.voiceLastTranscript = endpoint ? "" : compact;
 }"""
             if original_voice_handler not in source:
                 raise RuntimeError("voice transcript handler was not found")
             source = source.replace(original_voice_handler, korean_voice_handler)
+            source = source.replace("}, 700);", "}, 5000);")
         return Response(source, media_type="application/javascript")
     if name == "styles.css":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
