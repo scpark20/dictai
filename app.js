@@ -41,11 +41,11 @@ const books = Object.freeze({
   ],
 });
 
-function bookCard(book) {
+function bookCard(book, index) {
   const tag = book.href ? "a" : "button";
   const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
   return `
-    <${tag} class="book-card" ${action} aria-label="${book.title}">
+    <${tag} class="book-card" ${action} aria-label="${book.title}" style="--row:${index}">
       <span class="book-cover" style="--cover:${book.color}" aria-hidden="true">${book.mark}</span>
       <span class="book-name">${book.title}</span>
     </${tag}>`;
