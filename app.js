@@ -1,6 +1,7 @@
 "use strict";
 
-const state = { level: "A1", language: "en", path: "conversation" };
+const savedLanguage = localStorage.getItem("echostep-learning-language");
+const state = { level: "A1", language: savedLanguage === "ko" ? "ko" : "en", path: "conversation" };
 const levels = [...document.querySelectorAll(".level")];
 const languages = [...document.querySelectorAll(".language")];
 const topicList = document.querySelector("#topicList");
@@ -187,6 +188,11 @@ function topicCard([topic, icon], index) {
 
 function render() {
   document.body.dataset.level = state.level;
+  languages.forEach((button) => {
+    const active = button.dataset.language === state.language;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-checked", String(active));
+  });
   levels.forEach((button) => {
     const active = button.dataset.level === state.level;
     button.classList.toggle("is-active", active);
@@ -203,6 +209,7 @@ levels.forEach((button) => button.addEventListener("click", () => {
 }));
 languages.forEach((button) => button.addEventListener("click", () => {
   state.language = button.dataset.language;
+  localStorage.setItem("echostep-learning-language", state.language);
   languages.forEach((item) => {
     const active = item === button;
     item.classList.toggle("is-active", active);
