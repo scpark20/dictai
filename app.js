@@ -5,8 +5,6 @@ const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
 const practicePanel = document.querySelector("#practicePanel");
-const practiceBackdrop = document.querySelector("#practiceBackdrop");
-const panelClose = document.querySelector("#panelClose");
 const listenButton = document.querySelector("#listenButton");
 const practiceAnswer = document.querySelector("#practiceAnswer");
 const answerFeedback = document.querySelector("#answerFeedback");
@@ -186,20 +184,12 @@ levels.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
-function setPractice(open) {
-  document.body.classList.toggle("practice-open", open);
-  practicePanel.setAttribute("aria-hidden", String(!open));
-  if (open) setTimeout(() => practiceAnswer.focus(), 360);
-}
-
 topicList.addEventListener("click", (event) => {
   const button = event.target.closest(".topic-card.is-ready");
-  if (button) setPractice(true);
-});
-panelClose.addEventListener("click", () => setPractice(false));
-practiceBackdrop.addEventListener("click", () => setPractice(false));
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") setPractice(false);
+  if (!button) return;
+  topicList.querySelectorAll(".topic-card").forEach((item) => item.classList.remove("is-selected"));
+  button.classList.add("is-selected");
+  practiceAnswer.focus();
 });
 listenButton.addEventListener("click", () => {
   window.speechSynthesis.cancel();

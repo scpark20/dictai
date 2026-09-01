@@ -57,9 +57,10 @@ body[data-level="C2"] { --accent: #343b8f; --accent-rgb: 52, 59, 143; --secondar
 button, a { font: inherit; }
 button { color: inherit; }
 
+.app-layout { display: grid; grid-template-columns: minmax(620px, 920px) minmax(380px, 500px); gap: 24px; width: min(1460px, calc(100% - 40px)); margin: 0 auto; align-items: start; }
 .shell {
-  width: min(920px, calc(100% - 40px));
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 24px 0 60px;
 }
 
@@ -124,6 +125,7 @@ button { color: inherit; }
 .topic-card:last-child { border-bottom: 0; }
 .topic-card.is-ready { cursor: pointer; }
 .topic-card.is-ready:hover { background: rgba(var(--accent-rgb), .1); }
+.topic-card.is-selected { color: var(--accent); background: rgba(var(--accent-rgb), .12); }
 .topic-icon { display: grid; width: 27px; height: 27px; place-items: center; color: var(--accent); background: rgba(var(--accent-rgb), .1); border-radius: 8px; }
 .topic-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .book-cover {
@@ -179,15 +181,11 @@ button { color: inherit; }
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.practice-backdrop { position: fixed; inset: 0; z-index: 20; visibility: hidden; opacity: 0; background: rgba(20,24,32,.3); border: 0; backdrop-filter: blur(3px); transition: opacity 280ms ease, visibility 280ms; }
-.practice-panel { position: fixed; top: 0; right: 0; z-index: 21; width: min(520px, 94vw); height: 100dvh; padding: 24px; overflow: auto; background: linear-gradient(160deg, #f9fbff, #eef4ff); box-shadow: -20px 0 60px rgba(25,42,72,.2); transform: translateX(105%); transition: transform 380ms cubic-bezier(.22,.78,.18,1); }
-.practice-open .practice-backdrop { visibility: visible; opacity: 1; }
-.practice-open .practice-panel { transform: translateX(0); }
+.practice-panel { position: sticky; top: 20px; height: calc(100dvh - 40px); margin-top: 20px; padding: 24px; overflow: auto; background: linear-gradient(160deg, #f9fbff, #eef4ff); border: 1px solid rgba(var(--accent-rgb),.14); border-radius: 28px; box-shadow: 0 20px 55px rgba(25,42,72,.14); }
 .practice-top { display: flex; gap: 14px; align-items: center; }
 .practice-top div { display: grid; gap: 3px; }
 .practice-top small { color: var(--accent); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
 .practice-top strong { font-size: 20px; }
-.panel-close { display: grid; width: 42px; height: 42px; place-items: center; background: white; border: 1px solid rgba(var(--accent-rgb),.16); border-radius: 50%; font-size: 21px; cursor: pointer; box-shadow: 0 6px 18px rgba(var(--accent-rgb),.1); }
 .practice-progress { height: 5px; margin: 22px 0 34px; overflow: hidden; background: rgba(var(--accent-rgb),.11); border-radius: 9px; }
 .practice-progress i { display: block; width: 10%; height: 100%; background: var(--accent); border-radius: inherit; }
 .practice-card { padding: 26px; background: rgba(255,255,255,.9); border: 1px solid rgba(var(--accent-rgb),.14); border-radius: 24px; box-shadow: 0 18px 45px rgba(var(--accent-rgb),.1); }
@@ -220,6 +218,10 @@ button { color: inherit; }
   .levels { gap: 2px; }
   .paths { grid-template-columns: 1fr; }
   .book-card { min-height: 68px; padding-inline: 12px; }
+}
+@media (max-width: 1080px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .practice-panel { position: relative; top: auto; width: 100%; height: auto; min-height: 560px; margin: 0 0 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
