@@ -9,6 +9,7 @@ const itemCount = document.querySelector("#itemCount");
 const courseList = document.querySelector("#courseList");
 
 function render() {
+  document.body.dataset.level = state.level;
   levels.forEach((button) => {
     const active = button.dataset.level === state.level;
     button.classList.toggle("is-active", active);
