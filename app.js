@@ -2,11 +2,13 @@
 
 const state = { level: "A1", path: "conversation" };
 const levels = [...document.querySelectorAll(".level")];
-const paths = [...document.querySelectorAll(".path")];
-const currentLevel = document.querySelector("#currentLevel");
-const currentPath = document.querySelector("#currentPath");
-const itemCount = document.querySelector("#itemCount");
-const courseList = document.querySelector("#courseList");
+const topicList = document.querySelector("#topicList");
+const bookList = document.querySelector("#bookList");
+
+const topics = Object.freeze([
+  "Travel", "Work", "School", "Daily Life", "Shopping",
+  "Food & Dining", "Friends & Family", "Health", "Hobbies", "Emergencies", "Random",
+]);
 
 const books = Object.freeze({
   A1: [
@@ -74,6 +76,13 @@ function bookCard(book, index) {
     </${tag}>`;
 }
 
+function topicCard(topic, index) {
+  return `<button class="topic-card" type="button" aria-disabled="true" style="--row:${index}">
+    <span class="topic-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
+    <span>${topic}</span>
+  </button>`;
+}
+
 function render() {
   document.body.dataset.level = state.level;
   levels.forEach((button) => {
@@ -81,40 +90,12 @@ function render() {
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-checked", String(active));
   });
-  paths.forEach((button) => {
-    const active = button.dataset.path === state.path;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-
-  currentLevel.textContent = state.level;
-  currentPath.textContent = state.path === "book" ? "Book" : "Conversation";
-  document.querySelector(".content").classList.toggle("is-book", state.path === "book");
-
-  if (state.path === "book") {
-    const list = books[state.level];
-    itemCount.textContent = `${list.length} books`;
-    courseList.innerHTML = list.map(bookCard).join("");
-  } else {
-    itemCount.textContent = "Coming soon";
-    courseList.innerHTML = `<div class="empty">No courses yet.</div>`;
-  }
+  topicList.innerHTML = topics.map(topicCard).join("");
+  bookList.innerHTML = books[state.level].map(bookCard).join("");
 }
 
 levels.forEach((button) => button.addEventListener("click", () => {
   state.level = button.dataset.level;
   render();
 }));
-paths.forEach((button) => button.addEventListener("click", () => {
-  const openingBook = button.dataset.path === "book" && state.path !== "book";
-  state.path = button.dataset.path;
-  render();
-  if (openingBook) {
-    const content = document.querySelector(".content");
-    content.classList.remove("is-opening");
-    void content.offsetWidth;
-    content.classList.add("is-opening");
-  }
-}));
-
 render();

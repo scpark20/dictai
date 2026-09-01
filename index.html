@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
     <title>EchoStep</title>
-    <link rel="stylesheet" href="./styles.css?v=dev-10" />
+    <link rel="stylesheet" href="./styles.css?v=dev-12" />
   </head>
   <body data-level="A1">
     <main class="shell">
@@ -31,24 +31,22 @@
       </section>
 
       <section class="paths" aria-label="Choose practice type">
-        <button class="path is-active" type="button" data-path="conversation" aria-pressed="true">
-          <span class="path-icon" aria-hidden="true">••</span>
-          <span><strong>Conversation</strong><small>Everyday listening</small></span>
-        </button>
-        <button class="path" type="button" data-path="book" aria-pressed="false">
-          <span class="path-icon book-icon" aria-hidden="true">▤</span>
-          <span><strong>Book</strong><small>Stories and novels</small></span>
-        </button>
-      </section>
-
-      <section class="content" aria-live="polite">
-        <div class="content-head">
-          <div><span id="currentLevel">A1</span><h2 id="currentPath">Conversation</h2></div>
-          <small id="itemCount">Coming soon</small>
+        <div class="path-group">
+          <div class="path">
+            <span class="path-icon" aria-hidden="true">••</span>
+            <span><strong>Conversation</strong><small>Everyday listening</small></span>
+          </div>
+          <div class="mini-list" id="topicList"></div>
         </div>
-        <div class="course-list" id="courseList"></div>
+        <div class="path-group">
+          <div class="path">
+            <span class="path-icon book-icon" aria-hidden="true">▤</span>
+            <span><strong>Book</strong><small>Stories and novels</small></span>
+          </div>
+          <div class="mini-list" id="bookList"></div>
+        </div>
       </section>
     </main>
-    <script src="./app.js?v=dev-11"></script>
+    <script src="./app.js?v=dev-13"></script>
   </body>
 </html>
