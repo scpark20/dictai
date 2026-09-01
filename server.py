@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
+PRACTICE_ROOT = Path("/home/scpark/apps/harry-dictation")
 MANIFEST = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json")
 PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
 AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
@@ -234,6 +235,23 @@ def index() -> FileResponse:
 @app.get("/build-status/")
 def status_page() -> FileResponse:
     return FileResponse(ROOT / "build-status.html")
+
+
+@app.get("/practice")
+@app.get("/practice/")
+def practice_index() -> FileResponse:
+    return FileResponse(PRACTICE_ROOT / "index.html")
+
+
+@app.get("/practice/{name}")
+def practice_static(name: str) -> FileResponse:
+    allowed = {
+        "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js",
+        "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js",
+    }
+    if name not in allowed:
+        raise HTTPException(404)
+    return FileResponse(PRACTICE_ROOT / name)
 
 
 @app.get("/{name}")
