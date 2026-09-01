@@ -118,7 +118,47 @@ button { color: inherit; }
 .book-card:last-child { border-bottom: 0; }
 .book-card:hover { background: rgba(var(--accent-rgb), .07); }
 .book-card[aria-disabled="true"] { cursor: default; }
-.book-cover { display: grid; width: 44px; height: 44px; place-items: center; color: white; background: linear-gradient(145deg, color-mix(in srgb, var(--cover, var(--accent)) 74%, white), var(--cover, var(--accent))); border-radius: 13px; box-shadow: 0 6px 14px color-mix(in srgb, var(--cover, var(--accent)) 28%, transparent); font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-size: 23px; line-height: 1; }
+.book-cover {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 52px;
+  padding-left: 4px;
+  place-items: center;
+  overflow: hidden;
+  color: white;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.2), transparent 45%),
+    var(--cover, var(--accent));
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: 3px 5px 10px rgba(0,0,0,.2);
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-size: 18px;
+  line-height: 1;
+  transform: perspective(120px) rotateY(-5deg);
+}
+
+.book-cover::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: rgba(0,0,0,.2);
+  border-right: 1px solid rgba(255,255,255,.2);
+  content: "";
+}
+
+.book-cover::after {
+  position: absolute;
+  right: 1px;
+  bottom: 2px;
+  left: 6px;
+  height: 3px;
+  background: rgba(255,255,255,.72);
+  border-radius: 0 0 4px 1px;
+  box-shadow: 0 -1px rgba(0,0,0,.08);
+  content: "";
+}
 .book-name { overflow: hidden; font-size: 16px; font-weight: 680; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
 
 @keyframes book-row-in {
