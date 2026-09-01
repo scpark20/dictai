@@ -50,6 +50,10 @@ GREETING_TURNS = [
     ("Have a nice day!", "Thanks. You, too!"),
     ("Goodbye. See you tomorrow.", "Bye! See you then."),
 ]
+GREETING_VOICE_PAIRS = [
+    ("AF", "AM"), ("AM", "AF"), ("AM", "BM"), ("AF", "BF"), ("BF", "BM"),
+    ("BM", "AF"), ("AM", "BM"), ("BF", "AF"), ("BM", "BF"), ("AF", "AM"),
+]
 def load_sentences() -> list[dict]:
     source = json.loads(MANIFEST.read_text(encoding="utf-8"))
     unique: dict[str, dict] = {}
@@ -201,8 +205,8 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "target_language": body.target_language,
         "proper_noun_indices": proper_noun_indices,
         "dialogue_turns": [
-            {"speaker": "A", "voice": "Woman", "text": GREETING_TURNS[level - 1][0], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][0]))},
-            {"speaker": "B", "voice": "Man", "text": GREETING_TURNS[level - 1][1], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][1]))},
+            {"speaker": "A", "text": GREETING_TURNS[level - 1][0], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][0]))},
+            {"speaker": "B", "text": GREETING_TURNS[level - 1][1], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][1]))},
         ],
     }
 
@@ -308,7 +312,7 @@ def practice_static(name: str) -> FileResponse:
     group.className = `speaker-turn speaker-${String(turn.speaker).toLowerCase()}`;
     const label = document.createElement("div");
     label.className = "speaker-label";
-    label.innerHTML = `<b>${turn.speaker}</b><span>${turn.voice}</span>`;
+    label.innerHTML = `<b>${turn.speaker}</b>`;
     const row = document.createElement("div");
     row.className = "speaker-word-row";
     group.append(label, row);
@@ -328,13 +332,12 @@ def practice_static(name: str) -> FileResponse:
         source += """
 .word-grid:has(.speaker-turn) { display:grid; gap:12px; }
 .speaker-turn { display:grid; grid-template-columns:72px minmax(0,1fr); gap:10px; align-items:start; padding:12px 14px; border-radius:18px; }
-.speaker-turn.speaker-a { background:rgba(255,107,132,.10); border:1px solid rgba(220,72,102,.18); }
-.speaker-turn.speaker-b { background:rgba(55,126,242,.10); border:1px solid rgba(55,126,242,.18); }
+.speaker-turn.speaker-a { background:rgba(24,119,232,.09); border:1px solid rgba(24,119,232,.20); }
+.speaker-turn.speaker-b { background:rgba(12,79,163,.12); border:1px solid rgba(12,79,163,.25); }
 .speaker-label { display:flex; align-items:center; gap:7px; min-height:38px; }
 .speaker-label b { display:grid; width:28px; height:28px; place-items:center; color:white; border-radius:50%; font-size:13px; }
-.speaker-a .speaker-label b { background:#db4d69; }
-.speaker-b .speaker-label b { background:#377ef2; }
-.speaker-label span { color:#6e6e73; font-size:12px; font-weight:700; }
+.speaker-a .speaker-label b { background:#1877e8; }
+.speaker-b .speaker-label b { background:#0c4fa3; }
 .speaker-word-row { display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
 @media (max-width:700px) { .speaker-turn { grid-template-columns:1fr; gap:5px; } }
 """
