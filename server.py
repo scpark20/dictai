@@ -108,7 +108,7 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
     env.useBrowserCache = true;
     const transcriber = await pipeline(
       "automatic-speech-recognition",
-      "onnx-community/whisper-tiny",
+      "onnx-community/whisper-base",
       {
         device: "wasm",
         dtype: "q8",
@@ -123,13 +123,29 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
     const recognizer = {
       createStream() {
         return {
-          chunks: [], sampleCount: 0, busy: false, fresh: false, text: "", disposed: false,
+          chunks: [], sampleCount: 0, speechStarted: false, silenceSamples: 0,
+          busy: false, fresh: false, text: "", disposed: false,
           acceptWaveform(_rate, samples) {
             if (this.disposed || !samples?.length) return;
             const copy = new Float32Array(samples);
             this.chunks.push(copy);
             this.sampleCount += copy.length;
-            const maximum = 16000 * 8;
+            let energy = 0;
+            for (let index = 0; index < copy.length; index += 1) energy += copy[index] * copy[index];
+            const rms = Math.sqrt(energy / copy.length);
+            if (rms >= 0.012) {
+              this.speechStarted = true;
+              this.silenceSamples = 0;
+            } else if (this.speechStarted) {
+              this.silenceSamples += copy.length;
+            }
+            if (!this.speechStarted && this.sampleCount > 16000) {
+              while (this.sampleCount > 16000 * 0.35 && this.chunks.length > 1) {
+                this.sampleCount -= this.chunks[0].length;
+                this.chunks.shift();
+              }
+            }
+            const maximum = 16000 * 6;
             while (this.sampleCount > maximum && this.chunks.length > 1) {
               this.sampleCount -= this.chunks[0].length;
               this.chunks.shift();
@@ -139,7 +155,10 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
         };
       },
       isReady(stream) {
-        return !stream.disposed && !stream.busy && !stream.fresh && stream.sampleCount >= 16000 * 2.5;
+        const phraseEnded = stream.silenceSamples >= 16000 * 0.45;
+        const phraseFull = stream.sampleCount >= 16000 * 5;
+        return !stream.disposed && !stream.busy && !stream.fresh && stream.speechStarted
+          && stream.sampleCount >= 16000 * 0.6 && (phraseEnded || phraseFull);
       },
       decode(stream) {
         if (stream.busy || stream.fresh || stream.disposed) return;
@@ -148,9 +167,10 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
         void transcriber(audio, {
           language: "korean",
           task: "transcribe",
-          chunk_length_s: 8,
+          chunk_length_s: 6,
           stride_length_s: 1,
           return_timestamps: false,
+          temperature: 0,
         }).then((result) => {
           if (stream.disposed) return;
           stream.text = String(result?.text || "").trim();
@@ -160,6 +180,8 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
           emitStatus("Voice recognition failed", null);
           stream.chunks = [];
           stream.sampleCount = 0;
+          stream.speechStarted = false;
+          stream.silenceSamples = 0;
         }).finally(() => { stream.busy = false; });
       },
       getResult(stream) { return { text: stream.fresh ? stream.text : "" }; },
@@ -167,6 +189,8 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
       reset(stream) {
         stream.chunks = [];
         stream.sampleCount = 0;
+        stream.speechStarted = false;
+        stream.silenceSamples = 0;
         stream.text = "";
         stream.fresh = false;
       },
