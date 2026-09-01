@@ -343,6 +343,9 @@ def practice_static(name: str) -> FileResponse:
         source = source.replace(
             'url("/ch003.png?v=20260901-2") center / cover fixed no-repeat,',
             "",
+        ).replace(
+            'url("/ch003.png?v=20260901-3") center / cover fixed no-repeat,',
+            "",
         )
         source += """
 .practice-panel-theme-marker { display:none; }
