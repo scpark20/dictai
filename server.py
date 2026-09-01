@@ -285,7 +285,7 @@ def practice_index() -> FileResponse:
 @app.get("/practice/{name}")
 def practice_static(name: str) -> FileResponse:
     allowed = {
-        "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js",
+        "app.js", "styles.css", "wasm-asr-bootstrap.js",
         "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js",
     }
     if name not in allowed:
@@ -340,6 +340,10 @@ def practice_static(name: str) -> FileResponse:
         return Response(source, media_type="application/javascript")
     if name == "styles.css":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
+        source = source.replace(
+            'url("/ch003.png?v=20260901-2") center / cover fixed no-repeat,',
+            "",
+        )
         source += """
 .practice-panel-theme-marker { display:none; }
 :root {
