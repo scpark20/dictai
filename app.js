@@ -10,7 +10,6 @@ const courseList = document.querySelector("#courseList");
 
 const books = Object.freeze({
   A1: [
-    { title: "Harry Potter", note: "Chapter 3 · 641 sentences", mark: "⚡", color: "#365486", href: "https://192.168.0.68:8771/" },
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", mark: "🐇", color: "#6a994e" },
     { title: "The Adventures of Pinocchio", note: "Gutenberg", mark: "🤥", color: "#bc6c25" },
     { title: "Aesop’s Fables", note: "Gutenberg", mark: "🦊", color: "#588157" },
@@ -43,7 +42,6 @@ const books = Object.freeze({
 });
 
 const coverArt = Object.freeze({
-  "Harry Potter": `<svg viewBox="0 0 38 52"><path d="M7 45V26l6-7 4 4 5-13 4 13 5-4 4 7v19z" fill="#17233d"/><path d="m22 5-6 13h6l-4 13 12-17h-7l4-9z" fill="#f7d35c"/><circle cx="11" cy="9" r="2" fill="#fff"/></svg>`,
   "The Tale of Peter Rabbit": `<svg viewBox="0 0 38 52"><path d="M0 34Q10 25 19 34T38 31v21H0z" fill="#315f35"/><path d="M18 31c-7-6-4-14 1-12-1-9 2-13 5-4 3-8 6-5 2 7-2 10 6 3 5 11-1 15H17c-3-6-2-9 1-11z" fill="#e7dfcf"/><circle cx="27" cy="22" r="1" fill="#222"/></svg>`,
   "The Adventures of Pinocchio": `<svg viewBox="0 0 38 52"><path d="M8 42l8-23 12 2 4 22z" fill="#6c301d"/><circle cx="21" cy="16" r="8" fill="#e8b875"/><path d="M21 16h15l-15 3z" fill="#8f3b25"/><path d="M12 10h18l-4-6H15z" fill="#2c483b"/></svg>`,
   "Aesop’s Fables": `<svg viewBox="0 0 38 52"><circle cx="19" cy="25" r="15" fill="#efd694"/><path d="m8 17 7 2 4-8 4 8 8-2-4 8 3 10-11 6-11-6 3-10z" fill="#9a4b27"/><path d="m15 28 4 3 5-3" fill="none" stroke="#261b17" stroke-width="2"/></svg>`,
