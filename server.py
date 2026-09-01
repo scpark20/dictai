@@ -11,7 +11,7 @@ import urllib.request
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -251,6 +251,13 @@ def practice_static(name: str) -> FileResponse:
     }
     if name not in allowed:
         raise HTTPException(404)
+    if name == "app.js":
+        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
+        source = source.replace(
+            "if (window.location.origin !== DEPLOYED_ORIGIN) {",
+            "if (window.top === window.self && window.location.origin !== DEPLOYED_ORIGIN) {",
+        )
+        return Response(source, media_type="application/javascript")
     return FileResponse(PRACTICE_ROOT / name)
 
 
