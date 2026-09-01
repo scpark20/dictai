@@ -60,15 +60,15 @@ const topicIcons = Object.freeze({
 const books = Object.freeze({
   A1: [
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", mark: "🐇", color: "#6a994e" },
+    { title: "Winnie-the-Pooh", note: "Gutenberg", color: "#b38335" },
     { title: "The Happy Prince", note: "Gutenberg", color: "#527a9b" },
-    { title: "Just So Stories", note: "Gutenberg", color: "#8a6843" },
-    { title: "The Story of Doctor Dolittle", note: "Gutenberg", mark: "🦜", color: "#457b9d" },
-    { title: "The Velveteen Rabbit", note: "Gutenberg", color: "#9b6b76" },
+    { title: "The Wind in the Willows", note: "Gutenberg", color: "#557250" },
+    { title: "The Railway Children", note: "Gutenberg", color: "#735648" },
   ],
   A2: [
-    { title: "The Wonderful Wizard of Oz", note: "Gutenberg", mark: "🌪️", color: "#4d908e" },
     { title: "Alice’s Adventures in Wonderland", note: "Gutenberg", mark: "🐰", color: "#577590" },
-    { title: "Pollyanna", note: "Gutenberg", color: "#8c6b83" },
+    { title: "The Wonderful Wizard of Oz", note: "Gutenberg", mark: "🌪️", color: "#4d908e" },
+    { title: "Peter Pan", note: "Gutenberg", color: "#315f73" },
     { title: "Black Beauty", note: "Gutenberg", mark: "🐎", color: "#495057" },
     { title: "Little Women", note: "Gutenberg", color: "#8f5d67" },
   ],
@@ -77,28 +77,28 @@ const books = Object.freeze({
     { title: "Anne of Green Gables", note: "Gutenberg", mark: "🏡", color: "#bc6c25" },
     { title: "The Jungle Book", note: "Gutenberg", mark: "🐅", color: "#386641" },
     { title: "Treasure Island", note: "Gutenberg", mark: "🏴‍☠️", color: "#277da1" },
-    { title: "Kidnapped", note: "Gutenberg", color: "#596b48" },
+    { title: "The Adventures of Tom Sawyer", note: "Gutenberg", color: "#596b48" },
   ],
   B2: [
     { title: "The Adventures of Sherlock Holmes", note: "Gutenberg", mark: "🔍", color: "#6c584c" },
     { title: "Dr. Jekyll and Mr. Hyde", note: "Gutenberg", mark: "⚗️", color: "#495057" },
-    { title: "Frankenstein", note: "Coming soon", mark: "⚗️", color: "#386641" },
+    { title: "Frankenstein", note: "Gutenberg", mark: "⚗️", color: "#386641" },
     { title: "A Christmas Carol", note: "Gutenberg", mark: "🔔", color: "#bc4749" },
-    { title: "Dracula", note: "Gutenberg", color: "#4b1f2b" },
+    { title: "The Time Machine", note: "Gutenberg", color: "#344d62" },
   ],
   C1: [
-    { title: "Pride and Prejudice", note: "Coming soon", mark: "💌", color: "#9c6644" },
-    { title: "Wuthering Heights", note: "Coming soon", mark: "🌫️", color: "#577590" },
+    { title: "Pride and Prejudice", note: "Gutenberg", mark: "💌", color: "#9c6644" },
+    { title: "Wuthering Heights", note: "Gutenberg", mark: "🌫️", color: "#577590" },
     { title: "Jane Eyre", note: "Gutenberg", mark: "🕯️", color: "#9d4edd" },
     { title: "Moby-Dick", note: "Gutenberg", mark: "🐋", color: "#277da1" },
-    { title: "Middlemarch", note: "Gutenberg", color: "#78604a" },
+    { title: "The Picture of Dorian Gray", note: "Gutenberg", color: "#455c48" },
   ],
   C2: [
     { title: "Ulysses", note: "Gutenberg", color: "#26355d" },
     { title: "Paradise Lost", note: "Gutenberg", color: "#4f2830" },
-    { title: "Tristram Shandy", note: "Gutenberg", color: "#78603d" },
-    { title: "The Ambassadors", note: "Gutenberg", color: "#334d58" },
-    { title: "The Golden Bowl", note: "Gutenberg", color: "#6b5730" },
+    { title: "Great Expectations", note: "Gutenberg", color: "#78603d" },
+    { title: "A Tale of Two Cities", note: "Gutenberg", color: "#5e3434" },
+    { title: "The Complete Works of William Shakespeare", note: "Gutenberg", color: "#3d4658" },
   ],
 });
 
@@ -147,7 +147,7 @@ function bookCard(book, index) {
   const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
   return `
     <${tag} class="book-card" ${action} aria-label="${book.title}" style="--row:${index}">
-      <span class="book-cover" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art">${coverArt[book.title]}</i></span>
+      <span class="book-cover" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art">${coverArt[book.title] || ""}</i></span>
       <span class="book-name">${book.title}</span>
     </${tag}>`;
 }
