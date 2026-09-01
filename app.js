@@ -31,33 +31,27 @@ practiceFrame.addEventListener("load", syncPracticeTheme);
 const topics = Object.freeze({
   A1: [
     ["Greetings", "chat"], ["Daily Life", "sun"], ["Family", "people"], ["Food", "food"],
-    ["Shopping", "bag"], ["School", "school"], ["Home", "home"], ["Transport", "bus"],
-    ["Weather", "cloud"], ["Health Basics", "health"], ["Random", "shuffle"],
+    ["Shopping", "bag"], ["Random", "shuffle"],
   ],
   A2: [
-    ["Travel", "plane"], ["Work Basics", "work"], ["Restaurants", "food"], ["Shopping", "bag"],
-    ["Friends", "people"], ["Hobbies", "star"], ["Directions", "map"], ["Appointments", "calendar"],
-    ["Phone & Messages", "phone"], ["Problems & Help", "help"], ["Random", "shuffle"],
+    ["Travel", "plane"], ["Work Basics", "work"], ["Restaurants", "food"], ["Friends", "people"],
+    ["Directions", "map"], ["Random", "shuffle"],
   ],
   B1: [
-    ["Travel Experiences", "plane"], ["Workplace", "work"], ["Education", "school"], ["Relationships", "people"],
-    ["Health & Fitness", "health"], ["Entertainment", "play"], ["Technology", "tech"], ["Money", "money"],
-    ["Housing", "home"], ["News & Events", "news"], ["Random", "shuffle"],
+    ["Travel Experiences", "plane"], ["Workplace", "work"], ["Education", "school"],
+    ["Health & Fitness", "health"], ["Technology", "tech"], ["Random", "shuffle"],
   ],
   B2: [
-    ["Career", "work"], ["Academic Life", "school"], ["Culture", "culture"], ["Social Issues", "people"],
-    ["Media", "news"], ["Business", "money"], ["Environment", "leaf"], ["Science & Tech", "tech"],
-    ["Personal Growth", "growth"], ["Discussion", "debate"], ["Random", "shuffle"],
+    ["Career", "work"], ["Culture", "culture"], ["Social Issues", "people"],
+    ["Environment", "leaf"], ["Personal Growth", "growth"], ["Random", "shuffle"],
   ],
   C1: [
-    ["Professional Communication", "work"], ["Higher Education", "school"], ["Society & Policy", "policy"], ["Economics", "money"],
-    ["Arts & Literature", "culture"], ["Ethics", "balance"], ["Science", "science"], ["Global Affairs", "globe"],
-    ["Psychology", "mind"], ["Argument & Debate", "debate"], ["Random", "shuffle"],
+    ["Professional Communication", "work"], ["Society & Policy", "policy"], ["Economics", "money"],
+    ["Ethics", "balance"], ["Global Affairs", "globe"], ["Random", "shuffle"],
   ],
   C2: [
-    ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"], ["Philosophy", "mind"],
-    ["Literary Criticism", "culture"], ["Ethics & Ideology", "balance"], ["Scientific Discourse", "science"], ["Corporate Strategy", "work"],
-    ["Rhetoric & Persuasion", "debate"], ["Abstract Concepts", "growth"], ["Random", "shuffle"],
+    ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"],
+    ["Philosophy", "mind"], ["Scientific Discourse", "science"], ["Random", "shuffle"],
   ],
 });
 
