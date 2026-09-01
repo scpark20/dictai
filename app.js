@@ -47,7 +47,7 @@ function bookCard(book, index) {
   const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
   return `
     <${tag} class="book-card" ${action} aria-label="${book.title}" style="--row:${index}">
-      <span class="book-cover" style="--cover:${book.color}" aria-hidden="true">${book.mark}</span>
+      <span class="book-cover design-${(index % 5) + 1}" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art"><b></b></i></span>
       <span class="book-name">${book.title}</span>
     </${tag}>`;
 }
