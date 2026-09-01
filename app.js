@@ -4,13 +4,7 @@ const state = { level: "A1", path: "conversation" };
 const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
-const practicePanel = document.querySelector("#practicePanel");
-const listenButton = document.querySelector("#listenButton");
-const practiceAnswer = document.querySelector("#practiceAnswer");
-const answerFeedback = document.querySelector("#answerFeedback");
-const checkButton = document.querySelector("#checkButton");
-const skipButton = document.querySelector("#skipButton");
-const greetingSentence = "Hello, nice to meet you.";
+const practiceFrame = document.querySelector("#practiceFrame");
 
 const topics = Object.freeze({
   A1: [
@@ -189,27 +183,5 @@ topicList.addEventListener("click", (event) => {
   if (!button) return;
   topicList.querySelectorAll(".topic-card").forEach((item) => item.classList.remove("is-selected"));
   button.classList.add("is-selected");
-  practiceAnswer.focus();
-});
-listenButton.addEventListener("click", () => {
-  window.speechSynthesis.cancel();
-  const voice = new SpeechSynthesisUtterance(greetingSentence);
-  voice.lang = "en-US";
-  voice.rate = 0.86;
-  window.speechSynthesis.speak(voice);
-});
-function checkGreeting() {
-  const normalize = (text) => text.toLowerCase().replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
-  const correct = normalize(practiceAnswer.value) === normalize(greetingSentence);
-  answerFeedback.textContent = correct ? "Correct — nice work." : "Listen once more and try again.";
-  answerFeedback.className = `answer-feedback ${correct ? "is-correct" : "is-wrong"}`;
-}
-checkButton.addEventListener("click", checkGreeting);
-practiceAnswer.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") checkGreeting();
-});
-skipButton.addEventListener("click", () => {
-  practiceAnswer.value = "";
-  answerFeedback.textContent = "Skipped. The answer was: Hello, nice to meet you.";
-  answerFeedback.className = "answer-feedback";
+  practiceFrame.focus();
 });

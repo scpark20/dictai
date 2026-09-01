@@ -57,7 +57,7 @@ body[data-level="C2"] { --accent: #343b8f; --accent-rgb: 52, 59, 143; --secondar
 button, a { font: inherit; }
 button { color: inherit; }
 
-.app-layout { display: grid; grid-template-columns: minmax(620px, 920px) minmax(380px, 500px); gap: 24px; width: min(1460px, calc(100% - 40px)); margin: 0 auto; align-items: start; }
+.app-layout { display: grid; grid-template-columns: minmax(430px, 34%) minmax(720px, 66%); gap: 18px; width: calc(100% - 32px); margin: 0 auto; align-items: start; }
 .shell {
   width: 100%;
   margin: 0;
@@ -181,7 +181,8 @@ button { color: inherit; }
   from { opacity: 0; transform: translateY(-12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.practice-panel { position: sticky; top: 20px; height: calc(100dvh - 40px); margin-top: 20px; padding: 24px; overflow: auto; background: linear-gradient(160deg, #f9fbff, #eef4ff); border: 1px solid rgba(var(--accent-rgb),.14); border-radius: 28px; box-shadow: 0 20px 55px rgba(25,42,72,.14); }
+.practice-panel { position: sticky; top: 16px; height: calc(100dvh - 32px); margin-top: 16px; overflow: hidden; background: white; border: 1px solid rgba(var(--accent-rgb),.14); border-radius: 28px; box-shadow: 0 20px 55px rgba(25,42,72,.14); }
+.practice-panel iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
 .practice-top { display: flex; gap: 14px; align-items: center; }
 .practice-top div { display: grid; gap: 3px; }
 .practice-top small { color: var(--accent); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
@@ -220,8 +221,8 @@ button { color: inherit; }
   .book-card { min-height: 68px; padding-inline: 12px; }
 }
 @media (max-width: 1080px) {
-  .app-layout { grid-template-columns: 1fr; }
-  .practice-panel { position: relative; top: auto; width: 100%; height: auto; min-height: 560px; margin: 0 0 24px; }
+  body { overflow-x: auto; }
+  .app-layout { grid-template-columns: 430px 720px; min-width: 1168px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

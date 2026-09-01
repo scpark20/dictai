@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
     <title>EchoStep</title>
-    <link rel="stylesheet" href="./styles.css?v=dev-20" />
+    <link rel="stylesheet" href="./styles.css?v=dev-23" />
   </head>
   <body data-level="A1">
     <div class="app-layout">
@@ -49,27 +49,10 @@
         </div>
       </section>
     </main>
-    <aside class="practice-panel" id="practicePanel" aria-hidden="false" aria-labelledby="practiceTitle">
-      <div class="practice-top">
-        <div><small>A1 · Greetings</small><strong id="practiceTitle">Sentence 1 of 10</strong></div>
-      </div>
-      <div class="practice-progress"><i></i></div>
-      <section class="practice-card">
-        <p class="practice-label">Listen and type the sentence</p>
-        <button class="listen-button" id="listenButton" type="button"><span>▶</span> Listen</button>
-        <div class="word-hints" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <label class="answer-box">
-          <span>Your answer</span>
-          <input id="practiceAnswer" type="text" autocomplete="off" placeholder="Type what you hear" />
-        </label>
-        <p class="answer-feedback" id="answerFeedback" aria-live="polite"></p>
-        <div class="practice-actions">
-          <button class="skip-button" id="skipButton" type="button">Skip</button>
-          <button class="check-button" id="checkButton" type="button">Check</button>
-        </div>
-      </section>
-    </aside>
+    <section class="practice-panel" id="practicePanel" aria-label="EchoStep practice">
+      <iframe id="practiceFrame" title="EchoStep practice" src="./practice/"></iframe>
+    </section>
     </div>
-    <script src="./app.js?v=dev-22"></script>
+    <script src="./app.js?v=dev-23"></script>
   </body>
 </html>
