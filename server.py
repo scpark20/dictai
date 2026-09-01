@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import random
 import re
 import sqlite3
 import threading
@@ -159,12 +160,11 @@ def select_course(body: CourseBody, request: Request) -> dict:
     topics = catalog[body.level]
     topic = body.topic
     if topic == "Random":
-        import random
         topic = random.choice(list(topics))
     if topic not in topics:
         raise HTTPException(404, "Topic not found.")
     SELECTED_COURSES[visitor(request)] = (body.level, topic)
-    set_level(visitor(request), 1)
+    set_level(visitor(request), random.randint(1, 5))
     return {"level": body.level, "topic": topic, "count": 5}
 
 
@@ -280,7 +280,8 @@ def complete(attempt_id: str, body: CompleteBody, request: Request) -> dict:
     if received != expected:
         raise HTTPException(400, "The completed answer could not be verified.")
     attempt["completed"] = True
-    next_level = min(5, attempt["level"] + 1)
+    choices = [number for number in range(1, 6) if number != attempt["level"]]
+    next_level = random.choice(choices)
     set_level(attempt["visitor"], next_level)
     return {"completed": True, "used_answer": attempt["revealed"], "next_level": next_level}
 
@@ -398,6 +399,8 @@ html, body { min-height:100%; background:linear-gradient(145deg,#fff 0%,var(--le
 body { padding:0; color:var(--ink); transition:background 320ms ease; }
 .topbar,.page { width:min(980px,calc(100% - 40px)); }
 .topbar { min-height:64px; border-color:rgba(var(--level-rgb),.14); }
+.topbar { justify-content:flex-start; }
+.step-label { display:none !important; }
 .brand { color:var(--level-dark); font-size:15px; font-weight:850; }
 .step-label { padding:7px 10px; background:rgba(255,255,255,.72); border:1px solid rgba(var(--level-rgb),.16); border-radius:999px; }
 .chapter-progress { background:rgba(var(--level-rgb),.12); }
