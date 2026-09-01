@@ -84,6 +84,104 @@ app.mount("/asr-wasm", StaticFiles(directory=ROOT / "asr-wasm"), name="asr-wasm"
 app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
 
+KOREAN_WHISPER_LOADER = r'''"use strict";
+
+(async () => {
+  const emitStatus = (status, percent = null) => window.dispatchEvent(new CustomEvent("wasm-asr-status", {
+    detail: { status, percent },
+  }));
+  const flatten = (chunks) => {
+    const length = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const audio = new Float32Array(length);
+    let offset = 0;
+    chunks.forEach((chunk) => { audio.set(chunk, offset); offset += chunk.length; });
+    return audio;
+  };
+
+  try {
+    emitStatus("Loading Korean voice model…", 5);
+    if (navigator.storage?.persist) void navigator.storage.persist().catch(() => false);
+    const { pipeline, env } = await import(
+      "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2/dist/transformers.min.js"
+    );
+    env.allowLocalModels = false;
+    env.useBrowserCache = true;
+    const transcriber = await pipeline(
+      "automatic-speech-recognition",
+      "onnx-community/whisper-tiny",
+      {
+        device: "wasm",
+        dtype: "q8",
+        progress_callback: (event) => {
+          if (event?.status === "progress" && Number.isFinite(event.progress)) {
+            emitStatus("Saving Korean voice model…", Math.max(5, Math.min(95, Math.round(event.progress))));
+          }
+        },
+      },
+    );
+
+    const recognizer = {
+      createStream() {
+        return {
+          chunks: [], sampleCount: 0, busy: false, fresh: false, text: "", disposed: false,
+          acceptWaveform(_rate, samples) {
+            if (this.disposed || !samples?.length) return;
+            const copy = new Float32Array(samples);
+            this.chunks.push(copy);
+            this.sampleCount += copy.length;
+            const maximum = 16000 * 8;
+            while (this.sampleCount > maximum && this.chunks.length > 1) {
+              this.sampleCount -= this.chunks[0].length;
+              this.chunks.shift();
+            }
+          },
+          free() { this.disposed = true; this.chunks = []; this.sampleCount = 0; },
+        };
+      },
+      isReady(stream) {
+        return !stream.disposed && !stream.busy && !stream.fresh && stream.sampleCount >= 16000 * 2.5;
+      },
+      decode(stream) {
+        if (stream.busy || stream.fresh || stream.disposed) return;
+        stream.busy = true;
+        const audio = flatten(stream.chunks);
+        void transcriber(audio, {
+          language: "korean",
+          task: "transcribe",
+          chunk_length_s: 8,
+          stride_length_s: 1,
+          return_timestamps: false,
+        }).then((result) => {
+          if (stream.disposed) return;
+          stream.text = String(result?.text || "").trim();
+          stream.fresh = true;
+        }).catch((error) => {
+          console.error("Korean Whisper transcription failed", error);
+          emitStatus("Voice recognition failed", null);
+          stream.chunks = [];
+          stream.sampleCount = 0;
+        }).finally(() => { stream.busy = false; });
+      },
+      getResult(stream) { return { text: stream.fresh ? stream.text : "" }; },
+      isEndpoint(stream) { return stream.fresh; },
+      reset(stream) {
+        stream.chunks = [];
+        stream.sampleCount = 0;
+        stream.text = "";
+        stream.fresh = false;
+      },
+    };
+    window.wasmAsrRecognizer = recognizer;
+    emitStatus("Ready", 100);
+    window.dispatchEvent(new CustomEvent("wasm-asr-ready"));
+  } catch (error) {
+    console.error("Korean Whisper model failed", error);
+    emitStatus("Voice model failed", null);
+  }
+})();
+'''
+
+
 @app.middleware("http")
 async def no_store(request: Request, call_next):
     response = await call_next(request)
@@ -528,12 +626,9 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 """
         return Response(source, media_type="text/css")
     if name == "persistent-model-loader.js":
-        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
         if language == "ko":
-            source = source.replace('sherpa-main-asr-20260901-v1', 'sherpa-ko-asr-20260902-v1')
-            source = source.replace('/asr-wasm/', '/asr-wasm-ko/')
-            source = source.replace('const expectedDataBytes = 190951044;', 'const expectedDataBytes = 140922636;')
-            source = source.replace('const expectedWasmBytes = 13148431;', 'const expectedWasmBytes = 13150079;')
+            return Response(KOREAN_WHISPER_LOADER, media_type="application/javascript")
+        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
         source = source.replace('/wasm-asr-bootstrap.js?v=20260901-3', '/practice/wasm-asr-bootstrap.js?v=20260902-1')
         return Response(source, media_type="application/javascript")
     if name == "wasm-asr-bootstrap.js":
