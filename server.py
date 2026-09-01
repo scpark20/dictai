@@ -77,16 +77,17 @@ PROPER_NOUN_METADATA = (
     else {}
 )
 ATTEMPTS: dict[str, dict] = {}
-SELECTED_COURSES: dict[str, tuple[str, str]] = {}
+SELECTED_COURSES: dict[str, tuple[str, str, str]] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
 app.mount("/asr-wasm", StaticFiles(directory=ROOT / "asr-wasm"), name="asr-wasm")
+app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
 
 @app.middleware("http")
 async def no_store(request: Request, call_next):
     response = await call_next(request)
-    if request.url.path.startswith("/asr-wasm/"):
+    if request.url.path.startswith(("/asr-wasm/", "/asr-wasm-ko/")):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     else:
         response.headers["Cache-Control"] = "no-store, max-age=0"
@@ -330,13 +331,14 @@ def practice_index() -> FileResponse:
 
 
 @app.get("/practice/{name}")
-def practice_static(name: str) -> FileResponse:
+def practice_static(name: str, request: Request) -> FileResponse:
     allowed = {
         "app.js", "styles.css", "wasm-asr-bootstrap.js",
         "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js",
     }
     if name not in allowed:
         raise HTTPException(404)
+    language = selected_course(request)[0]
     if name == "app.js":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
         source = source.replace(
@@ -445,6 +447,20 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 @media (max-width:700px) { .speaker-turn { grid-template-columns:1fr; gap:5px; } }
 """
         return Response(source, media_type="text/css")
+    if name == "persistent-model-loader.js":
+        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
+        if language == "ko":
+            source = source.replace('sherpa-main-asr-20260901-v1', 'sherpa-ko-asr-20260902-v1')
+            source = source.replace('/asr-wasm/', '/asr-wasm-ko/')
+            source = source.replace('const expectedDataBytes = 190951044;', 'const expectedDataBytes = 140922636;')
+            source = source.replace('const expectedWasmBytes = 13148431;', 'const expectedWasmBytes = 13150079;')
+        source = source.replace('/wasm-asr-bootstrap.js?v=20260901-3', '/practice/wasm-asr-bootstrap.js?v=20260902-1')
+        return Response(source, media_type="application/javascript")
+    if name == "wasm-asr-bootstrap.js":
+        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
+        if language == "ko":
+            source = source.replace('/asr-wasm/', '/asr-wasm-ko/')
+        return Response(source, media_type="application/javascript")
     return FileResponse(PRACTICE_ROOT / name)
 
 
