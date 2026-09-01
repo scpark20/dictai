@@ -122,7 +122,8 @@ button { color: inherit; }
 .topic-card { display: grid; grid-template-columns: 30px 1fr; gap: 9px; align-items: center; width: 100%; min-height: 43px; padding: 5px 11px; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid rgba(var(--accent-rgb), .1); text-align: left; font-size: 14px; font-weight: 680; cursor: default; animation: book-row-in 360ms cubic-bezier(.2,.75,.2,1) calc(var(--row) * 40ms + 60ms) both; transition: background 160ms ease; }
 .topic-card:last-child { border-bottom: 0; }
 .topic-card:hover { background: rgba(var(--accent-rgb), .07); }
-.topic-number { display: grid; width: 27px; height: 27px; place-items: center; color: var(--accent); background: rgba(var(--accent-rgb), .1); border-radius: 8px; font-size: 10px; font-weight: 850; letter-spacing: .04em; }
+.topic-icon { display: grid; width: 27px; height: 27px; place-items: center; color: var(--accent); background: rgba(var(--accent-rgb), .1); border-radius: 8px; }
+.topic-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .book-cover {
   position: relative;
   display: grid;

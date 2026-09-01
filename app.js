@@ -5,10 +5,52 @@ const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
 
-const topics = Object.freeze([
-  "Travel", "Work", "School", "Daily Life", "Shopping",
-  "Food & Dining", "Friends & Family", "Health", "Hobbies", "Emergencies", "Random",
-]);
+const topics = Object.freeze({
+  A1: [
+    ["Greetings", "chat"], ["Daily Life", "sun"], ["Family", "people"], ["Food", "food"],
+    ["Shopping", "bag"], ["School", "school"], ["Home", "home"], ["Transport", "bus"],
+    ["Weather", "cloud"], ["Health Basics", "health"], ["Random", "shuffle"],
+  ],
+  A2: [
+    ["Travel", "plane"], ["Work Basics", "work"], ["Restaurants", "food"], ["Shopping", "bag"],
+    ["Friends", "people"], ["Hobbies", "star"], ["Directions", "map"], ["Appointments", "calendar"],
+    ["Phone & Messages", "phone"], ["Problems & Help", "help"], ["Random", "shuffle"],
+  ],
+  B1: [
+    ["Travel Experiences", "plane"], ["Workplace", "work"], ["Education", "school"], ["Relationships", "people"],
+    ["Health & Fitness", "health"], ["Entertainment", "play"], ["Technology", "tech"], ["Money", "money"],
+    ["Housing", "home"], ["News & Events", "news"], ["Random", "shuffle"],
+  ],
+  B2: [
+    ["Career", "work"], ["Academic Life", "school"], ["Culture", "culture"], ["Social Issues", "people"],
+    ["Media", "news"], ["Business", "money"], ["Environment", "leaf"], ["Science & Tech", "tech"],
+    ["Personal Growth", "growth"], ["Discussion", "debate"], ["Random", "shuffle"],
+  ],
+  C1: [
+    ["Professional Communication", "work"], ["Higher Education", "school"], ["Society & Policy", "policy"], ["Economics", "money"],
+    ["Arts & Literature", "culture"], ["Ethics", "balance"], ["Science", "science"], ["Global Affairs", "globe"],
+    ["Psychology", "mind"], ["Argument & Debate", "debate"], ["Random", "shuffle"],
+  ],
+});
+
+const topicIcons = Object.freeze({
+  chat: `<path d="M4 5h16v11H9l-5 4z"/>`, sun: `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>`,
+  people: `<circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-4 2-6 6-6s6 2 6 6m0-5c4 0 6 2 6 5"/>`, food: `<path d="M7 3v8m-3-8v5c0 2 6 2 6 0V3M7 11v10M17 3c4 3 3 9 0 11v7"/>`,
+  bag: `<path d="M5 8h14l1 13H4zM9 8a3 3 0 0 1 6 0"/>`, school: `<path d="m3 9 9-5 9 5-9 5zM6 12v6h12v-6M3 21h18"/>`,
+  home: `<path d="m3 11 9-8 9 8v10H7V11m4 10v-6h4v6"/>`, bus: `<rect x="4" y="3" width="16" height="16" rx="3"/><path d="M4 11h16M8 19v2m8-2v2M8 7h8"/>`,
+  cloud: `<path d="M6 18h12a4 4 0 0 0 0-8 6 6 0 0 0-11-2A5 5 0 0 0 6 18z"/>`, health: `<path d="M12 21S4 16 4 9a4 4 0 0 1 7-3l1 1 1-1a4 4 0 0 1 7 3c0 7-8 12-8 12z"/>`,
+  shuffle: `<path d="M4 7h3c5 0 5 10 10 10h3m-3-3 3 3-3 3M4 17h3c2 0 3-2 4-4m3-4c1-1 2-2 3-2h3m-3-3 3 3-3 3"/>`, plane: `<path d="m3 11 18-8-7 18-3-7zM11 14l4-4"/>`,
+  work: `<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3m-12 5h18M10 12v2h4v-2"/>`, star: `<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/>`,
+  map: `<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15m6-12v15"/>`, calendar: `<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4m8-4v4M3 10h18"/>`,
+  phone: `<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 18h4"/>`, help: `<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-1 .5-1 1.2-1 2.2M12 18h.01"/>`,
+  play: `<circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/>`, tech: `<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/>`,
+  money: `<circle cx="12" cy="12" r="9"/><path d="M15 8h-4a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4H9m3-10v12"/>`, news: `<path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/>`,
+  culture: `<path d="M4 20h16M6 20v-8h12v8M4 9l8-5 8 5zM9 12v8m6-8v8"/>`, leaf: `<path d="M20 4C10 4 5 9 5 16c4 3 12 1 15-12zM5 20c2-5 6-8 11-11"/>`,
+  growth: `<path d="M4 20V9m6 11V4m6 16v-7m4 7V7"/>`, debate: `<path d="M3 5h13v10H8l-5 4zM18 8h3v10l-3-2"/>`,
+  policy: `<path d="M12 3 4 7v5c0 5 3 8 8 10 5-2 8-5 8-10V7zM9 12l2 2 4-5"/>`, balance: `<path d="M12 3v18M5 6h14M7 6l-4 8h8zm10 0-4 8h8z"/>`,
+  science: `<path d="M9 3h6m-5 0v6L5 19c-.5 1 0 2 2 2h10c2 0 2.5-1 2-2L14 9V3M8 15h8"/>`, globe: `<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>`,
+  mind: `<path d="M9 19H7a4 4 0 0 1-2-7 5 5 0 0 1 8-6 4 4 0 0 1 6 5c3 3 1 8-3 8h-2v3H9zM9 9v10m5-11v11"/>`,
+});
 
 const books = Object.freeze({
   A1: [
@@ -76,9 +118,9 @@ function bookCard(book, index) {
     </${tag}>`;
 }
 
-function topicCard(topic, index) {
+function topicCard([topic, icon], index) {
   return `<button class="topic-card" type="button" aria-disabled="true" style="--row:${index}">
-    <span class="topic-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
+    <span class="topic-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${topicIcons[icon]}</svg></span>
     <span>${topic}</span>
   </button>`;
 }
@@ -90,7 +132,7 @@ function render() {
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-checked", String(active));
   });
-  topicList.innerHTML = topics.map(topicCard).join("");
+  topicList.innerHTML = topics[state.level].map(topicCard).join("");
   bookList.innerHTML = books[state.level].map(bookCard).join("");
 }
 
