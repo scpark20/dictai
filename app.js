@@ -1,7 +1,8 @@
 "use strict";
 
-const state = { level: "A1", path: "conversation" };
+const state = { level: "A1", language: "en", path: "conversation" };
 const levels = [...document.querySelectorAll(".level")];
+const languages = [...document.querySelectorAll(".language")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
 const practiceFrame = document.querySelector("#practiceFrame");
@@ -53,6 +54,14 @@ const topics = Object.freeze({
     ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"],
     ["Philosophy", "mind"], ["Scientific Discourse", "science"], ["Random", "shuffle"],
   ],
+});
+const topicsKo = Object.freeze({
+  A1: [["인사","chat"],["일상생활","sun"],["가족","people"],["음식","food"],["쇼핑","bag"],["무작위","shuffle"]],
+  A2: [["여행","plane"],["직장 기초","work"],["식당","food"],["친구","people"],["길 찾기","map"],["무작위","shuffle"]],
+  B1: [["여행 경험","plane"],["직장생활","work"],["교육","school"],["건강과 운동","health"],["기술","tech"],["무작위","shuffle"]],
+  B2: [["진로","work"],["문화","culture"],["사회 문제","people"],["환경","leaf"],["자기계발","growth"],["무작위","shuffle"]],
+  C1: [["업무 소통","work"],["사회와 정책","policy"],["경제","money"],["윤리","balance"],["국제 정세","globe"],["무작위","shuffle"]],
+  C2: [["외교와 지정학","globe"],["법과 통치","policy"],["경제 이론","money"],["철학","mind"],["과학 담론","science"],["무작위","shuffle"]],
 });
 
 const topicIcons = Object.freeze({
@@ -183,13 +192,22 @@ function render() {
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-checked", String(active));
   });
-  topicList.innerHTML = topics[state.level].map(topicCard).join("");
+  topicList.innerHTML = (state.language === "ko" ? topicsKo : topics)[state.level].map(topicCard).join("");
   bookList.innerHTML = books[state.level].map(bookCard).join("");
   syncPracticeTheme();
 }
 
 levels.forEach((button) => button.addEventListener("click", () => {
   state.level = button.dataset.level;
+  render();
+}));
+languages.forEach((button) => button.addEventListener("click", () => {
+  state.language = button.dataset.language;
+  languages.forEach((item) => {
+    const active = item === button;
+    item.classList.toggle("is-active", active);
+    item.setAttribute("aria-checked", String(active));
+  });
   render();
 }));
 render();
@@ -203,11 +221,11 @@ topicList.addEventListener("click", async (event) => {
     const response = await fetch("./api/course", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ level: state.level, topic: requestedTopic }),
+      body: JSON.stringify({ language: state.language, level: state.level, topic: requestedTopic }),
     });
     if (!response.ok) throw new Error("Course selection failed");
     const selected = await response.json();
-    practiceCourseTopic.textContent = requestedTopic === "Random" ? `Random · ${selected.topic}` : selected.topic;
+    practiceCourseTopic.textContent = ["Random", "무작위"].includes(requestedTopic) ? `${requestedTopic} · ${selected.topic}` : selected.topic;
   } catch (error) {
     button.disabled = false;
     return;

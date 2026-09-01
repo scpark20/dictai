@@ -26,9 +26,11 @@ SECOND_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio-b")
 GREETINGS_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/a1-greetings")
 CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation")
 CONVERSATION_CATALOG_PATH = CONVERSATION_ROOT / "catalog.json"
+KOREAN_CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation-ko")
 DB = ROOT / "progress.sqlite3"
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
+LEARNING_WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*|[가-힣]+|[0-9]+")
 GREETINGS = [
     ("Hi, I'm Emma. Hello, I'm Daniel.", "AF", "AM"),
     ("Good morning! Good morning. How are you?", "AF", "AM"),
@@ -104,18 +106,20 @@ class CompleteBody(BaseModel):
 
 
 class CourseBody(BaseModel):
+    language: str = "en"
     level: str
     topic: str
 
 
-def conversation_catalog() -> dict:
-    if not CONVERSATION_CATALOG_PATH.is_file():
+def conversation_catalog(language: str = "en") -> dict:
+    path = (KOREAN_CONVERSATION_ROOT if language == "ko" else CONVERSATION_ROOT) / "catalog.json"
+    if not path.is_file():
         raise HTTPException(503, "Conversation content is still being prepared.")
-    return json.loads(CONVERSATION_CATALOG_PATH.read_text(encoding="utf-8"))["levels"]
+    return json.loads(path.read_text(encoding="utf-8"))["levels"]
 
 
-def selected_course(request: Request) -> tuple[str, str]:
-    return SELECTED_COURSES.get(visitor(request), ("A1", "Greetings"))
+def selected_course(request: Request) -> tuple[str, str, str]:
+    return SELECTED_COURSES.get(visitor(request), ("en", "A1", "Greetings"))
 
 
 def visitor(request: Request) -> str:
@@ -148,22 +152,24 @@ def get_attempt(attempt_id: str, request: Request) -> dict:
 
 @app.get("/api/bootstrap")
 def bootstrap(request: Request) -> dict:
-    course_level, topic = selected_course(request)
-    return {"level": db_level(visitor(request)), "max_level": 5, "max_words": 100, "course_level": course_level, "topic": topic}
+    language, course_level, topic = selected_course(request)
+    return {"level": db_level(visitor(request)), "max_level": 5, "max_words": 100, "learning_language": language, "course_level": course_level, "topic": topic}
 
 
 @app.post("/api/course")
 def select_course(body: CourseBody, request: Request) -> dict:
-    catalog = conversation_catalog()
+    if body.language not in {"en", "ko"}:
+        raise HTTPException(400, "Unsupported learning language.")
+    catalog = conversation_catalog(body.language)
     if body.level not in catalog:
         raise HTTPException(404, "Level not found.")
     topics = catalog[body.level]
     topic = body.topic
-    if topic == "Random":
+    if topic in {"Random", "무작위"}:
         topic = random.choice(list(topics))
     if topic not in topics:
         raise HTTPException(404, "Topic not found.")
-    SELECTED_COURSES[visitor(request)] = (body.level, topic)
+    SELECTED_COURSES[visitor(request)] = (body.language, body.level, topic)
     set_level(visitor(request), random.randint(1, 5))
     return {"level": body.level, "topic": topic, "count": 5}
 
@@ -212,13 +218,14 @@ def change_level(body: LevelBody, request: Request) -> dict:
 def create_problem(body: LanguageBody, request: Request) -> dict:
     key = visitor(request)
     level = db_level(key)
-    course_level, topic = selected_course(request)
-    item = conversation_catalog()[course_level][topic][level - 1]
+    language, course_level, topic = selected_course(request)
+    root = KOREAN_CONVERSATION_ROOT if language == "ko" else CONVERSATION_ROOT
+    item = conversation_catalog(language)[course_level][topic][level - 1]
     text = item["text"]
     proper_noun_indices = []
     speaker = "A+B"
-    audio = (CONVERSATION_ROOT / item["audio"]).resolve()
-    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve())
+    audio = (root / item["audio"]).resolve()
+    allowed = audio.is_relative_to(root.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     attempt_id = uuid.uuid4().hex
@@ -226,10 +233,11 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "visitor": key,
         "level": level,
         "text": text,
-        "answers": WORD_RE.findall(text),
+        "answers": LEARNING_WORD_RE.findall(text),
         "audio": audio,
         "audio_second": audio,
         "speaker": speaker,
+        "language": language,
         "revealed": False,
         "completed": False,
     }
@@ -243,8 +251,8 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "target_language": body.target_language,
         "proper_noun_indices": proper_noun_indices,
         "dialogue_turns": [
-            {"speaker": "A", "text": item["turns"][0], "word_count": len(WORD_RE.findall(item["turns"][0]))},
-            {"speaker": "B", "text": item["turns"][1], "word_count": len(WORD_RE.findall(item["turns"][1]))},
+            {"speaker": "A", "text": item["turns"][0], "word_count": len(LEARNING_WORD_RE.findall(item["turns"][0]))},
+            {"speaker": "B", "text": item["turns"][1], "word_count": len(LEARNING_WORD_RE.findall(item["turns"][1]))},
         ],
     }
 
@@ -253,7 +261,7 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
 def problem_audio(attempt_id: str, request: Request, take: int = 0) -> FileResponse:
     attempt = get_attempt(attempt_id, request)
     audio = attempt["audio_second"] if take == 1 and attempt["audio_second"].is_file() else attempt["audio"]
-    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve())
+    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve()) or audio.is_relative_to(KOREAN_CONVERSATION_ROOT.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     return FileResponse(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
@@ -334,6 +342,13 @@ def practice_static(name: str) -> FileResponse:
         source = source.replace(
             "if (window.location.origin !== DEPLOYED_ORIGIN) {",
             "if (window.top === window.self && window.location.origin !== DEPLOYED_ORIGIN) {",
+        )
+        source = source.replace(
+            "const match = normalised.match(/[a-z]+(?:['-][a-z]+)*/);",
+            "const match = normalised.match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/u);",
+        ).replace(
+            "return standardiseWordPunctuation(sentence).match(/[A-Za-z]+(?:['-][A-Za-z]+)*/g) || [];",
+            "return standardiseWordPunctuation(sentence).match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/gu) || [];",
         )
         source = source.replace(
             "    properNounIndices,\n  };",
