@@ -22,9 +22,22 @@ PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
 AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
 CYCLING_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio")
 SECOND_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio-b")
+GREETINGS_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/a1-greetings")
 DB = ROOT / "progress.sqlite3"
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
+GREETINGS = [
+    ("Hi, I'm Emma. Hello, I'm Daniel.", "AF", "AM"),
+    ("Good morning! Good morning. How are you?", "AF", "AM"),
+    ("I'm fine, thank you. That's great to hear.", "AF", "AM"),
+    ("Nice to meet you. Nice to meet you, too.", "AF", "AM"),
+    ("What's your name? My name is Alex.", "AF", "AM"),
+    ("Where are you from? I'm from Canada.", "AF", "AM"),
+    ("How is your day? It's going well, thanks.", "AF", "AM"),
+    ("Good to see you again. It's good to see you, too.", "AF", "AM"),
+    ("Have a nice day! Thanks. You, too!", "AF", "AM"),
+    ("Goodbye. See you tomorrow. Bye! See you then.", "AF", "AM"),
+]
 def load_sentences() -> list[dict]:
     source = json.loads(MANIFEST.read_text(encoding="utf-8"))
     unique: dict[str, dict] = {}
@@ -78,7 +91,7 @@ def db_level(key: str) -> int:
     with sqlite3.connect(DB) as db:
         db.execute("CREATE TABLE IF NOT EXISTS progress(visitor TEXT PRIMARY KEY, level INTEGER NOT NULL)")
         row = db.execute("SELECT level FROM progress WHERE visitor=?", (key,)).fetchone()
-        return int(row[0]) if row else 1
+        return min(10, max(1, int(row[0]))) if row else 1
 
 
 def set_level(key: str, level: int) -> None:
@@ -100,7 +113,7 @@ def get_attempt(attempt_id: str, request: Request) -> dict:
 
 @app.get("/api/bootstrap")
 def bootstrap(request: Request) -> dict:
-    return {"level": db_level(visitor(request)), "max_level": 641, "max_words": 100}
+    return {"level": db_level(visitor(request)), "max_level": 10, "max_words": 100}
 
 
 @app.get("/api/build-status")
@@ -137,8 +150,8 @@ def build_status() -> dict:
 
 @app.post("/api/level")
 def change_level(body: LevelBody, request: Request) -> dict:
-    if not 1 <= body.level <= 641:
-        raise HTTPException(400, "The sentence number must be between 1 and 641.")
+    if not 1 <= body.level <= 10:
+        raise HTTPException(400, "The conversation number must be between 1 and 10.")
     set_level(visitor(request), body.level)
     return {"current_level": body.level}
 
@@ -147,26 +160,21 @@ def change_level(body: LevelBody, request: Request) -> dict:
 def create_problem(body: LanguageBody, request: Request) -> dict:
     key = visitor(request)
     level = db_level(key)
-    row = SENTENCES[level - 1]
-    proper_noun_indices = PROPER_NOUN_METADATA.get(row["sentence_id"], {}).get(
-        "proper_noun_indices", []
-    )
-    speaker = SPEAKER_CYCLE[(level - 1) % len(SPEAKER_CYCLE)]
-    generated = CYCLING_AUDIO_ROOT / f"{level:04d}.wav"
-    audio = generated.resolve() if generated.is_file() else (
-        AUDIO_ROOT / row["sentence_id"] / f"{speaker}.wav"
-    ).resolve()
-    allowed = audio.is_relative_to(AUDIO_ROOT.resolve()) or audio.is_relative_to(CYCLING_AUDIO_ROOT.resolve())
+    text, first_speaker, second_speaker = GREETINGS[level - 1]
+    proper_noun_indices = []
+    speaker = f"{first_speaker}+{second_speaker}"
+    audio = (GREETINGS_AUDIO_ROOT / f"{level:04d}.wav").resolve()
+    allowed = audio.is_relative_to(GREETINGS_AUDIO_ROOT.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     attempt_id = uuid.uuid4().hex
     attempt = {
         "visitor": key,
         "level": level,
-        "text": row["display_text"],
-        "answers": WORD_RE.findall(row["display_text"]),
+        "text": text,
+        "answers": WORD_RE.findall(text),
         "audio": audio,
-        "audio_second": (SECOND_AUDIO_ROOT / f"{level:04d}.wav").resolve(),
+        "audio_second": audio,
         "speaker": speaker,
         "revealed": False,
         "completed": False,
@@ -187,7 +195,7 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
 def problem_audio(attempt_id: str, request: Request, take: int = 0) -> FileResponse:
     attempt = get_attempt(attempt_id, request)
     audio = attempt["audio_second"] if take == 1 and attempt["audio_second"].is_file() else attempt["audio"]
-    allowed = audio.is_relative_to(AUDIO_ROOT.resolve()) or audio.is_relative_to(CYCLING_AUDIO_ROOT.resolve()) or audio.is_relative_to(SECOND_AUDIO_ROOT.resolve())
+    allowed = audio.is_relative_to(GREETINGS_AUDIO_ROOT.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     return FileResponse(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
@@ -214,7 +222,7 @@ def complete(attempt_id: str, body: CompleteBody, request: Request) -> dict:
     if received != expected:
         raise HTTPException(400, "The completed answer could not be verified.")
     attempt["completed"] = True
-    next_level = min(641, attempt["level"] + 1)
+    next_level = min(10, attempt["level"] + 1)
     set_level(attempt["visitor"], next_level)
     return {"completed": True, "used_answer": attempt["revealed"], "next_level": next_level}
 
