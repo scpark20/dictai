@@ -268,7 +268,18 @@ def status_page() -> FileResponse:
 @app.get("/practice")
 @app.get("/practice/")
 def practice_index() -> FileResponse:
-    return FileResponse(PRACTICE_ROOT / "index.html")
+    source = (PRACTICE_ROOT / "index.html").read_text(encoding="utf-8")
+    source = source.replace(
+        "English dictation practice with Harry Potter Chapter 3",
+        "EchoStep level-based English listening practice",
+    ).replace(
+        "<title>Harry Potter Chapter 3 Dictation</title>",
+        "<title>EchoStep Practice</title>",
+    ).replace(
+        'aria-label="Chapter 3 progress"',
+        'aria-label="Practice progress"',
+    )
+    return Response(source, media_type="text/html")
 
 
 @app.get("/practice/{name}")
@@ -330,14 +341,43 @@ def practice_static(name: str) -> FileResponse:
     if name == "styles.css":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
         source += """
+.practice-panel-theme-marker { display:none; }
+:root {
+  --level-accent:#1877e8; --level-dark:#0c4fa3; --level-soft:#eaf3ff; --level-rgb:24,119,232;
+  --ink:#17243a; --muted:#697386; --paper:var(--level-soft); --surface:#fff;
+  --line:rgba(var(--level-rgb),.16); --soft:rgba(var(--level-rgb),.07);
+  --green:var(--level-accent); --green-dark:var(--level-dark); --green-soft:var(--level-soft);
+  --accent:var(--level-accent); --accent-rgb:var(--level-rgb);
+}
+html, body { min-height:100%; background:linear-gradient(145deg,#fff 0%,var(--level-soft) 100%) !important; }
+body { padding:0; color:var(--ink); transition:background 320ms ease; }
+.topbar,.page { width:min(980px,calc(100% - 40px)); }
+.topbar { min-height:64px; border-color:rgba(var(--level-rgb),.14); }
+.brand { color:var(--level-dark); font-size:15px; font-weight:850; }
+.step-label { padding:7px 10px; background:rgba(255,255,255,.72); border:1px solid rgba(var(--level-rgb),.16); border-radius:999px; }
+.chapter-progress { background:rgba(var(--level-rgb),.12); }
+.chapter-progress i { background:var(--level-accent); }
+.page { display:grid; place-items:center; min-height:calc(100dvh - 64px); padding:22px 0 34px; }
+.practice-card,.practice-card.is-success,.practice-card.is-reveal-complete {
+  width:100%; max-width:900px; padding:clamp(22px,3vw,38px); overflow:visible;
+  background:rgba(255,255,255,.92); border:1px solid rgba(var(--level-rgb),.16); border-radius:24px;
+  box-shadow:0 18px 52px rgba(var(--level-rgb),.11); backdrop-filter:blur(14px);
+}
+.voice-toggle { border-color:rgba(var(--level-rgb),.2); background:rgba(var(--level-rgb),.07); }
+.voice-check,.voice-setup-progress i,.chapter-progress-fill { background:var(--level-accent) !important; }
+.word-slot { border-color:rgba(var(--level-rgb),.18); background:#fff; }
+.word-slot.is-correct,.word-slot.is-revealed { color:var(--level-dark); background:var(--level-soft); }
+.answer-input-wrap:focus-within { border-color:var(--level-accent); box-shadow:0 0 0 4px rgba(var(--level-rgb),.10); }
+.proper-noun-button { color:var(--level-dark); border-color:rgba(var(--level-rgb),.24); background:var(--level-soft); }
+.playback-buttons .speed-button.is-selected,.playback-buttons .speed-button.is-playing { color:var(--level-dark); background:var(--level-soft); box-shadow:inset 0 0 0 1px rgba(var(--level-rgb),.24); }
+.speaker-turn.speaker-a { background:rgba(var(--level-rgb),.07); border-color:rgba(var(--level-rgb),.18); }
+.speaker-turn.speaker-b { background:rgba(var(--level-rgb),.14); border-color:rgba(var(--level-rgb),.27); }
+.speaker-a .speaker-label b { background:var(--level-accent); }
+.speaker-b .speaker-label b { background:var(--level-dark); }
 .word-grid:has(.speaker-turn) { display:grid; gap:12px; }
-.speaker-turn { display:grid; grid-template-columns:72px minmax(0,1fr); gap:10px; align-items:start; padding:12px 14px; border-radius:18px; }
-.speaker-turn.speaker-a { background:rgba(24,119,232,.09); border:1px solid rgba(24,119,232,.20); }
-.speaker-turn.speaker-b { background:rgba(12,79,163,.12); border:1px solid rgba(12,79,163,.25); }
+.speaker-turn { display:grid; grid-template-columns:52px minmax(0,1fr); gap:10px; align-items:start; padding:13px 14px; border:1px solid; border-radius:18px; }
 .speaker-label { display:flex; align-items:center; gap:7px; min-height:38px; }
 .speaker-label b { display:grid; width:28px; height:28px; place-items:center; color:white; border-radius:50%; font-size:13px; }
-.speaker-a .speaker-label b { background:#1877e8; }
-.speaker-b .speaker-label b { background:#0c4fa3; }
 .speaker-word-row { display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
 @media (max-width:700px) { .speaker-turn { grid-template-columns:1fr; gap:5px; } }
 """

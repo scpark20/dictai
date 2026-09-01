@@ -5,6 +5,26 @@ const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
 const practiceFrame = document.querySelector("#practiceFrame");
+const levelThemes = Object.freeze({
+  A1: ["#1877e8", "#0c4fa3", "#eaf3ff", "24,119,232"],
+  A2: ["#078c7b", "#045e54", "#e7f7f3", "7,140,123"],
+  B1: ["#c47a00", "#815000", "#fff3d9", "196,122,0"],
+  B2: ["#d84d45", "#96332e", "#ffebe8", "216,77,69"],
+  C1: ["#7950c7", "#50328f", "#f0eafe", "121,80,199"],
+  C2: ["#343b8f", "#20265f", "#e9eafb", "52,59,143"],
+});
+
+function syncPracticeTheme() {
+  const root = practiceFrame.contentDocument?.documentElement;
+  if (!root) return;
+  const [accent, dark, soft, rgb] = levelThemes[state.level];
+  root.dataset.level = state.level;
+  root.style.setProperty("--level-accent", accent);
+  root.style.setProperty("--level-dark", dark);
+  root.style.setProperty("--level-soft", soft);
+  root.style.setProperty("--level-rgb", rgb);
+}
+practiceFrame.addEventListener("load", syncPracticeTheme);
 
 const topics = Object.freeze({
   A1: [
@@ -170,6 +190,7 @@ function render() {
   });
   topicList.innerHTML = topics[state.level].map(topicCard).join("");
   bookList.innerHTML = books[state.level].map(bookCard).join("");
+  syncPracticeTheme();
 }
 
 levels.forEach((button) => button.addEventListener("click", () => {
