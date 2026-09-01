@@ -4,6 +4,15 @@ const state = { level: "A1", path: "conversation" };
 const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
+const practicePanel = document.querySelector("#practicePanel");
+const practiceBackdrop = document.querySelector("#practiceBackdrop");
+const panelClose = document.querySelector("#panelClose");
+const listenButton = document.querySelector("#listenButton");
+const practiceAnswer = document.querySelector("#practiceAnswer");
+const answerFeedback = document.querySelector("#answerFeedback");
+const checkButton = document.querySelector("#checkButton");
+const skipButton = document.querySelector("#skipButton");
+const greetingSentence = "Hello, nice to meet you.";
 
 const topics = Object.freeze({
   A1: [
@@ -153,7 +162,8 @@ function bookCard(book, index) {
 }
 
 function topicCard([topic, icon], index) {
-  return `<button class="topic-card" type="button" aria-disabled="true" style="--row:${index}">
+  const available = state.level === "A1" && topic === "Greetings";
+  return `<button class="topic-card${available ? " is-ready" : ""}" type="button" data-topic="${topic}" aria-disabled="${!available}" style="--row:${index}">
     <span class="topic-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${topicIcons[icon]}</svg></span>
     <span>${topic}</span>
   </button>`;
@@ -175,3 +185,41 @@ levels.forEach((button) => button.addEventListener("click", () => {
   render();
 }));
 render();
+
+function setPractice(open) {
+  document.body.classList.toggle("practice-open", open);
+  practicePanel.setAttribute("aria-hidden", String(!open));
+  if (open) setTimeout(() => practiceAnswer.focus(), 360);
+}
+
+topicList.addEventListener("click", (event) => {
+  const button = event.target.closest(".topic-card.is-ready");
+  if (button) setPractice(true);
+});
+panelClose.addEventListener("click", () => setPractice(false));
+practiceBackdrop.addEventListener("click", () => setPractice(false));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setPractice(false);
+});
+listenButton.addEventListener("click", () => {
+  window.speechSynthesis.cancel();
+  const voice = new SpeechSynthesisUtterance(greetingSentence);
+  voice.lang = "en-US";
+  voice.rate = 0.86;
+  window.speechSynthesis.speak(voice);
+});
+function checkGreeting() {
+  const normalize = (text) => text.toLowerCase().replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
+  const correct = normalize(practiceAnswer.value) === normalize(greetingSentence);
+  answerFeedback.textContent = correct ? "Correct — nice work." : "Listen once more and try again.";
+  answerFeedback.className = `answer-feedback ${correct ? "is-correct" : "is-wrong"}`;
+}
+checkButton.addEventListener("click", checkGreeting);
+practiceAnswer.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") checkGreeting();
+});
+skipButton.addEventListener("click", () => {
+  practiceAnswer.value = "";
+  answerFeedback.textContent = "Skipped. The answer was: Hello, nice to meet you.";
+  answerFeedback.className = "answer-feedback";
+});

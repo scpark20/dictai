@@ -48,6 +48,28 @@
         </div>
       </section>
     </main>
-    <script src="./app.js?v=dev-20"></script>
+    <button class="practice-backdrop" id="practiceBackdrop" type="button" aria-label="Close practice"></button>
+    <aside class="practice-panel" id="practicePanel" aria-hidden="true" aria-labelledby="practiceTitle">
+      <div class="practice-top">
+        <button class="panel-close" id="panelClose" type="button" aria-label="Close">←</button>
+        <div><small>A1 · Greetings</small><strong id="practiceTitle">Sentence 1 of 10</strong></div>
+      </div>
+      <div class="practice-progress"><i></i></div>
+      <section class="practice-card">
+        <p class="practice-label">Listen and type the sentence</p>
+        <button class="listen-button" id="listenButton" type="button"><span>▶</span> Listen</button>
+        <div class="word-hints" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <label class="answer-box">
+          <span>Your answer</span>
+          <input id="practiceAnswer" type="text" autocomplete="off" placeholder="Type what you hear" />
+        </label>
+        <p class="answer-feedback" id="answerFeedback" aria-live="polite"></p>
+        <div class="practice-actions">
+          <button class="skip-button" id="skipButton" type="button">Skip</button>
+          <button class="check-button" id="checkButton" type="button">Check</button>
+        </div>
+      </section>
+    </aside>
+    <script src="./app.js?v=dev-21"></script>
   </body>
 </html>
