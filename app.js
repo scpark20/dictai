@@ -41,20 +41,14 @@ const books = Object.freeze({
   ],
 });
 
-function bookRow(book) {
-  const action = book.href
-    ? `<a class="open-course" href="${book.href}">Open →</a>`
-    : `<span class="soon">Soon</span>`;
+function bookCard(book) {
+  const tag = book.href ? "a" : "button";
+  const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
   return `
-    <article class="course">
+    <${tag} class="book-card" ${action} aria-label="${book.title}">
       <span class="book-cover" style="--cover:${book.color}" aria-hidden="true">${book.mark}</span>
-      <div class="course-copy">
-        <small>BOOK · ${state.level}</small>
-        <strong>${book.title}</strong>
-        <span>${book.note}</span>
-      </div>
-      ${action}
-    </article>`;
+      <span class="book-name">${book.title}</span>
+    </${tag}>`;
 }
 
 function render() {
@@ -72,11 +66,12 @@ function render() {
 
   currentLevel.textContent = state.level;
   currentPath.textContent = state.path === "book" ? "Book" : "Conversation";
+  document.querySelector(".content").classList.toggle("is-book", state.path === "book");
 
   if (state.path === "book") {
     const list = books[state.level];
     itemCount.textContent = `${list.length} books`;
-    courseList.innerHTML = list.map(bookRow).join("");
+    courseList.innerHTML = list.map(bookCard).join("");
   } else {
     itemCount.textContent = "Coming soon";
     courseList.innerHTML = `<div class="empty">No courses yet.</div>`;
@@ -88,8 +83,15 @@ levels.forEach((button) => button.addEventListener("click", () => {
   render();
 }));
 paths.forEach((button) => button.addEventListener("click", () => {
+  const openingBook = button.dataset.path === "book" && state.path !== "book";
   state.path = button.dataset.path;
   render();
+  if (openingBook) {
+    const content = document.querySelector(".content");
+    content.classList.remove("is-opening");
+    void content.offsetWidth;
+    content.classList.add("is-opening");
+  }
 }));
 
 render();
