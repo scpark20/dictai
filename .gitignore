@@ -6,6 +6,6 @@ __pycache__/
 .venv-ner/
 tools/
 certs/
-asr-wasm/
+/asr-wasm
 asr-wasm-source/
 .DS_Store
