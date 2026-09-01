@@ -31,6 +31,11 @@ const topics = Object.freeze({
     ["Arts & Literature", "culture"], ["Ethics", "balance"], ["Science", "science"], ["Global Affairs", "globe"],
     ["Psychology", "mind"], ["Argument & Debate", "debate"], ["Random", "shuffle"],
   ],
+  C2: [
+    ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"], ["Philosophy", "mind"],
+    ["Literary Criticism", "culture"], ["Ethics & Ideology", "balance"], ["Scientific Discourse", "science"], ["Corporate Strategy", "work"],
+    ["Rhetoric & Persuasion", "debate"], ["Abstract Concepts", "growth"], ["Random", "shuffle"],
+  ],
 });
 
 const topicIcons = Object.freeze({
@@ -83,9 +88,19 @@ const books = Object.freeze({
     { title: "Jane Eyre", note: "Gutenberg", mark: "🕯️", color: "#9d4edd" },
     { title: "Moby-Dick", note: "Gutenberg", mark: "🐋", color: "#277da1" },
   ],
+  C2: [
+    { title: "Ulysses", note: "Gutenberg", color: "#26355d" },
+    { title: "The Brothers Karamazov", note: "Gutenberg", color: "#6b302f" },
+    { title: "The Republic", note: "Gutenberg", color: "#66553b" },
+    { title: "Thus Spake Zarathustra", note: "Gutenberg", color: "#403557" },
+  ],
 });
 
 const coverArt = Object.freeze({
+  "Ulysses": `<svg viewBox="0 0 38 52"><path d="M0 35q9-8 19 0t19 0v17H0z" fill="#172c4c"/><path d="m8 32 10-19 11 19z" fill="#d0b36d"/><circle cx="28" cy="10" r="5" fill="#eee4b8"/></svg>`,
+  "The Brothers Karamazov": `<svg viewBox="0 0 38 52"><path d="M7 44q2-24 12-28 11 5 12 28z" fill="#211c20"/><path d="M11 16h16l-3-8H14z" fill="#d3b37a"/><path d="M5 45h28" stroke="#c69b55" stroke-width="3"/></svg>`,
+  "The Republic": `<svg viewBox="0 0 38 52"><path d="M5 43h28M8 40V18h22v22M5 18l14-10 14 10z" fill="none" stroke="#e0c578" stroke-width="3"/><path d="M13 21v16m6-16v16m6-16v16" stroke="#e0c578" stroke-width="2"/></svg>`,
+  "Thus Spake Zarathustra": `<svg viewBox="0 0 38 52"><circle cx="27" cy="11" r="7" fill="#d9b456"/><path d="m0 42 13-20 6 9 7-17 12 28v10H0z" fill="#1b2634"/><path d="M7 47q8-14 15 0" fill="#b68a50"/></svg>`,
   "The Tale of Peter Rabbit": `<svg viewBox="0 0 38 52"><path d="M0 34Q10 25 19 34T38 31v21H0z" fill="#315f35"/><path d="M18 31c-7-6-4-14 1-12-1-9 2-13 5-4 3-8 6-5 2 7-2 10 6 3 5 11-1 15H17c-3-6-2-9 1-11z" fill="#e7dfcf"/><circle cx="27" cy="22" r="1" fill="#222"/></svg>`,
   "The Adventures of Pinocchio": `<svg viewBox="0 0 38 52"><path d="M8 42l8-23 12 2 4 22z" fill="#6c301d"/><circle cx="21" cy="16" r="8" fill="#e8b875"/><path d="M21 16h15l-15 3z" fill="#8f3b25"/><path d="M12 10h18l-4-6H15z" fill="#2c483b"/></svg>`,
   "Aesop’s Fables": `<svg viewBox="0 0 38 52"><circle cx="19" cy="25" r="15" fill="#efd694"/><path d="m8 17 7 2 4-8 4 8 8-2-4 8 3 10-11 6-11-6 3-10z" fill="#9a4b27"/><path d="m15 28 4 3 5-3" fill="none" stroke="#261b17" stroke-width="2"/></svg>`,

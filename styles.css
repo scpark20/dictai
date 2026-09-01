@@ -53,6 +53,7 @@ body[data-level="C1"] {
   --page: #f1eafe;
   --page-soft: #fbf9ff;
 }
+body[data-level="C2"] { --accent: #343b8f; --accent-rgb: 52, 59, 143; --secondary: #7161c8; --page: #e8e9f8; --page-soft: #f8f8fd; }
 button, a { font: inherit; }
 button { color: inherit; }
 
@@ -71,7 +72,7 @@ button { color: inherit; }
 .hero h1 { max-width: 600px; margin: 0; font-size: clamp(38px, 7vw, 66px); line-height: .98; letter-spacing: -.055em; }
 
 .picker h2 { margin: 0 0 12px; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
-.levels { display: grid; grid-template-columns: repeat(5, 1fr); padding: 5px; background: rgba(var(--accent-rgb), .1); border: 1px solid rgba(var(--accent-rgb), .08); border-radius: 16px; transition: background 320ms ease, border-color 320ms ease; }
+.levels { display: grid; grid-template-columns: repeat(6, 1fr); padding: 5px; background: rgba(var(--accent-rgb), .1); border: 1px solid rgba(var(--accent-rgb), .08); border-radius: 16px; transition: background 320ms ease, border-color 320ms ease; }
 .level { min-height: 50px; border: 0; border-radius: 12px; background: transparent; font-size: 16px; font-weight: 760; cursor: pointer; }
 .level.is-active { color: var(--accent); background: white; box-shadow: 0 5px 18px rgba(var(--accent-rgb), .16); transition: color 260ms ease, box-shadow 260ms ease; }
 
