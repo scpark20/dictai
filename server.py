@@ -112,6 +112,13 @@ class CourseBody(BaseModel):
     topic: str
 
 
+class VoiceDebugBody(BaseModel):
+    transcript: str = ""
+    before: int = 0
+    after: int = 0
+    matched: list[str] = []
+
+
 def conversation_catalog(language: str = "en") -> dict:
     path = (KOREAN_CONVERSATION_ROOT if language == "ko" else CONVERSATION_ROOT) / "catalog.json"
     if not path.is_file():
@@ -256,6 +263,16 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
             {"speaker": "B", "text": item["turns"][1], "word_count": len(LEARNING_WORD_RE.findall(item["turns"][1]))},
         ],
     }
+
+
+@app.post("/api/voice-debug")
+def voice_debug(body: VoiceDebugBody, request: Request) -> dict:
+    language, course_level, topic = selected_course(request)
+    print(json.dumps({
+        "voice_debug": True, "visitor": visitor(request), "language": language,
+        "level": course_level, "topic": topic, **body.model_dump(),
+    }, ensure_ascii=False), flush=True)
+    return {"ok": True}
 
 
 @app.get("/api/problem/{attempt_id}/audio")
@@ -412,6 +429,8 @@ def practice_static(name: str, request: Request) -> FileResponse:
   const compact = transcript.normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
   if (!compact || (!endpoint && compact === state.voiceLastTranscript)) return;
   showRecognizedVoiceWord(transcript);
+  const solvedBefore = state.solved.size;
+  const acceptedWords = [];
   const distance = (left, right) => {
     const row = Array.from({ length: right.length + 1 }, (_, i) => i);
     for (let i = 1; i <= left.length; i += 1) {
@@ -440,8 +459,14 @@ def practice_static(name: str, request: Request) -> FileResponse:
     }
     if (!accepted) return;
     flashVoiceCandidate([index]);
-    markSolved([index], false);
+    acceptedWords.push(state.problem.displayWords[index]);
+    commitVoiceWord(state.problem.displayWords[index]);
   });
+  void fetch("/api/voice-debug", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transcript, before: solvedBefore, after: state.solved.size, matched: acceptedWords }),
+  }).catch(() => {});
   state.voiceLastTranscript = endpoint ? "" : compact;
 }"""
             if original_voice_handler not in source:
