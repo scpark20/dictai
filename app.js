@@ -60,15 +60,15 @@ const topicIcons = Object.freeze({
 const books = Object.freeze({
   A1: [
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", mark: "🐇", color: "#6a994e" },
-    { title: "The Adventures of Pinocchio", note: "Gutenberg", mark: "🤥", color: "#bc6c25" },
-    { title: "Aesop’s Fables", note: "Gutenberg", mark: "🦊", color: "#588157" },
+    { title: "The Happy Prince", note: "Gutenberg", color: "#527a9b" },
+    { title: "Just So Stories", note: "Gutenberg", color: "#8a6843" },
     { title: "The Story of Doctor Dolittle", note: "Gutenberg", mark: "🦜", color: "#457b9d" },
     { title: "The Velveteen Rabbit", note: "Gutenberg", color: "#9b6b76" },
   ],
   A2: [
     { title: "The Wonderful Wizard of Oz", note: "Gutenberg", mark: "🌪️", color: "#4d908e" },
     { title: "Alice’s Adventures in Wonderland", note: "Gutenberg", mark: "🐰", color: "#577590" },
-    { title: "Heidi", note: "Gutenberg", mark: "🏔️", color: "#43aa8b" },
+    { title: "Pollyanna", note: "Gutenberg", color: "#8c6b83" },
     { title: "Black Beauty", note: "Gutenberg", mark: "🐎", color: "#495057" },
     { title: "Little Women", note: "Gutenberg", color: "#8f5d67" },
   ],
@@ -95,14 +95,21 @@ const books = Object.freeze({
   ],
   C2: [
     { title: "Ulysses", note: "Gutenberg", color: "#26355d" },
-    { title: "The Brothers Karamazov", note: "Gutenberg", color: "#6b302f" },
-    { title: "The Republic", note: "Gutenberg", color: "#66553b" },
-    { title: "Thus Spake Zarathustra", note: "Gutenberg", color: "#403557" },
-    { title: "Critique of Pure Reason", note: "Gutenberg", color: "#3d4658" },
+    { title: "Paradise Lost", note: "Gutenberg", color: "#4f2830" },
+    { title: "Tristram Shandy", note: "Gutenberg", color: "#78603d" },
+    { title: "The Ambassadors", note: "Gutenberg", color: "#334d58" },
+    { title: "The Golden Bowl", note: "Gutenberg", color: "#6b5730" },
   ],
 });
 
 const coverArt = Object.freeze({
+  "The Happy Prince": `<svg viewBox="0 0 38 52"><circle cx="27" cy="10" r="6" fill="#f0ce71"/><path d="M16 43V19h7v24m-11 0h15M14 19l5-10 6 10z" fill="#d8bc68"/><path d="M4 35q6-8 12 0" fill="none" stroke="#4d7893" stroke-width="3"/></svg>`,
+  "Just So Stories": `<svg viewBox="0 0 38 52"><circle cx="27" cy="11" r="6" fill="#edc977"/><path d="M7 43q3-22 14-23 11 8 9 23h-8l-2-8-3 8z" fill="#9b7048"/><path d="m20 21 10-9-3 13" fill="#9b7048"/><path d="M0 46h38" stroke="#425b3b" stroke-width="4"/></svg>`,
+  "Pollyanna": `<svg viewBox="0 0 38 52"><circle cx="28" cy="10" r="7" fill="#f1d77a"/><path d="M0 39q18-10 38 0v13H0z" fill="#50754d"/><path d="M11 43q1-18 8-22 8 6 9 22z" fill="#70526a"/><path d="M14 19q5-9 10 0" fill="none" stroke="#d7b08c" stroke-width="5"/></svg>`,
+  "Paradise Lost": `<svg viewBox="0 0 38 52"><circle cx="27" cy="10" r="7" fill="#ddbc70"/><path d="M0 44 12 28l6 7 8-22 12 31v8H0z" fill="#161924"/><path d="M12 19q7-13 14 0" fill="none" stroke="#b53c42" stroke-width="3"/></svg>`,
+  "Tristram Shandy": `<svg viewBox="0 0 38 52"><path d="M7 8h24v36H7z" fill="#e3d3ad"/><path d="M12 14q7-8 14 0t-14 10q14 6 3 15" fill="none" stroke="#3f342a" stroke-width="3"/><circle cx="26" cy="34" r="3" fill="#a94d3f"/></svg>`,
+  "The Ambassadors": `<svg viewBox="0 0 38 52"><path d="M8 44q2-20 10-23 9 6 11 23z" fill="#202b32"/><path d="M12 19q6-10 12 0" fill="none" stroke="#d6bea4" stroke-width="6"/><path d="M4 12h30M7 8h24" stroke="#b8a168" stroke-width="2"/><path d="M26 27h8v17h-8" fill="#805c45"/></svg>`,
+  "The Golden Bowl": `<svg viewBox="0 0 38 52"><circle cx="19" cy="20" r="11" fill="#d7b350"/><path d="M9 18q10 9 20 0-1 13-10 14-9-1-10-14zM17 31h4v10h-4zm-7 10h18v4H10z" fill="#ead586"/><path d="m17 9 4 22" stroke="#6c4328" stroke-width="2"/></svg>`,
   "The Velveteen Rabbit": `<svg viewBox="0 0 38 52"><circle cx="27" cy="10" r="6" fill="#f1d9a5"/><path d="M14 42c-7-7-3-15 2-14-2-11 2-17 6-5 3-11 7-7 2 9-2 13 7 5 4 14-2 15z" fill="#d8b39c"/><path d="M0 45q18-8 38 0v7H0z" fill="#495c48"/></svg>`,
   "Little Women": `<svg viewBox="0 0 38 52"><path d="M5 43q2-18 7-22 5 4 7 22m0 0q2-22 7-25 6 5 7 25" fill="#412f3b"/><path d="M8 17q4-8 8 0m6-3q4-8 8 0" fill="none" stroke="#e5c5a7" stroke-width="5"/><path d="M4 46h30" stroke="#d69b88" stroke-width="3"/></svg>`,
   "Kidnapped": `<svg viewBox="0 0 38 52"><path d="M0 35q9-7 19 0t19 0v17H0z" fill="#244d60"/><path d="M9 33V13h2v20m0-17 16 11H11z" fill="#d4c6a1"/><path d="M5 39q10-6 27 0" fill="none" stroke="#e6d9b4" stroke-width="2"/></svg>`,
