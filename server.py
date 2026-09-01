@@ -38,6 +38,18 @@ GREETINGS = [
     ("Have a nice day! Thanks. You, too!", "AF", "AM"),
     ("Goodbye. See you tomorrow. Bye! See you then.", "AF", "AM"),
 ]
+GREETING_TURNS = [
+    ("Hi, I'm Emma.", "Hello, I'm Daniel."),
+    ("Good morning!", "Good morning. How are you?"),
+    ("I'm fine, thank you.", "That's great to hear."),
+    ("Nice to meet you.", "Nice to meet you, too."),
+    ("What's your name?", "My name is Alex."),
+    ("Where are you from?", "I'm from Canada."),
+    ("How is your day?", "It's going well, thanks."),
+    ("Good to see you again.", "It's good to see you, too."),
+    ("Have a nice day!", "Thanks. You, too!"),
+    ("Goodbye. See you tomorrow.", "Bye! See you then."),
+]
 def load_sentences() -> list[dict]:
     source = json.loads(MANIFEST.read_text(encoding="utf-8"))
     unique: dict[str, dict] = {}
@@ -188,6 +200,10 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "text": attempt["text"],
         "target_language": body.target_language,
         "proper_noun_indices": proper_noun_indices,
+        "dialogue_turns": [
+            {"speaker": "A", "voice": "Woman", "text": GREETING_TURNS[level - 1][0], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][0]))},
+            {"speaker": "B", "voice": "Man", "text": GREETING_TURNS[level - 1][1], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][1]))},
+        ],
     }
 
 
@@ -265,7 +281,64 @@ def practice_static(name: str) -> FileResponse:
             "if (window.location.origin !== DEPLOYED_ORIGIN) {",
             "if (window.top === window.self && window.location.origin !== DEPLOYED_ORIGIN) {",
         )
+        source = source.replace(
+            "    properNounIndices,\n  };",
+            "    properNounIndices,\n    dialogueTurns: Array.isArray(payload.dialogue_turns) ? payload.dialogue_turns : [],\n  };",
+        )
+        source = source.replace(
+            "function createWordSlot(index) {",
+            "function createWordSlot(index, parent = elements.wordGrid) {",
+        ).replace(
+            "  elements.wordGrid.append(slotElement);\n\n  return {",
+            "  parent.append(slotElement);\n\n  return {",
+        )
+        source = source.replace(
+            "function renderWordGrid(wordCount) {\n  elements.wordGrid.replaceChildren();\n  state.slots = Array.from({ length: wordCount }, (_, index) => createWordSlot(index));\n}",
+            """function renderWordGrid(wordCount) {
+  elements.wordGrid.replaceChildren();
+  const turns = state.problem?.dialogueTurns || [];
+  if (!turns.length) {
+    state.slots = Array.from({ length: wordCount }, (_, index) => createWordSlot(index));
+    return;
+  }
+  const slots = [];
+  let wordIndex = 0;
+  turns.forEach((turn) => {
+    const group = document.createElement("section");
+    group.className = `speaker-turn speaker-${String(turn.speaker).toLowerCase()}`;
+    const label = document.createElement("div");
+    label.className = "speaker-label";
+    label.innerHTML = `<b>${turn.speaker}</b><span>${turn.voice}</span>`;
+    const row = document.createElement("div");
+    row.className = "speaker-word-row";
+    group.append(label, row);
+    elements.wordGrid.append(group);
+    const count = Number(turn.word_count) || 0;
+    for (let offset = 0; offset < count; offset += 1) {
+      slots.push(createWordSlot(wordIndex, row));
+      wordIndex += 1;
+    }
+  });
+  state.slots = slots;
+}""",
+        )
         return Response(source, media_type="application/javascript")
+    if name == "styles.css":
+        source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
+        source += """
+.word-grid:has(.speaker-turn) { display:grid; gap:12px; }
+.speaker-turn { display:grid; grid-template-columns:72px minmax(0,1fr); gap:10px; align-items:start; padding:12px 14px; border-radius:18px; }
+.speaker-turn.speaker-a { background:rgba(255,107,132,.10); border:1px solid rgba(220,72,102,.18); }
+.speaker-turn.speaker-b { background:rgba(55,126,242,.10); border:1px solid rgba(55,126,242,.18); }
+.speaker-label { display:flex; align-items:center; gap:7px; min-height:38px; }
+.speaker-label b { display:grid; width:28px; height:28px; place-items:center; color:white; border-radius:50%; font-size:13px; }
+.speaker-a .speaker-label b { background:#db4d69; }
+.speaker-b .speaker-label b { background:#377ef2; }
+.speaker-label span { color:#6e6e73; font-size:12px; font-weight:700; }
+.speaker-word-row { display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
+@media (max-width:700px) { .speaker-turn { grid-template-columns:1fr; gap:5px; } }
+"""
+        return Response(source, media_type="text/css")
     return FileResponse(PRACTICE_ROOT / name)
 
 
