@@ -183,6 +183,11 @@ button { color: inherit; }
 }
 .practice-panel { position: sticky; top: 16px; height: calc(100dvh - 32px); margin-top: 16px; overflow: hidden; background: white; border: 1px solid rgba(var(--accent-rgb),.14); border-radius: 28px; box-shadow: 0 20px 55px rgba(25,42,72,.14); }
 .practice-panel iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
+.practice-context { display:flex; gap:10px; align-items:center; height:58px; padding:0 22px; background:rgba(255,255,255,.82); border-bottom:1px solid rgba(var(--accent-rgb),.14); }
+.practice-context span { display:grid; min-width:34px; height:26px; padding:0 8px; place-items:center; color:white; background:var(--accent); border-radius:999px; font-size:12px; font-weight:850; }
+.practice-context strong { font-size:15px; }
+.practice-context small { margin-left:auto; color:var(--muted); font-size:12px; }
+.practice-panel iframe { height:calc(100% - 58px); }
 .practice-top { display: flex; gap: 14px; align-items: center; }
 .practice-top div { display: grid; gap: 3px; }
 .practice-top small { color: var(--accent); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }

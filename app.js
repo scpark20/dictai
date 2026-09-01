@@ -5,6 +5,8 @@ const levels = [...document.querySelectorAll(".level")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
 const practiceFrame = document.querySelector("#practiceFrame");
+const practiceCourseLevel = document.querySelector("#practiceCourseLevel");
+const practiceCourseTopic = document.querySelector("#practiceCourseTopic");
 const levelThemes = Object.freeze({
   A1: ["#1877e8", "#0c4fa3", "#eaf3ff", "24,119,232"],
   A2: ["#078c7b", "#045e54", "#e7f7f3", "7,140,123"],
@@ -174,8 +176,7 @@ function bookCard(book, index) {
 }
 
 function topicCard([topic, icon], index) {
-  const available = state.level === "A1" && topic === "Greetings";
-  return `<button class="topic-card${available ? " is-ready" : ""}" type="button" data-topic="${topic}" aria-disabled="${!available}" style="--row:${index}">
+  return `<button class="topic-card is-ready" type="button" data-topic="${topic}" aria-disabled="false" style="--row:${index}">
     <span class="topic-icon" aria-hidden="true"><svg viewBox="0 0 24 24">${topicIcons[icon]}</svg></span>
     <span>${topic}</span>
   </button>`;
@@ -199,10 +200,27 @@ levels.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
-topicList.addEventListener("click", (event) => {
+topicList.addEventListener("click", async (event) => {
   const button = event.target.closest(".topic-card.is-ready");
   if (!button) return;
+  const requestedTopic = button.dataset.topic;
+  button.disabled = true;
+  try {
+    const response = await fetch("./api/course", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ level: state.level, topic: requestedTopic }),
+    });
+    if (!response.ok) throw new Error("Course selection failed");
+    const selected = await response.json();
+    practiceCourseTopic.textContent = requestedTopic === "Random" ? `Random · ${selected.topic}` : selected.topic;
+  } catch (error) {
+    button.disabled = false;
+    return;
+  }
   topicList.querySelectorAll(".topic-card").forEach((item) => item.classList.remove("is-selected"));
   button.classList.add("is-selected");
-  practiceFrame.focus();
+  button.disabled = false;
+  practiceCourseLevel.textContent = state.level;
+  practiceFrame.src = `./practice/?course=${encodeURIComponent(state.level)}-${encodeURIComponent(requestedTopic)}&v=${Date.now()}`;
 });

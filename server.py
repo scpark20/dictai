@@ -23,6 +23,8 @@ AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/ac
 CYCLING_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio")
 SECOND_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio-b")
 GREETINGS_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/a1-greetings")
+CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation")
+CONVERSATION_CATALOG_PATH = CONVERSATION_ROOT / "catalog.json"
 DB = ROOT / "progress.sqlite3"
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
@@ -72,6 +74,7 @@ PROPER_NOUN_METADATA = (
     else {}
 )
 ATTEMPTS: dict[str, dict] = {}
+SELECTED_COURSES: dict[str, tuple[str, str]] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
 app.mount("/asr-wasm", StaticFiles(directory=ROOT / "asr-wasm"), name="asr-wasm")
@@ -99,6 +102,21 @@ class CompleteBody(BaseModel):
     answers: list[str]
 
 
+class CourseBody(BaseModel):
+    level: str
+    topic: str
+
+
+def conversation_catalog() -> dict:
+    if not CONVERSATION_CATALOG_PATH.is_file():
+        raise HTTPException(503, "Conversation content is still being prepared.")
+    return json.loads(CONVERSATION_CATALOG_PATH.read_text(encoding="utf-8"))["levels"]
+
+
+def selected_course(request: Request) -> tuple[str, str]:
+    return SELECTED_COURSES.get(visitor(request), ("A1", "Greetings"))
+
+
 def visitor(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
@@ -107,7 +125,7 @@ def db_level(key: str) -> int:
     with sqlite3.connect(DB) as db:
         db.execute("CREATE TABLE IF NOT EXISTS progress(visitor TEXT PRIMARY KEY, level INTEGER NOT NULL)")
         row = db.execute("SELECT level FROM progress WHERE visitor=?", (key,)).fetchone()
-        return min(10, max(1, int(row[0]))) if row else 1
+        return min(5, max(1, int(row[0]))) if row else 1
 
 
 def set_level(key: str, level: int) -> None:
@@ -129,7 +147,25 @@ def get_attempt(attempt_id: str, request: Request) -> dict:
 
 @app.get("/api/bootstrap")
 def bootstrap(request: Request) -> dict:
-    return {"level": db_level(visitor(request)), "max_level": 10, "max_words": 100}
+    course_level, topic = selected_course(request)
+    return {"level": db_level(visitor(request)), "max_level": 5, "max_words": 100, "course_level": course_level, "topic": topic}
+
+
+@app.post("/api/course")
+def select_course(body: CourseBody, request: Request) -> dict:
+    catalog = conversation_catalog()
+    if body.level not in catalog:
+        raise HTTPException(404, "Level not found.")
+    topics = catalog[body.level]
+    topic = body.topic
+    if topic == "Random":
+        import random
+        topic = random.choice(list(topics))
+    if topic not in topics:
+        raise HTTPException(404, "Topic not found.")
+    SELECTED_COURSES[visitor(request)] = (body.level, topic)
+    set_level(visitor(request), 1)
+    return {"level": body.level, "topic": topic, "count": 5}
 
 
 @app.get("/api/build-status")
@@ -166,8 +202,8 @@ def build_status() -> dict:
 
 @app.post("/api/level")
 def change_level(body: LevelBody, request: Request) -> dict:
-    if not 1 <= body.level <= 10:
-        raise HTTPException(400, "The conversation number must be between 1 and 10.")
+    if not 1 <= body.level <= 5:
+        raise HTTPException(400, "The conversation number must be between 1 and 5.")
     set_level(visitor(request), body.level)
     return {"current_level": body.level}
 
@@ -176,11 +212,13 @@ def change_level(body: LevelBody, request: Request) -> dict:
 def create_problem(body: LanguageBody, request: Request) -> dict:
     key = visitor(request)
     level = db_level(key)
-    text, first_speaker, second_speaker = GREETINGS[level - 1]
+    course_level, topic = selected_course(request)
+    item = conversation_catalog()[course_level][topic][level - 1]
+    text = item["text"]
     proper_noun_indices = []
-    speaker = f"{first_speaker}+{second_speaker}"
-    audio = (GREETINGS_AUDIO_ROOT / f"{level:04d}.wav").resolve()
-    allowed = audio.is_relative_to(GREETINGS_AUDIO_ROOT.resolve())
+    speaker = "A+B"
+    audio = (CONVERSATION_ROOT / item["audio"]).resolve()
+    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     attempt_id = uuid.uuid4().hex
@@ -205,8 +243,8 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "target_language": body.target_language,
         "proper_noun_indices": proper_noun_indices,
         "dialogue_turns": [
-            {"speaker": "A", "text": GREETING_TURNS[level - 1][0], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][0]))},
-            {"speaker": "B", "text": GREETING_TURNS[level - 1][1], "word_count": len(WORD_RE.findall(GREETING_TURNS[level - 1][1]))},
+            {"speaker": "A", "text": item["turns"][0], "word_count": len(WORD_RE.findall(item["turns"][0]))},
+            {"speaker": "B", "text": item["turns"][1], "word_count": len(WORD_RE.findall(item["turns"][1]))},
         ],
     }
 
@@ -215,7 +253,7 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
 def problem_audio(attempt_id: str, request: Request, take: int = 0) -> FileResponse:
     attempt = get_attempt(attempt_id, request)
     audio = attempt["audio_second"] if take == 1 and attempt["audio_second"].is_file() else attempt["audio"]
-    allowed = audio.is_relative_to(GREETINGS_AUDIO_ROOT.resolve())
+    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve())
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     return FileResponse(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
@@ -242,7 +280,7 @@ def complete(attempt_id: str, body: CompleteBody, request: Request) -> dict:
     if received != expected:
         raise HTTPException(400, "The completed answer could not be verified.")
     attempt["completed"] = True
-    next_level = min(10, attempt["level"] + 1)
+    next_level = min(5, attempt["level"] + 1)
     set_level(attempt["visitor"], next_level)
     return {"completed": True, "used_answer": attempt["revealed"], "next_level": next_level}
 
