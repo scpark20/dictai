@@ -393,6 +393,41 @@ def practice_static(name: str, request: Request) -> FileResponse:
   state.slots = slots;
 }""",
         )
+        if language == "ko":
+            original_voice_handler = """function acceptVoiceTranscript(text, endpoint = false) {
+  if (!state.problem || state.completing || state.problemLoading) return;
+  const previous = entryWords(state.voiceLastTranscript);
+  const current = entryWords(text);
+  let shared = 0;
+  while (shared < previous.length && shared < current.length && previous[shared] === current[shared]) shared += 1;
+  for (const word of current.slice(shared)) {
+    if (state.completing) break;
+    commitVoiceWord(word);
+  }
+  state.voiceLastTranscript = endpoint ? "" : String(text || "");
+}"""
+            korean_voice_handler = """function acceptVoiceTranscript(text, endpoint = false) {
+  if (!state.problem || state.completing || state.problemLoading) return;
+  const transcript = String(text || "");
+  const compact = transcript.normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
+  if (!compact || (!endpoint && compact === state.voiceLastTranscript)) return;
+  let cursor = 0;
+  state.problem.answerWords.forEach((answer, index) => {
+    if (state.completing || state.solved.has(index)) return;
+    const expected = String(answer || "").normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
+    if (!expected) return;
+    const found = compact.indexOf(expected, cursor);
+    if (found < 0) return;
+    cursor = found + expected.length;
+    flashVoiceCandidate([index]);
+    showRecognizedVoiceWord(state.problem.displayWords[index]);
+    markSolved([index], false);
+  });
+  state.voiceLastTranscript = endpoint ? "" : compact;
+}"""
+            if original_voice_handler not in source:
+                raise RuntimeError("voice transcript handler was not found")
+            source = source.replace(original_voice_handler, korean_voice_handler)
         return Response(source, media_type="application/javascript")
     if name == "styles.css":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
