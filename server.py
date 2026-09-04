@@ -20,6 +20,7 @@ MANIFEST = Path(os.environ.get("DICTAI_MANIFEST", ROOT / "data" / "ch005.json"))
 PROPER_NOUNS = Path(os.environ.get("DICTAI_PROPER_NOUNS", ROOT / "data" / "ch005-proper-nouns.json"))
 CYCLING_AUDIO_ROOT = Path(os.environ.get("DICTAI_AUDIO_A", "/home/scpark/harry-concise-ch5/audio-a"))
 SECOND_AUDIO_ROOT = Path(os.environ.get("DICTAI_AUDIO_B", "/home/scpark/harry-concise-ch5/audio-b"))
+BUILD_ROOT = Path(os.environ.get("DICTAI_BUILD_ROOT", "/home/scpark/harry-concise-ch5"))
 DB = Path(os.environ.get("DICTAI_PROGRESS_DB", ROOT / "progress.sqlite3"))
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
@@ -103,20 +104,45 @@ def bootstrap(request: Request) -> dict:
 
 @app.get("/api/build-status")
 def build_status() -> dict:
-    generated = len(list(CYCLING_AUDIO_ROOT.glob("[0-9][0-9][0-9][0-9].wav")))
-    generated_second = len(list(SECOND_AUDIO_ROOT.glob("[0-9][0-9][0-9][0-9].wav")))
+    reference_root = BUILD_ROOT / "reference-bank"
+    generated_root_a = BUILD_ROOT / "audio-random-a"
+    generated_root_b = BUILD_ROOT / "audio-random-b"
+    if not generated_root_a.is_dir():
+        generated_root_a = CYCLING_AUDIO_ROOT
+    if not generated_root_b.is_dir():
+        generated_root_b = SECOND_AUDIO_ROOT
+    queue_root = BUILD_ROOT / "runtime/queue-random100"
+    references = {
+        "US Male": sum((reference_root / f"ref{number:03d}.wav").is_file() for number in range(1, 26)),
+        "US Female": sum((reference_root / f"ref{number:03d}.wav").is_file() for number in range(26, 51)),
+        "UK Male": sum((reference_root / f"ref{number:03d}.wav").is_file() for number in range(51, 76)),
+        "UK Female": sum((reference_root / f"ref{number:03d}.wav").is_file() for number in range(76, 101)),
+    }
+    generated = len(list(generated_root_a.glob("[0-9][0-9][0-9][0-9].wav")))
+    generated_second = len(list(generated_root_b.glob("[0-9][0-9][0-9][0-9].wav")))
+    queue = {
+        state: len(list((queue_root / state).glob("*.json")))
+        for state in ("pending", "claimed", "completed", "failed")
+    }
+    supervisor_pid_path = BUILD_ROOT / "runtime/random100-soulx-supervisor.pid"
+    supervisor_running = False
+    if supervisor_pid_path.is_file():
+        try:
+            supervisor_running = Path(f"/proc/{int(supervisor_pid_path.read_text().strip())}").exists()
+        except ValueError:
+            pass
     return {
-        "references": {"A": 1, "B": 1},
-        "reference_total": 2,
-        "reference_target": 2,
-        "soulx_workers": [],
-        "soulx_ready": 0,
+        "references": references,
+        "reference_total": sum(references.values()),
+        "reference_target": 100,
+        "soulx_ready": 2 if supervisor_running else 0,
         "audio_completed": generated,
         "audio_target": 191,
         "audio_second_completed": generated_second,
         "audio_second_target": 191,
+        "queue": queue,
         "app_url": "https://192.168.0.67:8774/",
-        "app_ready": generated == 191 and generated_second == 191,
+        "app_ready": generated == 191 and generated_second == 191 and queue["failed"] == 0,
     }
 
 
@@ -222,6 +248,6 @@ def status_page() -> FileResponse:
 
 @app.get("/{name}")
 def static(name: str) -> FileResponse:
-    if name not in {"index.html", "app.js", "styles.css", "ch005.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "build-status.html", "build-status.js"}:
+    if name not in {"index.html", "app.js", "styles.css", "ch005.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "build-status.html", "build-status.js", "build-status.css"}:
         raise HTTPException(404)
     return FileResponse(ROOT / name)

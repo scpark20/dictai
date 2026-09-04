@@ -11,11 +11,10 @@ from pathlib import Path
 ROOT = Path("/home/scpark/harry-concise-ch5")
 SOURCE = ROOT / "source/concise-tts.txt"
 MANIFEST = ROOT / "manifest/ch005.json"
-QUEUE_ROOT = ROOT / "runtime/queue"
-OUTPUTS = (ROOT / "audio-a", ROOT / "audio-b")
+QUEUE_ROOT = ROOT / "runtime/queue-random100"
+OUTPUTS = (ROOT / "audio-random-a", ROOT / "audio-random-b")
 PIPELINE = Path("/home/scpark/tts/a1-reader-production-v2/code")
-REFERENCES = Path("/home/scpark/tts/a1-reader-production-v2/artifacts/references")
-TAKE_REFS = (4, 5)  # female and male voices
+REFERENCES = ROOT / "reference-bank"
 
 PRONUNCIATIONS = {
     "Az-kuh-ban": "Azkaban",
@@ -65,6 +64,39 @@ def readable(spoken: str) -> str:
     return result
 
 
+def balanced_reference_assignments(sentence_count: int) -> tuple[list[int], list[int]]:
+    rng = random.Random(5_191_100)
+    references = list(range(1, 101))
+    total_slots = sentence_count * 2
+    base, extra = divmod(total_slots, len(references))
+    target_order = references.copy()
+    rng.shuffle(target_order)
+    target_counts = {reference: base + (reference in target_order[:extra]) for reference in references}
+
+    first_counts = {reference: 1 for reference in references}
+    first_extras = references.copy()
+    rng.shuffle(first_extras)
+    for reference in first_extras[:sentence_count - len(references)]:
+        first_counts[reference] += 1
+    first_refs = [reference for reference in references for _ in range(first_counts[reference])]
+    second_refs = [reference for reference in references for _ in range(target_counts[reference] - first_counts[reference])]
+    rng.shuffle(first_refs)
+    rng.shuffle(second_refs)
+
+    for index in range(sentence_count):
+        if first_refs[index] != second_refs[index]:
+            continue
+        swap_index = next(
+            candidate
+            for candidate in range(index + 1, sentence_count)
+            if second_refs[candidate] != first_refs[index]
+            and second_refs[index] != first_refs[candidate]
+        )
+        second_refs[index], second_refs[swap_index] = second_refs[swap_index], second_refs[index]
+    assert all(left != right for left, right in zip(first_refs, second_refs))
+    return first_refs, second_refs
+
+
 def main() -> None:
     sys.path.insert(0, str(PIPELINE))
     from soulx_job_queue import JsonJobQueue
@@ -104,15 +136,19 @@ def main() -> None:
         "blocks": expanded,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
+    first_refs, second_refs = balanced_reference_assignments(len(rows))
+    assignments = [{"sentence_ordinal": row["sentence_ordinal"], "take_1": f"ref{first_refs[index]:03d}", "take_2": f"ref{second_refs[index]:03d}"} for index, row in enumerate(rows)]
+    (ROOT / "manifest/reference-assignments.json").write_text(json.dumps(assignments, indent=2) + "\n", encoding="utf-8")
+
     queue = JsonJobQueue(QUEUE_ROOT)
     submitted = 0
-    for take_index, (output, ref_number) in enumerate(zip(OUTPUTS, TAKE_REFS), 1):
+    for take_index, output in enumerate(OUTPUTS, 1):
         output.mkdir(parents=True, exist_ok=True)
-        ref_audio = REFERENCES / f"ch{ref_number:03d}.wav"
-        ref_text_path = REFERENCES / f"ch{ref_number:03d}.txt"
-        prompt_text = " ".join(ref_text_path.read_text(encoding="utf-8").split())
-        for batch_index, start in enumerate(range(0, len(rows), 8)):
-            batch_rows = rows[start : start + 8]
+        for batch_index, row in enumerate(rows):
+            ref_number = first_refs[batch_index] if take_index == 1 else second_refs[batch_index]
+            ref_audio = REFERENCES / f"ref{ref_number:03d}.wav"
+            ref_text_path = REFERENCES / f"ref{ref_number:03d}.txt"
+            prompt_text = " ".join(ref_text_path.read_text(encoding="utf-8").split())
             blocks = [
                 {
                     "id": f"{row['sentence_ordinal']:04d}",
@@ -122,11 +158,10 @@ def main() -> None:
                     "speak_text": row["speak_text"],
                     "speak_hash": row["speak_hash"],
                 }
-                for row in batch_rows
             ]
             job = {
                 "schema_version": 1,
-                "job_id": f"concise-ch005-t{take_index}-b{batch_index:03d}",
+                "job_id": f"concise-ch005-random100-t{take_index}-s{row['sentence_ordinal']:04d}",
                 "chapter": 5,
                 "batch_index": batch_index,
                 "seed": 5_000_000 + take_index * 100_000 + batch_index,
@@ -136,7 +171,7 @@ def main() -> None:
                 "prompt_text_sha256": digest_text(prompt_text),
                 "output_dir": str(output),
                 "blocks": blocks,
-                "tail_batch": len(blocks) < 4,
+                "tail_batch": True,
                 "max_attempts": 3,
             }
             queue.submit(job)

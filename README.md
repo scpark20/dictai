@@ -9,6 +9,8 @@ Chapter 5 attached to it. The Chapter 3/4 source data is not rebuilt here.
 - 191 Chapter 5 problems: one title plus 190 sentences.
 - Display text and TTS pronunciation text remain separate in `data/ch005.json`.
 - Two pre-generated SoulX takes are preloaded and alternated per sentence.
+  Each sentence uses two distinct references selected from a balanced bank of
+  100 US/UK male/female voices across 25 recording situations.
 - Typing and voice recognition use independent input paths.
 - Names, click-to-reveal, Again/Next, speed controls and saved position remain.
 - Voice recognition is off by default. The in-browser recognizer offers the
@@ -25,6 +27,8 @@ committed to Git:
 
 - `/home/scpark/harry-concise-ch5/audio-a`
 - `/home/scpark/harry-concise-ch5/audio-b`
+- `/home/scpark/harry-concise-ch5/reference-bank`
+- `/home/scpark/harry-concise-ch5/manifest/reference-assignments.json`
 - `/home/scpark/dictai/asr-wasm`
 - `/home/scpark/dictai/certs`
 
