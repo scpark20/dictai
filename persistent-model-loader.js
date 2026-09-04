@@ -1,9 +1,11 @@
 "use strict";
 
 (async () => {
+  // Keep the legacy database identifier so existing 190 MB model downloads remain reusable.
+  // This identifier is never shown as product branding in the interface.
   const databaseName = "echostep-asr-models";
   const storeName = "files";
-  const selectedModel = localStorage.getItem("echostep-voice-model") === "20m" ? "20m" : "full";
+  const selectedModel = (localStorage.getItem("dictai-voice-model") || localStorage.getItem("echostep-voice-model")) === "20m" ? "20m" : "full";
   const packages = {
     full: {
       version: "sherpa-zipformer-en-2023-06-21-v1.13.7",
@@ -124,8 +126,8 @@
         removeStored(database, dataKey),
         removeStored(database, wasmKey),
       ]).catch(() => {});
-      if (sessionStorage.getItem("echostep-asr-recovered") !== modelVersion) {
-        sessionStorage.setItem("echostep-asr-recovered", modelVersion);
+      if (sessionStorage.getItem("dictai-asr-recovered") !== modelVersion) {
+        sessionStorage.setItem("dictai-asr-recovered", modelVersion);
         window.location.reload();
       }
     };

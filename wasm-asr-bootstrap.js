@@ -21,10 +21,10 @@ Module.setStatus = function(status) {
 };
 
 Module.onRuntimeInitialized = function() {
-  sessionStorage.removeItem("echostep-asr-recovered");
+  sessionStorage.removeItem("dictai-asr-recovered");
   let beam = 12;
   try {
-    const saved = JSON.parse(localStorage.getItem("echostep-voice-settings") || "{}");
+    const saved = JSON.parse(localStorage.getItem("dictai-voice-settings") || localStorage.getItem("echostep-voice-settings") || "{}");
     beam = Math.max(1, Math.min(32, Math.round(Number(saved.beam) || 12)));
   } catch (_error) {}
   window.wasmAsrRecognizer = createOnlineRecognizer(Module, {

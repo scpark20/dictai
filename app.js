@@ -8,7 +8,7 @@ const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
 const DEFAULT_MAX_LEVEL = 191;
 const DEPLOYED_ORIGIN = "https://192.168.0.67:8774";
 const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
-const VOICE_SETTINGS_KEY = "echostep-voice-settings";
+const VOICE_SETTINGS_KEY = "dictai-voice-settings";
 const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
 const PLAYBACK_RATES = Object.freeze([0.5, 0.8, 1.0, 1.2, 1.5]);
 const DEFAULT_TARGET_LANGUAGE = "ko";
@@ -194,7 +194,7 @@ function renderVoiceSettings() {
 }
 
 state.voiceSettings = loadVoiceSettings();
-localStorage.setItem("echostep-voice-model", state.voiceSettings.model);
+localStorage.setItem("dictai-voice-model", state.voiceSettings.model);
 
 let chimeContext = null;
 const activeWordTicks = new Set();
@@ -2383,7 +2383,7 @@ function dismissSlotClickHint() {
   if (!elements.slotClickHint || elements.slotClickHint.hidden) return;
   elements.slotClickHint.hidden = true;
   try {
-    window.localStorage.setItem("echostep-slot-hint-seen", "1");
+    window.localStorage.setItem("dictai-slot-hint-seen", "1");
   } catch (_error) {
     // The hint remains session-only when storage is unavailable.
   }
@@ -2392,7 +2392,7 @@ function dismissSlotClickHint() {
 function initializeSlotClickHint() {
   if (!elements.slotClickHint) return;
   try {
-    elements.slotClickHint.hidden = window.localStorage.getItem("echostep-slot-hint-seen") === "1";
+    elements.slotClickHint.hidden = (window.localStorage.getItem("dictai-slot-hint-seen") || window.localStorage.getItem("echostep-slot-hint-seen")) === "1";
   } catch (_error) {
     elements.slotClickHint.hidden = false;
   }
@@ -3272,7 +3272,7 @@ elements.applyVoiceSettings.addEventListener("click", () => {
   const recognizerMustRestart = next.model !== state.voiceSettings.model || next.beam !== state.voiceSettings.beam;
   state.voiceSettings = next;
   localStorage.setItem(VOICE_SETTINGS_KEY, JSON.stringify(next));
-  localStorage.setItem("echostep-voice-model", next.model);
+  localStorage.setItem("dictai-voice-model", next.model);
   renderVoiceSettings();
   if (recognizerMustRestart) {
     renderVoiceStatus("Reloading model…", false);
