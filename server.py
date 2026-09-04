@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
-PRACTICE_ROOT = Path("/home/scpark/apps/harry-dictation")
+PRACTICE_ROOT = ROOT / "practice"
 MANIFEST = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json")
 PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
 AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
