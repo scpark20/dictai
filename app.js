@@ -87,6 +87,7 @@ const topicIcons = Object.freeze({
 
 const books = Object.freeze({
   A1: [
+    { title: "Harry Potter 5", note: "Chapters 3–5", color: "#243b64", chapters: [3, 4, 5] },
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", color: "#6a994e" },
     { title: "The Velveteen Rabbit", note: "Gutenberg", color: "#9b6b76" },
     { title: "The Selfish Giant", note: "Gutenberg", color: "#6683a0" },
@@ -131,6 +132,7 @@ const books = Object.freeze({
 });
 
 const coverArt = Object.freeze({
+  "Harry Potter 5": `<svg viewBox="0 0 38 52"><path d="M7 46V9h24v37z" fill="#18294a"/><path d="m21 5-6 17h7l-6 20 15-24h-8l6-13z" fill="#e6bd55"/><path d="M5 47h28" stroke="#b68a43" stroke-width="3"/></svg>`,
   "The Happy Prince": `<svg viewBox="0 0 38 52"><circle cx="27" cy="10" r="6" fill="#f0ce71"/><path d="M16 43V19h7v24m-11 0h15M14 19l5-10 6 10z" fill="#d8bc68"/><path d="M4 35q6-8 12 0" fill="none" stroke="#4d7893" stroke-width="3"/></svg>`,
   "Just So Stories": `<svg viewBox="0 0 38 52"><circle cx="27" cy="11" r="6" fill="#edc977"/><path d="M7 43q3-22 14-23 11 8 9 23h-8l-2-8-3 8z" fill="#9b7048"/><path d="m20 21 10-9-3 13" fill="#9b7048"/><path d="M0 46h38" stroke="#425b3b" stroke-width="4"/></svg>`,
   "Pollyanna": `<svg viewBox="0 0 38 52"><circle cx="28" cy="10" r="7" fill="#f1d77a"/><path d="M0 39q18-10 38 0v13H0z" fill="#50754d"/><path d="M11 43q1-18 8-22 8 6 9 22z" fill="#70526a"/><path d="M14 19q5-9 10 0" fill="none" stroke="#d7b08c" stroke-width="5"/></svg>`,
@@ -171,6 +173,14 @@ const coverArt = Object.freeze({
 });
 
 function bookCard(book, index) {
+  if (book.chapters) {
+    const chapters = book.chapters.map((chapter) => `<button class="chapter-card" type="button" data-chapter="${chapter}">Chapter ${chapter}</button>`).join("");
+    return `<div class="book-entry" style="--row:${index}">
+      <button class="book-card book-card-expandable" type="button" data-book="harry-potter-5" aria-expanded="false" aria-label="${book.title}">
+        <span class="book-cover" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art">${coverArt[book.title] || ""}</i></span>
+        <span class="book-name">${book.title}<small>${book.note}</small></span><span class="book-chevron">⌄</span>
+      </button><div class="chapter-list" hidden>${chapters}</div></div>`;
+  }
   const tag = book.href ? "a" : "button";
   const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
   return `
@@ -252,4 +262,36 @@ topicList.addEventListener("click", (event) => {
 conversationPath.addEventListener("click", () => {
   const selected = topicList.querySelector(".topic-card.is-selected") || topicList.querySelector(".topic-card.is-ready");
   if (selected) void openConversation(selected);
+});
+
+bookList.addEventListener("click", async (event) => {
+  const bookButton = event.target.closest(".book-card-expandable");
+  if (bookButton) {
+    const chapterList = bookButton.nextElementSibling;
+    const opening = chapterList.hidden;
+    chapterList.hidden = !opening;
+    bookButton.setAttribute("aria-expanded", String(opening));
+    return;
+  }
+  const chapterButton = event.target.closest(".chapter-card");
+  if (!chapterButton) return;
+  const chapter = Number(chapterButton.dataset.chapter);
+  chapterButton.disabled = true;
+  try {
+    const response = await fetch("./api/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chapter }),
+    });
+    if (!response.ok) throw new Error("Book selection failed");
+    const selected = await response.json();
+    bookList.querySelectorAll(".chapter-card").forEach((item) => item.classList.remove("is-selected"));
+    chapterButton.classList.add("is-selected");
+    practiceCourseLevel.textContent = "A1";
+    practiceCourseTopic.textContent = `Harry Potter 5 · Chapter ${chapter}`;
+    practiceFrame.src = `./practice/?book=harry-potter-5&chapter=${chapter}&v=${Date.now()}`;
+    practiceFrame.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } finally {
+    chapterButton.disabled = false;
+  }
 });

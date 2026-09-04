@@ -17,12 +17,35 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
-PRACTICE_ROOT = ROOT / "practice"
+PRACTICE_ROOT = Path("/home/scpark/dictai")
 MANIFEST = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json")
 PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
 AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
 CYCLING_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio")
 SECOND_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio-b")
+HARRY_CHAPTERS = {
+    3: {
+        "title": "The Advanced Guard",
+        "manifest": Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json"),
+        "audio": Path("/home/scpark/harry-dictation-data/chapter3-audio"),
+        "audio_second": Path("/home/scpark/harry-dictation-data/chapter3-audio-b"),
+        "proper_nouns": Path("/home/scpark/apps/harry-baseline/data/ch003-proper-nouns.json"),
+    },
+    4: {
+        "title": "Number Twelve, Grimmauld Place",
+        "manifest": Path("/home/scpark/4repeat/jobs/ch004-number-twelve-grimmauld-place/manifest/ch004.json"),
+        "audio": Path("/home/scpark/harry-dictation-data/chapter4-audio"),
+        "audio_second": Path("/home/scpark/harry-dictation-data/chapter4-audio-b"),
+        "proper_nouns": Path("/home/scpark/apps/harry-baseline/data/ch004-proper-nouns.json"),
+    },
+    5: {
+        "title": "The Order of the Phoenix",
+        "manifest": Path("/home/scpark/dictai/data/ch005.json"),
+        "audio": Path("/home/scpark/harry-concise-ch5/audio-a"),
+        "audio_second": Path("/home/scpark/harry-concise-ch5/audio-b"),
+        "proper_nouns": Path("/home/scpark/dictai/data/ch005-proper-nouns.json"),
+    },
+}
 GREETINGS_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/a1-greetings")
 CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation")
 CONVERSATION_CATALOG_PATH = CONVERSATION_ROOT / "catalog.json"
@@ -71,6 +94,21 @@ def load_sentences() -> list[dict]:
 
 
 SENTENCES = load_sentences()
+
+
+def load_harry_chapter(chapter: dict) -> None:
+    source = json.loads(chapter["manifest"].read_text(encoding="utf-8"))
+    unique = {block["sentence_id"]: block for block in source["blocks"]}
+    chapter["sentences"] = sorted(unique.values(), key=lambda item: item["sentence_ordinal"])
+    proper_path = chapter["proper_nouns"]
+    chapter["proper_noun_metadata"] = (
+        json.loads(proper_path.read_text(encoding="utf-8")).get("sentences", {})
+        if proper_path.is_file() else {}
+    )
+
+
+for harry_chapter in HARRY_CHAPTERS.values():
+    load_harry_chapter(harry_chapter)
 PROPER_NOUN_METADATA = (
     json.loads(PROPER_NOUNS.read_text(encoding="utf-8")).get("sentences", {})
     if PROPER_NOUNS.is_file()
@@ -78,9 +116,10 @@ PROPER_NOUN_METADATA = (
 )
 ATTEMPTS: dict[str, dict] = {}
 SELECTED_COURSES: dict[str, tuple[str, str, str]] = {}
+SELECTED_BOOKS: dict[str, int] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
-app.mount("/asr-wasm", StaticFiles(directory=ROOT / "asr-wasm"), name="asr-wasm")
+app.mount("/asr-wasm", StaticFiles(directory=PRACTICE_ROOT / "asr-wasm"), name="asr-wasm")
 app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
 
@@ -234,6 +273,10 @@ class CourseBody(BaseModel):
     topic: str
 
 
+class BookBody(BaseModel):
+    chapter: int
+
+
 class VoiceDebugBody(BaseModel):
     transcript: str = ""
     before: int = 0
@@ -252,15 +295,28 @@ def selected_course(request: Request) -> tuple[str, str, str]:
     return SELECTED_COURSES.get(visitor(request), ("en", "A1", "Greetings"))
 
 
+def selected_book(request: Request) -> int | None:
+    return SELECTED_BOOKS.get(visitor(request))
+
+
+def progress_key(request: Request) -> str:
+    key = visitor(request)
+    chapter = selected_book(request)
+    if chapter is not None:
+        return f"{key}:book:harry-potter-5:chapter:{chapter}"
+    language, course_level, topic = selected_course(request)
+    return f"{key}:conversation:{language}:{course_level}:{topic}"
+
+
 def visitor(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-def db_level(key: str) -> int:
+def db_level(key: str, max_level: int = 5) -> int:
     with sqlite3.connect(DB) as db:
         db.execute("CREATE TABLE IF NOT EXISTS progress(visitor TEXT PRIMARY KEY, level INTEGER NOT NULL)")
         row = db.execute("SELECT level FROM progress WHERE visitor=?", (key,)).fetchone()
-        return min(5, max(1, int(row[0]))) if row else 1
+        return min(max_level, max(1, int(row[0]))) if row else 1
 
 
 def set_level(key: str, level: int) -> None:
@@ -282,8 +338,21 @@ def get_attempt(attempt_id: str, request: Request) -> dict:
 
 @app.get("/api/bootstrap")
 def bootstrap(request: Request) -> dict:
+    chapter_number = selected_book(request)
+    if chapter_number is not None:
+        chapter = HARRY_CHAPTERS[chapter_number]
+        maximum = len(chapter["sentences"])
+        return {
+            "level": db_level(progress_key(request), maximum),
+            "max_level": maximum,
+            "max_words": 100,
+            "learning_language": "en",
+            "book": "Harry Potter 5",
+            "chapter": chapter_number,
+            "chapter_title": chapter["title"],
+        }
     language, course_level, topic = selected_course(request)
-    return {"level": db_level(visitor(request)), "max_level": 5, "max_words": 100, "learning_language": language, "course_level": course_level, "topic": topic}
+    return {"level": db_level(progress_key(request)), "max_level": 5, "max_words": 100, "learning_language": language, "course_level": course_level, "topic": topic}
 
 
 @app.post("/api/course")
@@ -300,8 +369,23 @@ def select_course(body: CourseBody, request: Request) -> dict:
     if topic not in topics:
         raise HTTPException(404, "Topic not found.")
     SELECTED_COURSES[visitor(request)] = (body.language, body.level, topic)
-    set_level(visitor(request), random.randint(1, 5))
+    SELECTED_BOOKS.pop(visitor(request), None)
+    set_level(progress_key(request), random.randint(1, 5))
     return {"level": body.level, "topic": topic, "count": 5}
+
+
+@app.post("/api/book")
+def select_book(body: BookBody, request: Request) -> dict:
+    if body.chapter not in HARRY_CHAPTERS:
+        raise HTTPException(404, "Chapter not found.")
+    SELECTED_BOOKS[visitor(request)] = body.chapter
+    chapter = HARRY_CHAPTERS[body.chapter]
+    return {
+        "book": "Harry Potter 5",
+        "chapter": body.chapter,
+        "title": chapter["title"],
+        "count": len(chapter["sentences"]),
+    }
 
 
 @app.get("/api/build-status")
@@ -338,16 +422,46 @@ def build_status() -> dict:
 
 @app.post("/api/level")
 def change_level(body: LevelBody, request: Request) -> dict:
-    if not 1 <= body.level <= 5:
-        raise HTTPException(400, "The conversation number must be between 1 and 5.")
-    set_level(visitor(request), body.level)
+    chapter_number = selected_book(request)
+    maximum = len(HARRY_CHAPTERS[chapter_number]["sentences"]) if chapter_number is not None else 5
+    if not 1 <= body.level <= maximum:
+        raise HTTPException(400, f"The sentence number must be between 1 and {maximum}.")
+    set_level(progress_key(request), body.level)
     return {"current_level": body.level}
 
 
 @app.post("/api/problem")
 def create_problem(body: LanguageBody, request: Request) -> dict:
     key = visitor(request)
-    level = db_level(key)
+    chapter_number = selected_book(request)
+    if chapter_number is not None:
+        chapter = HARRY_CHAPTERS[chapter_number]
+        level = db_level(progress_key(request), len(chapter["sentences"]))
+        row = chapter["sentences"][level - 1]
+        text = row["display_text"]
+        answers = WORD_RE.findall(text)
+        proper_noun_indices = chapter["proper_noun_metadata"].get(row["sentence_id"], {}).get("proper_noun_indices", [])
+        audio = (chapter["audio"] / f"{level:04d}.wav").resolve()
+        audio_second = (chapter["audio_second"] / f"{level:04d}.wav").resolve()
+        if not audio.is_file() or not audio.is_relative_to(chapter["audio"].resolve()):
+            raise HTTPException(503, "Audio for this sentence is not ready yet.")
+        attempt_id = uuid.uuid4().hex
+        attempt = {
+            "visitor": key, "progress_key": progress_key(request), "mode": "book",
+            "chapter": chapter_number, "level": level, "text": text, "answers": answers,
+            "audio": audio, "audio_second": audio_second, "allowed_roots": (chapter["audio"], chapter["audio_second"]),
+            "speaker": SPEAKER_CYCLE[(level - 1) % len(SPEAKER_CYCLE)],
+            "revealed": False, "completed": False,
+        }
+        with LOCK:
+            ATTEMPTS[attempt_id] = attempt
+        return {
+            "attempt_id": attempt_id, "level": level, "chapter": chapter_number,
+            "word_count": len(answers), "text": text, "target_language": body.target_language,
+            "proper_noun_indices": proper_noun_indices,
+        }
+
+    level = db_level(progress_key(request))
     language, course_level, topic = selected_course(request)
     root = KOREAN_CONVERSATION_ROOT if language == "ko" else CONVERSATION_ROOT
     item = conversation_catalog(language)[course_level][topic][level - 1]
@@ -361,11 +475,14 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
     attempt_id = uuid.uuid4().hex
     attempt = {
         "visitor": key,
+        "progress_key": progress_key(request),
+        "mode": "conversation",
         "level": level,
         "text": text,
         "answers": LEARNING_WORD_RE.findall(text),
         "audio": audio,
         "audio_second": audio,
+        "allowed_roots": (root,),
         "speaker": speaker,
         "language": language,
         "revealed": False,
@@ -401,7 +518,7 @@ def voice_debug(body: VoiceDebugBody, request: Request) -> dict:
 def problem_audio(attempt_id: str, request: Request, take: int = 0) -> FileResponse:
     attempt = get_attempt(attempt_id, request)
     audio = attempt["audio_second"] if take == 1 and attempt["audio_second"].is_file() else attempt["audio"]
-    allowed = audio.is_relative_to(CONVERSATION_ROOT.resolve()) or audio.is_relative_to(KOREAN_CONVERSATION_ROOT.resolve())
+    allowed = any(audio.is_relative_to(root.resolve()) for root in attempt["allowed_roots"])
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
     return FileResponse(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
@@ -428,9 +545,13 @@ def complete(attempt_id: str, body: CompleteBody, request: Request) -> dict:
     if received != expected:
         raise HTTPException(400, "The completed answer could not be verified.")
     attempt["completed"] = True
-    choices = [number for number in range(1, 6) if number != attempt["level"]]
-    next_level = random.choice(choices)
-    set_level(attempt["visitor"], next_level)
+    if attempt["mode"] == "book":
+        maximum = len(HARRY_CHAPTERS[attempt["chapter"]]["sentences"])
+        next_level = min(maximum, attempt["level"] + 1)
+    else:
+        choices = [number for number in range(1, 6) if number != attempt["level"]]
+        next_level = random.choice(choices)
+    set_level(attempt["progress_key"], next_level)
     return {"completed": True, "used_answer": attempt["revealed"], "next_level": next_level}
 
 

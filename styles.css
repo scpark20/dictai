@@ -127,6 +127,16 @@ button { color: inherit; }
 .book-card:last-child { border-bottom: 0; }
 .book-card:hover { background: rgba(var(--accent-rgb), .07); }
 .book-card[aria-disabled="true"] { cursor: default; }
+.book-entry { border-bottom: 1px solid rgba(var(--accent-rgb), .1); }
+.book-entry .book-card { width: 100%; border-bottom: 0; animation-delay: calc(var(--row) * 45ms + 70ms); }
+.book-card-expandable { grid-template-columns: 28px minmax(0, 1fr) 20px; }
+.book-name small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 600; }
+.book-chevron { color: var(--accent); font-size: 18px; transition: transform 180ms ease; }
+.book-card-expandable[aria-expanded="true"] .book-chevron { transform: rotate(180deg); }
+.chapter-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 4px 10px 10px 48px; }
+.chapter-list[hidden] { display: none; }
+.chapter-card { min-height: 32px; color: var(--muted); background: rgba(var(--accent-rgb), .06); border: 1px solid rgba(var(--accent-rgb), .12); border-radius: 9px; font-size: 11px; font-weight: 750; cursor: pointer; }
+.chapter-card:hover, .chapter-card.is-selected { color: white; background: var(--accent); border-color: var(--accent); }
 .topic-card { display: grid; grid-template-columns: 30px 1fr; gap: 9px; align-items: center; width: 100%; min-height: 43px; padding: 5px 11px; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid rgba(var(--accent-rgb), .1); text-align: left; font-size: 14px; font-weight: 680; cursor: default; animation: book-row-in 360ms cubic-bezier(.2,.75,.2,1) calc(var(--row) * 40ms + 60ms) both; transition: background 160ms ease; }
 .topic-card:last-child { border-bottom: 0; }
 .topic-card.is-ready { cursor: pointer; }
