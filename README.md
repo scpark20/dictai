@@ -52,18 +52,37 @@ flowchart LR
 
 ## Conversation curriculum
 
-Every level contains five focused topics and a Random option. Each selected topic contains five two-speaker exercises.
+The expanded curriculum is derived from 2,312 expression-led dialogues in *Mentors Smart English Expressions, Chapters 01–09*. The source was parsed by chapter, unit, expression, timestamp, and A/B turn. A corpus-relative CEFR pass then ranks dialogue length, clause load, lexical form, turn count, and expression complexity.
+
+The old narrow topic menu was replaced after checking the source distribution. Every level now has five broad curriculum lanes plus Random, so material is grouped by what the dialogue is actually doing instead of being forced into the previous categories.
 
 | Level | Topics |
 |---|---|
-| A1 | Greetings, Daily Life, Family, Food, Shopping |
-| A2 | Travel, Work Basics, Restaurants, Friends, Directions |
-| B1 | Travel Experiences, Workplace, Education, Health & Fitness, Technology |
-| B2 | Career, Culture, Social Issues, Environment, Personal Growth |
-| C1 | Professional Communication, Society & Policy, Economics, Ethics, Global Affairs |
-| C2 | Diplomacy & Geopolitics, Law & Governance, Economic Theory, Philosophy, Scientific Discourse |
+| A1 | Work, School & Shopping · Travel & Communication · People & Simple Plans · Daily Life & Health · Thoughts, Feelings & Choices |
+| A2 | Work, Study & Money · Travel, Tech & Calls · Plans & Relationships · Home, Food & Wellbeing · Ideas, Feelings & Problems |
+| B1 | Work & Responsibilities · Communication & Travel · Relationships & Social Life · Health & Lifestyle · Opinions & Problem Solving |
+| B2 | Career & Finance · Digital & Public Life · Relationships & Conflict · Wellbeing & Change · Decisions & Influence |
+| C1 | Professional & Academic Life · Public Communication & Mobility · Interpersonal Nuance · Lifestyle, Risk & Recovery · Reasoning, Strategy & Consequences |
+| C2 | Institutional & Economic Affairs · Systems & Public Communication · Complex Social Dynamics · Human Condition & Wellbeing · Abstract Reasoning & Discourse |
 
-Conversation exercises preserve their two-speaker turn structure in the word-slot display. Sentence order is randomized within the selected five-item topic. Sentence-number navigation is intentionally hidden in Conversation mode.
+| Level | Dialogues |
+|---|---:|
+| A1 | 416 |
+| A2 | 463 |
+| B1 | 508 |
+| B2 | 439 |
+| C1 | 301 |
+| C2 | 185 |
+
+Conversation exercises preserve every source turn, including three-, four-, and five-turn exchanges. A selected category uses its full dialogue set rather than a five-item sample. Sentence-number navigation remains hidden in Conversation mode.
+
+### Dialogue audio policy
+
+- One of 25 recording environments is chosen for the complete dialogue.
+- Speaker A and Speaker B are sampled independently from the four matching references in that environment: US male, US female, UK male, and UK female.
+- The two references must be distinct.
+- The recording environment is locked for every turn; it cannot change inside a dialogue.
+- Generation is resumable and split across GPU shards. Each completed dialogue produces one WAV plus turn-boundary metadata.
 
 ## Book curriculum
 
@@ -161,6 +180,13 @@ dictai/
 ├── server.py                  # FastAPI course, chapter, problem, and audio API
 ├── practice-ui/               # Pinned current DictAI practice interface
 ├── data/                      # Proper-noun and local metadata
+│   ├── mentors-conversations.json # Classified source, turns, and audio plan
+│   └── mentors-catalog.json   # Runtime course catalog
+├── tools/
+│   ├── import_mentors_conversations.py
+│   ├── classify_mentors_conversations.py
+│   ├── build_mentors_catalog.py
+│   └── generate_mentors_audio.py
 ├── build-status.html          # Runtime build status screen
 ├── build-status.js
 ├── build-status.css

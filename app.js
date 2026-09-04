@@ -33,28 +33,34 @@ practiceFrame.addEventListener("load", syncPracticeTheme);
 
 const topics = Object.freeze({
   A1: [
-    ["Greetings", "chat"], ["Daily Life", "sun"], ["Family", "people"], ["Food", "food"],
-    ["Shopping", "bag"], ["Random", "shuffle"],
+    ["Work, School & Shopping", "school"], ["Travel & Communication", "phone"],
+    ["People & Simple Plans", "people"], ["Daily Life & Health", "health"],
+    ["Thoughts, Feelings & Choices", "mind"], ["Random", "shuffle"],
   ],
   A2: [
-    ["Travel", "plane"], ["Work Basics", "work"], ["Restaurants", "food"], ["Friends", "people"],
-    ["Directions", "map"], ["Random", "shuffle"],
+    ["Work, Study & Money", "money"], ["Travel, Tech & Calls", "tech"],
+    ["Plans & Relationships", "calendar"], ["Home, Food & Wellbeing", "home"],
+    ["Ideas, Feelings & Problems", "mind"], ["Random", "shuffle"],
   ],
   B1: [
-    ["Travel Experiences", "plane"], ["Workplace", "work"], ["Education", "school"],
-    ["Health & Fitness", "health"], ["Technology", "tech"], ["Random", "shuffle"],
+    ["Work & Responsibilities", "work"], ["Communication & Travel", "plane"],
+    ["Relationships & Social Life", "people"], ["Health & Lifestyle", "health"],
+    ["Opinions & Problem Solving", "mind"], ["Random", "shuffle"],
   ],
   B2: [
-    ["Career", "work"], ["Culture", "culture"], ["Social Issues", "people"],
-    ["Environment", "leaf"], ["Personal Growth", "growth"], ["Random", "shuffle"],
+    ["Career & Finance", "money"], ["Digital & Public Life", "tech"],
+    ["Relationships & Conflict", "debate"], ["Wellbeing & Change", "growth"],
+    ["Decisions & Influence", "balance"], ["Random", "shuffle"],
   ],
   C1: [
-    ["Professional Communication", "work"], ["Society & Policy", "policy"], ["Economics", "money"],
-    ["Ethics", "balance"], ["Global Affairs", "globe"], ["Random", "shuffle"],
+    ["Professional & Academic Life", "school"], ["Public Communication & Mobility", "globe"],
+    ["Interpersonal Nuance", "people"], ["Lifestyle, Risk & Recovery", "health"],
+    ["Reasoning, Strategy & Consequences", "mind"], ["Random", "shuffle"],
   ],
   C2: [
-    ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"],
-    ["Philosophy", "mind"], ["Scientific Discourse", "science"], ["Random", "shuffle"],
+    ["Institutional & Economic Affairs", "policy"], ["Systems & Public Communication", "globe"],
+    ["Complex Social Dynamics", "people"], ["Human Condition & Wellbeing", "health"],
+    ["Abstract Reasoning & Discourse", "mind"], ["Random", "shuffle"],
   ],
 });
 const topicsKo = Object.freeze({

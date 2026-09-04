@@ -4,7 +4,8 @@ __pycache__/
 *.pid
 *.sqlite3
 .venv-ner/
-tools/
+tools/*
+!tools/*.py
 certs/
 /asr-wasm
 asr-wasm-source/
