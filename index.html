@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
     <title>EchoStep</title>
-    <link rel="stylesheet" href="./styles.css?v=dev-26" />
+    <link rel="stylesheet" href="./styles.css?v=dev-27" />
   </head>
   <body data-level="A1">
     <div class="app-layout">
@@ -39,10 +39,10 @@
 
       <section class="paths" aria-label="Choose practice type">
         <div class="path-group">
-          <div class="path">
+          <button class="path path-button" id="conversationPath" type="button" aria-label="Open Conversation practice">
             <span class="path-icon" aria-hidden="true">••</span>
             <span><strong>Conversation</strong><small>Everyday listening</small></span>
-          </div>
+          </button>
           <div class="mini-list" id="topicList"></div>
         </div>
         <div class="path-group">
@@ -63,6 +63,6 @@
       <iframe id="practiceFrame" title="EchoStep practice" src="./practice/"></iframe>
     </section>
     </div>
-    <script src="./app.js?v=dev-26"></script>
+    <script src="./app.js?v=dev-27"></script>
   </body>
 </html>

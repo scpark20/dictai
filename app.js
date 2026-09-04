@@ -6,6 +6,7 @@ const levels = [...document.querySelectorAll(".level")];
 const languages = [...document.querySelectorAll(".language")];
 const topicList = document.querySelector("#topicList");
 const bookList = document.querySelector("#bookList");
+const conversationPath = document.querySelector("#conversationPath");
 const practiceFrame = document.querySelector("#practiceFrame");
 const practiceCourseLevel = document.querySelector("#practiceCourseLevel");
 const practiceCourseTopic = document.querySelector("#practiceCourseTopic");
@@ -219,9 +220,7 @@ languages.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
-topicList.addEventListener("click", async (event) => {
-  const button = event.target.closest(".topic-card.is-ready");
-  if (!button) return;
+async function openConversation(button) {
   const requestedTopic = button.dataset.topic;
   button.disabled = true;
   try {
@@ -242,4 +241,15 @@ topicList.addEventListener("click", async (event) => {
   button.disabled = false;
   practiceCourseLevel.textContent = state.level;
   practiceFrame.src = `./practice/?course=${encodeURIComponent(state.level)}-${encodeURIComponent(requestedTopic)}&v=${Date.now()}`;
+  practiceFrame.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+topicList.addEventListener("click", (event) => {
+  const button = event.target.closest(".topic-card.is-ready");
+  if (button) void openConversation(button);
+});
+
+conversationPath.addEventListener("click", () => {
+  const selected = topicList.querySelector(".topic-card.is-selected") || topicList.querySelector(".topic-card.is-ready");
+  if (selected) void openConversation(selected);
 });

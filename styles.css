@@ -84,6 +84,8 @@ button { color: inherit; }
 .paths { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; margin-top: 20px; }
 .path-group { min-width: 0; }
 .path { display: flex; gap: 15px; align-items: center; min-height: 92px; padding: 18px; text-align: left; background: white; border: 1px solid rgba(var(--accent-rgb), .24); border-radius: 20px; box-shadow: 0 12px 30px rgba(var(--accent-rgb), .1); }
+.path-button { width: 100%; color: inherit; font: inherit; cursor: pointer; }
+.path-button:hover, .path-button:focus-visible { border-color: var(--accent); box-shadow: 0 12px 30px rgba(var(--accent-rgb), .18); outline: none; }
 .path-icon { display: grid; flex: 0 0 44px; width: 44px; height: 44px; place-items: center; color: white; background: var(--secondary); border-radius: 13px; font-size: 18px; font-weight: 900; letter-spacing: -3px; box-shadow: 0 7px 16px rgba(var(--accent-rgb), .18); transition: background 320ms ease; }
 .book-icon { background: var(--accent); letter-spacing: 0; }
 .path strong, .path small { display: block; }
