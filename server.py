@@ -579,10 +579,10 @@ def practice_index() -> FileResponse:
     source = (PRACTICE_ROOT / "index.html").read_text(encoding="utf-8")
     source = source.replace(
         "English dictation practice with Harry Potter Chapter 3",
-        "EchoStep level-based English listening practice",
+        "DictAI level-based English listening practice",
     ).replace(
         "<title>Harry Potter Chapter 3 Dictation</title>",
-        "<title>EchoStep Practice</title>",
+        "<title>DictAI Practice</title>",
     ).replace(
         'aria-label="Chapter 3 progress"',
         'aria-label="Practice progress"',
