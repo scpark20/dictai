@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.log
+*.pid
+progress.sqlite3*
+certs/
+asr-wasm/
+

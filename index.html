@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f5f7" />
+    <meta
+      name="description"
+      content="English dictation practice with Harry Potter Concise Edition Chapter 5"
+    />
+    <title>Harry Potter Chapter 5 Dictation</title>
+    <link rel="stylesheet" href="./styles.css?v=20260901-22" />
+  </head>
+  <body>
+    <a class="skip-link" href="#practice">Skip to practice</a>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="EchoStep home">
+        <span>EchoStep</span>
+      </a>
+      <div class="step-label" id="headerStep" role="group" aria-label="Current sentence">
+        <button class="sentence-nav" id="previousSentence" type="button" aria-label="Previous sentence">←</button>
+        <span>Sentence</span>
+        <input
+          class="step-input"
+          id="levelInput"
+          type="number"
+          min="1"
+          max="191"
+          step="1"
+          inputmode="numeric"
+          enterkeyhint="done"
+          autocomplete="off"
+          aria-label="Sentence number to open"
+          aria-describedby="statusText"
+          value="1"
+          disabled
+        />
+        <span aria-hidden="true">/</span>
+        <span id="headerMaxLevel">191</span>
+        <button class="sentence-nav" id="nextSentence" type="button" aria-label="Next sentence">→</button>
+        <span class="chapter-progress" id="chapterProgress" role="progressbar" aria-label="Chapter 5 progress" aria-valuemin="1" aria-valuemax="191" aria-valuenow="1"><i id="chapterProgressFill"></i></span>
+      </div>
+    </header>
+
+    <main class="page" id="practice">
+      <section class="practice-card" aria-label="EchoStep practice">
+        <div class="listen-stage">
+          <p class="status" id="statusText" role="status" aria-live="polite">
+            Loading…
+          </p>
+        </div>
+
+        <form id="answerForm" class="answer-form" novalidate>
+          <div class="answer-title">
+            <div>
+              <p>Type what you hear</p>
+            </div>
+          </div>
+          <div class="voice-control-row">
+            <span class="voice-detected" id="voiceDetected" hidden></span>
+            <label class="voice-toggle" for="voiceToggle">
+              <input id="voiceToggle" type="checkbox" checked />
+              <span class="voice-check" aria-hidden="true">✓</span>
+              <span>Voice</span>
+              <small id="voiceStatus">Loading…</small>
+              <span class="voice-meter" id="voiceMeter" data-level="0" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <small class="input-mode-status" id="inputModeStatus">Voice + typing</small>
+            </label>
+            <span class="voice-setup-progress" id="voiceSetupProgress" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="word-grid" id="wordGrid" role="list" aria-label="Sentence word slots"></div>
+          <p class="slot-click-hint" id="slotClickHint">Tap a box to reveal it.</p>
+
+          <div class="answer-entry" id="answerEntry">
+            <div class="answer-entry-control">
+              <div class="answer-input-wrap" id="answerInputWrap">
+                <input
+                  id="answerInput"
+                  type="text"
+                  autocomplete="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  enterkeyhint="done"
+                  maxlength="80"
+                  aria-label="Enter an English word or phrase you heard"
+                  aria-describedby="answerFeedback"
+                  placeholder="Type a word"
+                  disabled
+                />
+                <span class="answer-entry-key" id="answerKeyHint" aria-hidden="true">
+                  <kbd>Space</kbd><span>/</span><kbd>Enter</kbd>
+                </span>
+              </div>
+              <button class="proper-noun-button" id="properNounButton" type="button" disabled>
+                Names
+              </button>
+              <button class="reveal-all-button" id="revealButton" type="button">
+                <span id="revealLabel">Give Up</span>
+              </button>
+              <button
+                class="redo-inline-button"
+                id="redoButton"
+                type="button"
+                aria-describedby="answerFeedback"
+                hidden
+                disabled
+              >↻ Again</button>
+              <button
+                class="next-inline-button"
+                id="nextButton"
+                type="button"
+                aria-describedby="answerFeedback"
+                hidden
+                disabled
+              >Next →</button>
+            </div>
+
+            <p class="answer-feedback" id="answerFeedback">
+              Type a word. Press Space or Enter.
+            </p>
+          </div>
+
+          <div
+            class="speed-control playback-buttons"
+            id="speedControl"
+            role="group"
+            aria-label="Sentence playback speed"
+            aria-busy="true"
+          >
+            <button class="speed-button" type="button" data-speed-level="1" aria-label="0.5x playback" aria-pressed="false" disabled>0.5</button>
+            <button class="speed-button" type="button" data-speed-level="2" aria-label="0.8x playback" aria-pressed="false" disabled>0.8</button>
+            <button class="speed-button is-selected" type="button" data-speed-level="3" aria-label="1.0x playback" aria-pressed="true" disabled>1.0</button>
+            <button class="speed-button" type="button" data-speed-level="4" aria-label="1.2x playback" aria-pressed="false" disabled>1.2</button>
+            <button class="speed-button" type="button" data-speed-level="5" aria-label="1.5x playback" aria-pressed="false" disabled>1.5</button>
+          </div>
+
+          <div class="reveal-controls" id="revealControls" hidden>
+            <button
+              class="analysis-button"
+              id="analysisButton"
+              type="button"
+              aria-controls="revealAnalysis"
+              aria-describedby="analysisStatus"
+              disabled
+            >Answer guide</button>
+            <div class="language-field">
+              <label id="targetLanguageLabel" for="targetLanguageSelect">Guide language</label>
+              <select
+                id="targetLanguageSelect"
+                aria-label="Answer guide language"
+                aria-controls="revealAnalysis"
+                disabled
+              >
+                <option value="ko" selected>Korean</option>
+                <option value="ja">Japanese</option>
+                <option value="zh-CN">Chinese (Simplified)</option>
+                <option value="es">Spanish</option>
+              </select>
+            </div>
+          </div>
+          <p
+            class="analysis-status"
+            id="analysisStatus"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></p>
+
+          <section
+            class="reveal-analysis"
+            id="revealAnalysis"
+            aria-labelledby="revealAnalysisTitle"
+            aria-live="polite"
+            aria-atomic="false"
+            hidden
+          >
+            <div class="reveal-analysis-heading">
+              <h2 id="revealAnalysisTitle">Full translation</h2>
+              <span id="revealLanguageLabel">Korean</span>
+            </div>
+            <p class="reveal-translation" id="revealTranslation"></p>
+            <div class="reveal-expressions" id="revealExpressions" hidden>
+              <h3>Key expressions</h3>
+              <ul id="revealExpressionList"></ul>
+            </div>
+          </section>
+        </form>
+
+        <div
+          class="state-panel"
+          id="statePanel"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-relevant="text"
+        >
+          <div class="loader" id="loader" aria-hidden="true"><i></i><i></i><i></i></div>
+          <strong class="loading-phase" id="stateTitle">Loading…</strong>
+          <p id="stateMessage">Please wait.</p>
+          <button id="retryButton" type="button" hidden>Retry</button>
+        </div>
+      </section>
+    </main>
+
+    <audio id="sentenceAudio" preload="auto" hidden></audio>
+    <script src="./app.js?v=20260904-concise-ch5-1"></script>
+    <script src="./persistent-model-loader.js?v=3"></script>
+  </body>
+</html>

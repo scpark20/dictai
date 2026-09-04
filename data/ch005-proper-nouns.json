@@ -1,0 +1,3080 @@
+{
+  "schema_version": 1,
+  "generator": "spacy/en_core_web_sm-3.8.0",
+  "sentence_count": 191,
+  "sentences": {
+    "ch005-s0001": {
+      "sentence_ordinal": 1,
+      "proper_noun_indices": [
+        1,
+        3,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Five",
+          "labels": [
+            "LAW"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Order",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Phoenix",
+          "labels": [
+            "GPE",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0002": {
+      "sentence_ordinal": 2,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0003": {
+      "sentence_ordinal": 3,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0004": {
+      "sentence_ordinal": 4,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0005": {
+      "sentence_ordinal": 5,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0006": {
+      "sentence_ordinal": 6,
+      "proper_noun_indices": [
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 7,
+          "word": "Black",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0007": {
+      "sentence_ordinal": 7,
+      "proper_noun_indices": [
+        0,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Dumbledore's",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0008": {
+      "sentence_ordinal": 8,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0009": {
+      "sentence_ordinal": 9,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0010": {
+      "sentence_ordinal": 10,
+      "proper_noun_indices": [
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0011": {
+      "sentence_ordinal": 11,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0012": {
+      "sentence_ordinal": 12,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0013": {
+      "sentence_ordinal": 13,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0014": {
+      "sentence_ordinal": 14,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0015": {
+      "sentence_ordinal": 15,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0016": {
+      "sentence_ordinal": 16,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0017": {
+      "sentence_ordinal": 17,
+      "proper_noun_indices": [
+        0,
+        1,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Arthur",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0018": {
+      "sentence_ordinal": 18,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Bill",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0019": {
+      "sentence_ordinal": 19,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Tonks",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0020": {
+      "sentence_ordinal": 20,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0021": {
+      "sentence_ordinal": 21,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0022": {
+      "sentence_ordinal": 22,
+      "proper_noun_indices": [
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 6,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0023": {
+      "sentence_ordinal": 23,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Mundungus",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Fletcher",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0024": {
+      "sentence_ordinal": 24,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0025": {
+      "sentence_ordinal": 25,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0026": {
+      "sentence_ordinal": 26,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0027": {
+      "sentence_ordinal": 27,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0028": {
+      "sentence_ordinal": 28,
+      "proper_noun_indices": [
+        0,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Sirius",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0029": {
+      "sentence_ordinal": 29,
+      "proper_noun_indices": [
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 4,
+          "word": "Sirius's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0030": {
+      "sentence_ordinal": 30,
+      "proper_noun_indices": [
+        0,
+        3,
+        5,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Dementors",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Privet",
+          "labels": [
+            "GPE",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Drive",
+          "labels": [
+            "GPE",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0031": {
+      "sentence_ordinal": 31,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0032": {
+      "sentence_ordinal": 32,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0033": {
+      "sentence_ordinal": 33,
+      "proper_noun_indices": [
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 7,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0034": {
+      "sentence_ordinal": 34,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0035": {
+      "sentence_ordinal": 35,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Peter",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Pettigrew",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0036": {
+      "sentence_ordinal": 36,
+      "proper_noun_indices": [
+        0,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort's",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0037": {
+      "sentence_ordinal": 37,
+      "proper_noun_indices": [
+        0,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Dumbledore",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Sirius",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0038": {
+      "sentence_ordinal": 38,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0039": {
+      "sentence_ordinal": 39,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0040": {
+      "sentence_ordinal": 40,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0041": {
+      "sentence_ordinal": 41,
+      "proper_noun_indices": [
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 3,
+          "word": "Sirius's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0042": {
+      "sentence_ordinal": 42,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0043": {
+      "sentence_ordinal": 43,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Kreacher",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0044": {
+      "sentence_ordinal": 44,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Dark",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0045": {
+      "sentence_ordinal": 45,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0046": {
+      "sentence_ordinal": 46,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fred",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "George",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0047": {
+      "sentence_ordinal": 47,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0048": {
+      "sentence_ordinal": 48,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0049": {
+      "sentence_ordinal": 49,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0050": {
+      "sentence_ordinal": 50,
+      "proper_noun_indices": [
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Sirius's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0051": {
+      "sentence_ordinal": 51,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0052": {
+      "sentence_ordinal": 52,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0053": {
+      "sentence_ordinal": 53,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0054": {
+      "sentence_ordinal": 54,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0055": {
+      "sentence_ordinal": 55,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0056": {
+      "sentence_ordinal": 56,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0057": {
+      "sentence_ordinal": 57,
+      "proper_noun_indices": [
+        1,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Percy",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Weasley's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0058": {
+      "sentence_ordinal": 58,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Mister",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0059": {
+      "sentence_ordinal": 59,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0060": {
+      "sentence_ordinal": 60,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0061": {
+      "sentence_ordinal": 61,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Bill",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0062": {
+      "sentence_ordinal": 62,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0063": {
+      "sentence_ordinal": 63,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0064": {
+      "sentence_ordinal": 64,
+      "proper_noun_indices": [
+        0,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Bill",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Gringotts",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0065": {
+      "sentence_ordinal": 65,
+      "proper_noun_indices": [
+        8
+      ],
+      "proper_nouns": [
+        {
+          "index": 8,
+          "word": "Voldemort",
+          "labels": [
+            "FAC",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0066": {
+      "sentence_ordinal": 66,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0067": {
+      "sentence_ordinal": 67,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT"
+          ]
+        }
+      ]
+    },
+    "ch005-s0068": {
+      "sentence_ordinal": 68,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0069": {
+      "sentence_ordinal": 69,
+      "proper_noun_indices": [
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Mundungus",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0070": {
+      "sentence_ordinal": 70,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0071": {
+      "sentence_ordinal": 71,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0072": {
+      "sentence_ordinal": 72,
+      "proper_noun_indices": [
+        0,
+        3,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Mundungus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Order",
+          "labels": [
+            "ORG"
+          ]
+        }
+      ]
+    },
+    "ch005-s0073": {
+      "sentence_ordinal": 73,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0074": {
+      "sentence_ordinal": 74,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Mundungus",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0075": {
+      "sentence_ordinal": 75,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0076": {
+      "sentence_ordinal": 76,
+      "proper_noun_indices": [
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 3,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0077": {
+      "sentence_ordinal": 77,
+      "proper_noun_indices": [
+        0,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Dumbledore's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Mundungus's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0078": {
+      "sentence_ordinal": 78,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0079": {
+      "sentence_ordinal": 79,
+      "proper_noun_indices": [
+        0,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Ginny",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Crookshanks",
+          "labels": [
+            "ORG"
+          ]
+        }
+      ]
+    },
+    "ch005-s0080": {
+      "sentence_ordinal": 80,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0081": {
+      "sentence_ordinal": 81,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0082": {
+      "sentence_ordinal": 82,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0083": {
+      "sentence_ordinal": 83,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0084": {
+      "sentence_ordinal": 84,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0085": {
+      "sentence_ordinal": 85,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Ron",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Hermione",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0086": {
+      "sentence_ordinal": 86,
+      "proper_noun_indices": [
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0087": {
+      "sentence_ordinal": 87,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0088": {
+      "sentence_ordinal": 88,
+      "proper_noun_indices": [
+        0,
+        1,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0089": {
+      "sentence_ordinal": 89,
+      "proper_noun_indices": [
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 7,
+          "word": "Order",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0090": {
+      "sentence_ordinal": 90,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0091": {
+      "sentence_ordinal": 91,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0092": {
+      "sentence_ordinal": 92,
+      "proper_noun_indices": [
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 4,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0093": {
+      "sentence_ordinal": 93,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0094": {
+      "sentence_ordinal": 94,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fred",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "George",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0095": {
+      "sentence_ordinal": 95,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0096": {
+      "sentence_ordinal": 96,
+      "proper_noun_indices": [
+        2,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0097": {
+      "sentence_ordinal": 97,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0098": {
+      "sentence_ordinal": 98,
+      "proper_noun_indices": [
+        2,
+        5,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "James",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0099": {
+      "sentence_ordinal": 99,
+      "proper_noun_indices": [
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 3,
+          "word": "Sirius's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0100": {
+      "sentence_ordinal": 100,
+      "proper_noun_indices": [
+        0,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "James",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0101": {
+      "sentence_ordinal": 101,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0102": {
+      "sentence_ordinal": 102,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Arthur",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0103": {
+      "sentence_ordinal": 103,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0104": {
+      "sentence_ordinal": 104,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0105": {
+      "sentence_ordinal": 105,
+      "proper_noun_indices": [
+        0,
+        5,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Arthur",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Extendable",
+          "labels": [
+            "LAW"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Ears",
+          "labels": [
+            "LAW"
+          ]
+        }
+      ]
+    },
+    "ch005-s0106": {
+      "sentence_ordinal": 106,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0107": {
+      "sentence_ordinal": 107,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0108": {
+      "sentence_ordinal": 108,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0109": {
+      "sentence_ordinal": 109,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0110": {
+      "sentence_ordinal": 110,
+      "proper_noun_indices": [
+        0,
+        2,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Molly's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0111": {
+      "sentence_ordinal": 111,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0112": {
+      "sentence_ordinal": 112,
+      "proper_noun_indices": [
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0113": {
+      "sentence_ordinal": 113,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0114": {
+      "sentence_ordinal": 114,
+      "proper_noun_indices": [
+        1,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Molly",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0115": {
+      "sentence_ordinal": 115,
+      "proper_noun_indices": [
+        0,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0116": {
+      "sentence_ordinal": 116,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0117": {
+      "sentence_ordinal": 117,
+      "proper_noun_indices": [
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 3,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0118": {
+      "sentence_ordinal": 118,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0119": {
+      "sentence_ordinal": 119,
+      "proper_noun_indices": [
+        0,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Lupin",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0120": {
+      "sentence_ordinal": 120,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0121": {
+      "sentence_ordinal": 121,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0122": {
+      "sentence_ordinal": 122,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fred",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "George",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0123": {
+      "sentence_ordinal": 123,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Ginny",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0124": {
+      "sentence_ordinal": 124,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Ron",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0125": {
+      "sentence_ordinal": 125,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0126": {
+      "sentence_ordinal": 126,
+      "proper_noun_indices": [
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 6,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0127": {
+      "sentence_ordinal": 127,
+      "proper_noun_indices": [
+        0,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Muggle",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0128": {
+      "sentence_ordinal": 128,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0129": {
+      "sentence_ordinal": 129,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0130": {
+      "sentence_ordinal": 130,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0131": {
+      "sentence_ordinal": 131,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0132": {
+      "sentence_ordinal": 132,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0133": {
+      "sentence_ordinal": 133,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0134": {
+      "sentence_ordinal": 134,
+      "proper_noun_indices": [
+        0,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Order",
+          "labels": [
+            "PERSON"
+          ]
+        }
+      ]
+    },
+    "ch005-s0135": {
+      "sentence_ordinal": 135,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0136": {
+      "sentence_ordinal": 136,
+      "proper_noun_indices": [
+        1,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Order",
+          "labels": [
+            "PERSON"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0137": {
+      "sentence_ordinal": 137,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0138": {
+      "sentence_ordinal": 138,
+      "proper_noun_indices": [
+        1,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Death",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Eaters",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0139": {
+      "sentence_ordinal": 139,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0140": {
+      "sentence_ordinal": 140,
+      "proper_noun_indices": [
+        6,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 6,
+          "word": "Imperius",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Curse",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0141": {
+      "sentence_ordinal": 141,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0142": {
+      "sentence_ordinal": 142,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0143": {
+      "sentence_ordinal": 143,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Giants",
+          "labels": [
+            "ORG"
+          ]
+        }
+      ]
+    },
+    "ch005-s0144": {
+      "sentence_ordinal": 144,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0145": {
+      "sentence_ordinal": 145,
+      "proper_noun_indices": [
+        1,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Order",
+          "labels": [
+            "PERSON"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Voldemort",
+          "labels": [
+            "FAC",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0146": {
+      "sentence_ordinal": 146,
+      "proper_noun_indices": [
+        0,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0147": {
+      "sentence_ordinal": 147,
+      "proper_noun_indices": [
+        0,
+        3,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Arthur",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Fudge",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Dumbledore's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0148": {
+      "sentence_ordinal": 148,
+      "proper_noun_indices": [
+        5,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Minister",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0149": {
+      "sentence_ordinal": 149,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0150": {
+      "sentence_ordinal": 150,
+      "proper_noun_indices": [
+        0,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fudge",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Dumbledore's",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0151": {
+      "sentence_ordinal": 151,
+      "proper_noun_indices": [
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0152": {
+      "sentence_ordinal": 152,
+      "proper_noun_indices": [
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 4,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0153": {
+      "sentence_ordinal": 153,
+      "proper_noun_indices": [
+        1,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Voldemort's",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0154": {
+      "sentence_ordinal": 154,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0155": {
+      "sentence_ordinal": 155,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fudge",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0156": {
+      "sentence_ordinal": 156,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0157": {
+      "sentence_ordinal": 157,
+      "proper_noun_indices": [
+        1,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Prophet",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0158": {
+      "sentence_ordinal": 158,
+      "proper_noun_indices": [
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0159": {
+      "sentence_ordinal": 159,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0160": {
+      "sentence_ordinal": 160,
+      "proper_noun_indices": [
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 2,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0161": {
+      "sentence_ordinal": 161,
+      "proper_noun_indices": [
+        0,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Sirius",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0162": {
+      "sentence_ordinal": 162,
+      "proper_noun_indices": [
+        1,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Sirius",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0163": {
+      "sentence_ordinal": 163,
+      "proper_noun_indices": [
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 5,
+          "word": "Fudge's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0164": {
+      "sentence_ordinal": 164,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0165": {
+      "sentence_ordinal": 165,
+      "proper_noun_indices": [
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Order",
+          "labels": [
+            "PERSON"
+          ]
+        }
+      ]
+    },
+    "ch005-s0166": {
+      "sentence_ordinal": 166,
+      "proper_noun_indices": [
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 4,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0167": {
+      "sentence_ordinal": 167,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Arthur",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Tonks",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0168": {
+      "sentence_ordinal": 168,
+      "proper_noun_indices": [
+        0,
+        1,
+        3,
+        6
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Kingsley",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "led",
+          "labels": [
+            "ORG"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Ministry",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 6,
+          "word": "Sirius",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0169": {
+      "sentence_ordinal": 169,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0170": {
+      "sentence_ordinal": 170,
+      "proper_noun_indices": [
+        1,
+        5
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Dumbledore",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 5,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0171": {
+      "sentence_ordinal": 171,
+      "proper_noun_indices": [
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Ministry",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0172": {
+      "sentence_ordinal": 172,
+      "proper_noun_indices": [
+        8
+      ],
+      "proper_nouns": [
+        {
+          "index": 8,
+          "word": "Azkaban",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0173": {
+      "sentence_ordinal": 173,
+      "proper_noun_indices": [
+        1,
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Dumbledore's",
+          "labels": [
+            "ORG",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 4,
+          "word": "Voldemort",
+          "labels": [
+            "FAC",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0174": {
+      "sentence_ordinal": 174,
+      "proper_noun_indices": [
+        1,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 1,
+          "word": "Dark",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "Lord",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0175": {
+      "sentence_ordinal": 175,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0176": {
+      "sentence_ordinal": 176,
+      "proper_noun_indices": [
+        0,
+        3
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 3,
+          "word": "Voldemort",
+          "labels": [
+            "PRODUCT",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0177": {
+      "sentence_ordinal": 177,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0178": {
+      "sentence_ordinal": 178,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0179": {
+      "sentence_ordinal": 179,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0180": {
+      "sentence_ordinal": 180,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0181": {
+      "sentence_ordinal": 181,
+      "proper_noun_indices": [
+        4
+      ],
+      "proper_nouns": [
+        {
+          "index": 4,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0182": {
+      "sentence_ordinal": 182,
+      "proper_noun_indices": [
+        0,
+        1
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Missus",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 1,
+          "word": "Weasley",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0183": {
+      "sentence_ordinal": 183,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0184": {
+      "sentence_ordinal": 184,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fred",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0185": {
+      "sentence_ordinal": 185,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Molly",
+          "labels": [
+            "PERSON"
+          ]
+        }
+      ]
+    },
+    "ch005-s0186": {
+      "sentence_ordinal": 186,
+      "proper_noun_indices": [
+        0,
+        7
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Ron",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        },
+        {
+          "index": 7,
+          "word": "Order",
+          "labels": [
+            "ORG"
+          ]
+        }
+      ]
+    },
+    "ch005-s0187": {
+      "sentence_ordinal": 187,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Sirius",
+          "labels": [
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0188": {
+      "sentence_ordinal": 188,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    },
+    "ch005-s0189": {
+      "sentence_ordinal": 189,
+      "proper_noun_indices": [
+        0,
+        2
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Fred",
+          "labels": [
+            "PROPN"
+          ]
+        },
+        {
+          "index": 2,
+          "word": "George",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0190": {
+      "sentence_ordinal": 190,
+      "proper_noun_indices": [
+        0
+      ],
+      "proper_nouns": [
+        {
+          "index": 0,
+          "word": "Harry",
+          "labels": [
+            "PERSON",
+            "PROPN"
+          ]
+        }
+      ]
+    },
+    "ch005-s0191": {
+      "sentence_ordinal": 191,
+      "proper_noun_indices": [],
+      "proper_nouns": []
+    }
+  }
+}
