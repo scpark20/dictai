@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sqlite3
 import threading
@@ -15,11 +16,11 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
-MANIFEST = ROOT / "data" / "ch005.json"
-PROPER_NOUNS = ROOT / "data" / "ch005-proper-nouns.json"
-CYCLING_AUDIO_ROOT = Path("/home/scpark/harry-concise-ch5/audio-a")
-SECOND_AUDIO_ROOT = Path("/home/scpark/harry-concise-ch5/audio-b")
-DB = ROOT / "progress.sqlite3"
+MANIFEST = Path(os.environ.get("DICTAI_MANIFEST", ROOT / "data" / "ch005.json"))
+PROPER_NOUNS = Path(os.environ.get("DICTAI_PROPER_NOUNS", ROOT / "data" / "ch005-proper-nouns.json"))
+CYCLING_AUDIO_ROOT = Path(os.environ.get("DICTAI_AUDIO_A", "/home/scpark/harry-concise-ch5/audio-a"))
+SECOND_AUDIO_ROOT = Path(os.environ.get("DICTAI_AUDIO_B", "/home/scpark/harry-concise-ch5/audio-b"))
+DB = Path(os.environ.get("DICTAI_PROGRESS_DB", ROOT / "progress.sqlite3"))
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
 def load_sentences() -> list[dict]:
