@@ -1,0 +1,961 @@
+{
+  "schema_version": 1,
+  "sentence_count": 211,
+  "sentences": {
+    "ch006-s0001": {
+      "proper_noun_indices": [
+        9
+      ]
+    },
+    "ch006-s0002": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0003": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0004": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0005": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0006": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0007": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0008": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0009": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0010": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0011": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0012": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0013": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0014": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0015": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0016": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0017": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0018": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0019": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0020": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0021": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0022": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0023": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0024": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0025": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0026": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0027": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0028": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0029": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0030": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0031": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0032": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0033": {
+      "proper_noun_indices": [
+        0,
+        5
+      ]
+    },
+    "ch006-s0034": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0035": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0036": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0037": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0038": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0039": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0040": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0041": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0042": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0043": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0044": {
+      "proper_noun_indices": [
+        0,
+        4,
+        5
+      ]
+    },
+    "ch006-s0045": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0046": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0047": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0048": {
+      "proper_noun_indices": [
+        2
+      ]
+    },
+    "ch006-s0049": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0050": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0051": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0052": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0053": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0054": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0055": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0056": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0057": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0058": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0059": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0060": {
+      "proper_noun_indices": [
+        6,
+        7
+      ]
+    },
+    "ch006-s0061": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0062": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0063": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0064": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0065": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0066": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0067": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0068": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0069": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0070": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0071": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0072": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0073": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0074": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0075": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0076": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0077": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0078": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0079": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0080": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0081": {
+      "proper_noun_indices": [
+        3,
+        4
+      ]
+    },
+    "ch006-s0082": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0083": {
+      "proper_noun_indices": [
+        1,
+        3
+      ]
+    },
+    "ch006-s0084": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0085": {
+      "proper_noun_indices": [
+        0,
+        4
+      ]
+    },
+    "ch006-s0086": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0087": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0088": {
+      "proper_noun_indices": [
+        2
+      ]
+    },
+    "ch006-s0089": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0090": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0091": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0092": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0093": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0094": {
+      "proper_noun_indices": [
+        0,
+        5
+      ]
+    },
+    "ch006-s0095": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0096": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0097": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0098": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0099": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0100": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0101": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0102": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0103": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0104": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0105": {
+      "proper_noun_indices": [
+        3
+      ]
+    },
+    "ch006-s0106": {
+      "proper_noun_indices": [
+        1,
+        2,
+        4
+      ]
+    },
+    "ch006-s0107": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0108": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0109": {
+      "proper_noun_indices": [
+        3
+      ]
+    },
+    "ch006-s0110": {
+      "proper_noun_indices": [
+        3
+      ]
+    },
+    "ch006-s0111": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0112": {
+      "proper_noun_indices": [
+        3
+      ]
+    },
+    "ch006-s0113": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0114": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0115": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0116": {
+      "proper_noun_indices": [
+        2,
+        3
+      ]
+    },
+    "ch006-s0117": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0118": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0119": {
+      "proper_noun_indices": [
+        0,
+        3,
+        4
+      ]
+    },
+    "ch006-s0120": {
+      "proper_noun_indices": [
+        0,
+        5
+      ]
+    },
+    "ch006-s0121": {
+      "proper_noun_indices": [
+        6
+      ]
+    },
+    "ch006-s0122": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0123": {
+      "proper_noun_indices": [
+        0,
+        1,
+        5
+      ]
+    },
+    "ch006-s0124": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0125": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0126": {
+      "proper_noun_indices": [
+        2,
+        4,
+        5
+      ]
+    },
+    "ch006-s0127": {
+      "proper_noun_indices": [
+        3,
+        5
+      ]
+    },
+    "ch006-s0128": {
+      "proper_noun_indices": [
+        0,
+        1,
+        5
+      ]
+    },
+    "ch006-s0129": {
+      "proper_noun_indices": [
+        4
+      ]
+    },
+    "ch006-s0130": {
+      "proper_noun_indices": [
+        0,
+        3,
+        4
+      ]
+    },
+    "ch006-s0131": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0132": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0133": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0134": {
+      "proper_noun_indices": [
+        4
+      ]
+    },
+    "ch006-s0135": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0136": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0137": {
+      "proper_noun_indices": [
+        1
+      ]
+    },
+    "ch006-s0138": {
+      "proper_noun_indices": [
+        5
+      ]
+    },
+    "ch006-s0139": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0140": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0141": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0142": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0143": {
+      "proper_noun_indices": [
+        6,
+        7
+      ]
+    },
+    "ch006-s0144": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0145": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0146": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0147": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0148": {
+      "proper_noun_indices": [
+        0,
+        5
+      ]
+    },
+    "ch006-s0149": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0150": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0151": {
+      "proper_noun_indices": [
+        0,
+        7
+      ]
+    },
+    "ch006-s0152": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0153": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0154": {
+      "proper_noun_indices": [
+        6
+      ]
+    },
+    "ch006-s0155": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0156": {
+      "proper_noun_indices": [
+        4
+      ]
+    },
+    "ch006-s0157": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0158": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0159": {
+      "proper_noun_indices": [
+        4
+      ]
+    },
+    "ch006-s0160": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0161": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0162": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0163": {
+      "proper_noun_indices": [
+        5
+      ]
+    },
+    "ch006-s0164": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0165": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0166": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0167": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0168": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0169": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0170": {
+      "proper_noun_indices": [
+        4
+      ]
+    },
+    "ch006-s0171": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0172": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0173": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0174": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0175": {
+      "proper_noun_indices": [
+        0,
+        4
+      ]
+    },
+    "ch006-s0176": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0177": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0178": {
+      "proper_noun_indices": [
+        0,
+        2
+      ]
+    },
+    "ch006-s0179": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0180": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0181": {
+      "proper_noun_indices": [
+        3,
+        4
+      ]
+    },
+    "ch006-s0182": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0183": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0184": {
+      "proper_noun_indices": [
+        0,
+        1
+      ]
+    },
+    "ch006-s0185": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0186": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0187": {
+      "proper_noun_indices": [
+        0,
+        5
+      ]
+    },
+    "ch006-s0188": {
+      "proper_noun_indices": [
+        0,
+        5,
+        6
+      ]
+    },
+    "ch006-s0189": {
+      "proper_noun_indices": [
+        6
+      ]
+    },
+    "ch006-s0190": {
+      "proper_noun_indices": [
+        3
+      ]
+    },
+    "ch006-s0191": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0192": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0193": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0194": {
+      "proper_noun_indices": [
+        2
+      ]
+    },
+    "ch006-s0195": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0196": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0197": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0198": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0199": {
+      "proper_noun_indices": [
+        5
+      ]
+    },
+    "ch006-s0200": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0201": {
+      "proper_noun_indices": [
+        0,
+        1,
+        3
+      ]
+    },
+    "ch006-s0202": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0203": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0204": {
+      "proper_noun_indices": [
+        0,
+        6
+      ]
+    },
+    "ch006-s0205": {
+      "proper_noun_indices": [
+        0
+      ]
+    },
+    "ch006-s0206": {
+      "proper_noun_indices": [
+        0,
+        1,
+        3
+      ]
+    },
+    "ch006-s0207": {
+      "proper_noun_indices": [
+        0,
+        3
+      ]
+    },
+    "ch006-s0208": {
+      "proper_noun_indices": []
+    },
+    "ch006-s0209": {
+      "proper_noun_indices": [
+        0,
+        4
+      ]
+    },
+    "ch006-s0210": {
+      "proper_noun_indices": [
+        6
+      ]
+    },
+    "ch006-s0211": {
+      "proper_noun_indices": [
+        5
+      ]
+    }
+  }
+}

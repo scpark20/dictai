@@ -118,6 +118,11 @@ def validate_proper_nouns(
     if not isinstance(sentences, dict):
         raise PipelineValidationError(f"{label}: sentences must be an object")
     row_by_id = {row["sentence_id"]: row for row in rows}
+    declared_count = payload.get("sentence_count")
+    if strict and declared_count is not None and declared_count != len(rows):
+        raise PipelineValidationError(
+            f"{label}: sentence_count is {declared_count}, but manifest has {len(rows)} sentences"
+        )
     cleaned: dict[str, Any] = {}
     for sentence_id, metadata in sentences.items():
         if sentence_id not in row_by_id:

@@ -93,7 +93,7 @@ const topicIcons = Object.freeze({
 
 const books = Object.freeze({
   A1: [
-    { title: "Harry Potter 5", note: "Chapters 3–5", color: "#243b64", chapters: [3, 4, 5] },
+    { title: "Harry Potter 5", note: "Chapters 3–6", color: "#243b64", chapters: [3, 4, 5, 6] },
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", color: "#6a994e" },
     { title: "The Velveteen Rabbit", note: "Gutenberg", color: "#9b6b76" },
     { title: "The Selfish Giant", note: "Gutenberg", color: "#6683a0" },
