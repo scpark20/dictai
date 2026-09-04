@@ -103,7 +103,7 @@ def bootstrap(request: Request) -> dict:
 
 
 @app.get("/api/build-status")
-def build_status() -> dict:
+def build_status(request: Request) -> dict:
     reference_root = BUILD_ROOT / "reference-bank"
     generated_root_a = BUILD_ROOT / "audio-random-a"
     generated_root_b = BUILD_ROOT / "audio-random-b"
@@ -141,7 +141,7 @@ def build_status() -> dict:
         "audio_second_completed": generated_second,
         "audio_second_target": 191,
         "queue": queue,
-        "app_url": "https://192.168.0.67:8774/",
+        "app_url": str(request.base_url),
         "app_ready": generated == 191 and generated_second == 191 and queue["failed"] == 0,
     }
 

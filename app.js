@@ -6,7 +6,6 @@ const AUDIO_READY_TIMEOUT_MS = 15000;
 const MAX_AUDIO_BLOB_BYTES = 8 * 1024 * 1024;
 const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
 const DEFAULT_MAX_LEVEL = 191;
-const DEPLOYED_ORIGIN = "https://192.168.0.67:8774";
 const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
 const VOICE_SETTINGS_KEY = "dictai-voice-settings";
 const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
@@ -3331,8 +3330,4 @@ document.addEventListener("visibilitychange", () => {
 });
 
 renderVoiceSettings();
-if (window.location.origin !== DEPLOYED_ORIGIN) {
-  window.location.replace(`${DEPLOYED_ORIGIN}/`);
-} else {
-  void bootstrap();
-}
+void bootstrap();
