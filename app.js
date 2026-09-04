@@ -8,6 +8,7 @@ const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
 const DEFAULT_MAX_LEVEL = 191;
 const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
 const VOICE_SETTINGS_KEY = "dictai-voice-settings";
+const VOICE_RESTORE_KEY = "dictai-restore-voice-after-settings";
 const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
 const PLAYBACK_RATES = Object.freeze([0.5, 0.8, 1.0, 1.2, 1.5]);
 const DEFAULT_TARGET_LANGUAGE = "ko";
@@ -166,6 +167,12 @@ const elements = {
   candidateValue: document.querySelector("#candidateValue"),
   applyVoiceSettings: document.querySelector("#applyVoiceSettings"),
 };
+
+const voiceRestoreValue = sessionStorage.getItem(VOICE_RESTORE_KEY);
+if (voiceRestoreValue !== null) {
+  state.voiceEnabled = voiceRestoreValue === "on";
+  sessionStorage.removeItem(VOICE_RESTORE_KEY);
+}
 
 function loadVoiceSettings() {
   try {
@@ -3274,6 +3281,7 @@ elements.applyVoiceSettings.addEventListener("click", () => {
   localStorage.setItem("dictai-voice-model", next.model);
   renderVoiceSettings();
   if (recognizerMustRestart) {
+    sessionStorage.setItem(VOICE_RESTORE_KEY, state.voiceEnabled ? "on" : "off");
     renderVoiceStatus("Reloading model…", false);
     window.location.reload();
   } else {
