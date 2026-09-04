@@ -740,7 +740,6 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 .topbar,.page { width:min(980px,calc(100% - 40px)); }
 .topbar { min-height:64px; border-color:rgba(var(--level-rgb),.14); }
 .topbar { justify-content:flex-start; }
-.step-label { display:none !important; }
 .brand { color:var(--level-dark); font-size:15px; font-weight:850; }
 .step-label { padding:7px 10px; background:rgba(255,255,255,.72); border:1px solid rgba(var(--level-rgb),.16); border-radius:999px; }
 .chapter-progress { background:rgba(var(--level-rgb),.12); }
@@ -769,6 +768,10 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 .speaker-word-row { display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
 @media (max-width:700px) { .speaker-turn { grid-template-columns:1fr; gap:5px; } }
 """
+        if selected_book(request) is None:
+            source += "\n.step-label { display:none !important; }\n"
+        else:
+            source += "\n.step-label { display:flex !important; margin-left:auto; }\n"
         return Response(source, media_type="text/css")
     if name == "persistent-model-loader.js":
         if language == "ko":
