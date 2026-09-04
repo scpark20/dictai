@@ -69,6 +69,19 @@
             </label>
             <span class="voice-setup-progress" id="voiceSetupProgress" aria-hidden="true"><i></i></span>
           </div>
+          <section class="voice-settings" id="voiceSettings" aria-label="Voice recognition settings">
+            <label class="voice-model-field">
+              <span>Model</span>
+              <select id="voiceModel">
+                <option value="full">sherpa-onnx-streaming-zipformer-en-2023-06-21</option>
+                <option value="20m">sherpa-onnx-streaming-zipformer-en-20M-2023-02-17</option>
+              </select>
+            </label>
+            <label><span>Beam <output id="beamValue">12</output></span><input id="beamSetting" type="range" min="1" max="32" step="1" value="12" /></label>
+            <label><span>Threshold <output id="thresholdValue">0.72</output></span><input id="thresholdSetting" type="range" min="0.01" max="4" step="0.01" value="0.72" /></label>
+            <label><span>Candidate <output id="candidateValue">0.08</output></span><input id="candidateSetting" type="range" min="0.01" max="4" step="0.01" value="0.08" /></label>
+            <button id="applyVoiceSettings" type="button">Apply</button>
+          </section>
           <div class="word-grid" id="wordGrid" role="list" aria-label="Sentence word slots"></div>
           <p class="slot-click-hint" id="slotClickHint">Tap a box to reveal it.</p>
 
@@ -204,7 +217,7 @@
     </main>
 
     <audio id="sentenceAudio" preload="auto" hidden></audio>
-    <script src="./app.js?v=20260904-concise-ch5-1"></script>
-    <script src="./persistent-model-loader.js?v=3"></script>
+    <script src="./app.js?v=20260904-voice-restore-1"></script>
+    <script src="./persistent-model-loader.js?v=20260904-voice-restore-1"></script>
   </body>
 </html>

@@ -3,11 +3,28 @@
 (async () => {
   const databaseName = "echostep-asr-models";
   const storeName = "files";
-  const modelVersion = "sherpa-main-asr-20260901-v1";
-  const dataUrl = "/asr-wasm/sherpa-onnx-wasm-main-asr.data";
+  const selectedModel = localStorage.getItem("echostep-voice-model") === "20m" ? "20m" : "full";
+  const packages = {
+    full: {
+      version: "sherpa-zipformer-en-2023-06-21-v1.13.7",
+      dataUrl: "/asr-wasm/sherpa-onnx-wasm-main-asr.data",
+      scriptUrl: "/asr-wasm/sherpa-onnx-wasm-main-asr.js",
+      expectedDataBytes: 190951044,
+    },
+    "20m": {
+      version: "sherpa-zipformer-en-20m-2023-02-17-v1",
+      dataUrl: "/asr-wasm/sherpa-onnx-wasm-main-asr-20m.data",
+      scriptUrl: "/asr-wasm/sherpa-onnx-wasm-main-asr-20m.js",
+      expectedDataBytes: 45969268,
+    },
+  };
+  const selectedPackage = packages[selectedModel];
+  const modelVersion = selectedPackage.version;
+  const dataUrl = selectedPackage.dataUrl;
   const wasmUrl = "/asr-wasm/sherpa-onnx-wasm-main-asr.wasm";
-  const expectedDataBytes = 190951044;
-  const expectedWasmBytes = 13148431;
+  const expectedDataBytes = selectedPackage.expectedDataBytes;
+  const expectedWasmBytes = 13150239;
+  window.__voiceModelId = selectedModel;
 
   const status = (label) => window.dispatchEvent(new CustomEvent("wasm-asr-status", {
     detail: { status: label, percent: null },
@@ -48,7 +65,27 @@
     status(label);
     const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) throw new Error(`${response.status}: ${url}`);
-    return response.arrayBuffer();
+    const total = Number(response.headers.get("content-length")) || 0;
+    if (!response.body || !total) return response.arrayBuffer();
+    const reader = response.body.getReader();
+    const chunks = [];
+    let received = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.byteLength;
+      window.dispatchEvent(new CustomEvent("wasm-asr-status", {
+        detail: {
+          status: `${label} ${Math.round((received / total) * 100)}%`,
+          percent: Math.round((received / total) * 100),
+        },
+      }));
+    }
+    const joined = new Uint8Array(received);
+    let offset = 0;
+    chunks.forEach((chunk) => { joined.set(chunk, offset); offset += chunk.byteLength; });
+    return joined.buffer;
   };
 
   try {
@@ -104,8 +141,8 @@
 
     status("Loading saved model");
     await loadScript("/asr-wasm/sherpa-onnx-asr.js");
-    await loadScript("/wasm-asr-bootstrap.js?v=20260901-3");
-    await loadScript("/asr-wasm/sherpa-onnx-wasm-main-asr.js");
+    await loadScript("/wasm-asr-bootstrap.js?v=20260904-voice-restore-1");
+    await loadScript(selectedPackage.scriptUrl);
   } catch (_error) {
     status("Could not save model");
   }

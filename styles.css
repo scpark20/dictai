@@ -1439,6 +1439,56 @@ body {
   margin: 0 0 8px;
 }
 
+.voice-settings {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 14px;
+  margin: 4px 0 24px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.voice-model-field { grid-column: 1 / -1; }
+
+.voice-settings label { display: grid; gap: 8px; min-width: 0; }
+.voice-settings label > span { display: flex; justify-content: space-between; gap: 8px; font-weight: 750; color: #555862; }
+.voice-settings output { color: #0878ef; font-variant-numeric: tabular-nums; }
+.voice-settings select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #c9cbd1;
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+}
+.voice-settings input[type="range"] { width: 100%; accent-color: #0878ef; }
+.voice-settings button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 13px;
+  background: #0878ef;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .voice-settings { grid-template-columns: 1fr 1fr; }
+  .voice-model-field { grid-column: 1 / -1; }
+}
+
+@media (max-width: 620px) {
+  .voice-settings { grid-template-columns: 1fr; }
+  .voice-model-field { grid-column: auto; }
+}
+
 .voice-toggle {
   display: inline-flex;
   gap: 7px;

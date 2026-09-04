@@ -8,6 +8,8 @@ const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
 const DEFAULT_MAX_LEVEL = 191;
 const DEPLOYED_ORIGIN = "https://192.168.0.67:8774";
 const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
+const VOICE_SETTINGS_KEY = "echostep-voice-settings";
+const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
 const PLAYBACK_RATES = Object.freeze([0.5, 0.8, 1.0, 1.2, 1.5]);
 const DEFAULT_TARGET_LANGUAGE = "ko";
 const REVEAL_TRANSLATION_MAX_LENGTH = 600;
@@ -103,6 +105,7 @@ const state = {
   voiceStarting: false,
   voiceLevel: 0,
   voiceDetectedTimer: 0,
+  voiceSettings: { ...DEFAULT_VOICE_SETTINGS },
   wordRevealPromise: null,
   wordRevealRequired: false,
   wordRevealRecorded: false,
@@ -155,7 +158,43 @@ const elements = {
   voiceSetupProgress: document.querySelector("#voiceSetupProgress"),
   slotClickHint: document.querySelector("#slotClickHint"),
   properNounButton: document.querySelector("#properNounButton"),
+  voiceModel: document.querySelector("#voiceModel"),
+  beamSetting: document.querySelector("#beamSetting"),
+  beamValue: document.querySelector("#beamValue"),
+  thresholdSetting: document.querySelector("#thresholdSetting"),
+  thresholdValue: document.querySelector("#thresholdValue"),
+  candidateSetting: document.querySelector("#candidateSetting"),
+  candidateValue: document.querySelector("#candidateValue"),
+  applyVoiceSettings: document.querySelector("#applyVoiceSettings"),
 };
+
+function loadVoiceSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VOICE_SETTINGS_KEY) || "{}");
+    return {
+      model: saved.model === "20m" ? "20m" : "full",
+      beam: integerBetween(saved.beam, 12, 1, 32),
+      threshold: Math.max(0.01, Math.min(4, Number(saved.threshold) || 0.72)),
+      candidate: Math.max(0.01, Math.min(4, Number(saved.candidate) || 0.08)),
+    };
+  } catch (_error) {
+    return { ...DEFAULT_VOICE_SETTINGS };
+  }
+}
+
+function renderVoiceSettings() {
+  const settings = state.voiceSettings;
+  elements.voiceModel.value = settings.model;
+  elements.beamSetting.value = String(settings.beam);
+  elements.thresholdSetting.value = String(settings.threshold);
+  elements.candidateSetting.value = String(settings.candidate);
+  elements.beamValue.textContent = String(settings.beam);
+  elements.thresholdValue.textContent = settings.threshold.toFixed(2);
+  elements.candidateValue.textContent = settings.candidate.toFixed(2);
+}
+
+state.voiceSettings = loadVoiceSettings();
+localStorage.setItem("echostep-voice-model", state.voiceSettings.model);
 
 let chimeContext = null;
 const activeWordTicks = new Set();
@@ -2176,7 +2215,71 @@ function commitVoiceWord(rawValue) {
     return true;
   }
 
+  const heard = normaliseWord(typedWords[0]);
+  const rankedByWord = new Map();
+  problem.answerWords.forEach((answerWord, index) => {
+    if (state.solved.has(index)) return;
+    const target = normaliseWord(answerWord);
+    const score = voiceWordSimilarity(heard, target);
+    const existing = rankedByWord.get(target);
+    if (!existing || score > existing.score) rankedByWord.set(target, { index, score, target });
+  });
+  const ranked = [...rankedByWord.values()]
+    .sort((left, right) => right.score - left.score)
+    .slice(0, state.voiceSettings.beam);
+  const best = ranked[0];
+  const runnerUp = ranked[1];
+  if (
+    best
+    && best.score >= state.voiceSettings.threshold
+    && best.score - (runnerUp?.score || 0) >= state.voiceSettings.candidate
+  ) {
+    flashVoiceCandidate([best.index]);
+    showRecognizedVoiceWord(problem.displayWords[best.index]);
+    markSolved([best.index], false);
+    return true;
+  }
+
   return false;
+}
+
+function voiceEditDistance(left, right) {
+  let previous = Array.from({ length: right.length + 1 }, (_value, index) => index);
+  for (let row = 1; row <= left.length; row += 1) {
+    const current = [row];
+    for (let column = 1; column <= right.length; column += 1) {
+      current[column] = Math.min(
+        current[column - 1] + 1,
+        previous[column] + 1,
+        previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1),
+      );
+    }
+    previous = current;
+  }
+  return previous[right.length];
+}
+
+function voicePhoneticShape(word) {
+  return String(word || "")
+    .replace(/ph/g, "f")
+    .replace(/[ckq]/g, "k")
+    .replace(/[sz]/g, "s")
+    .replace(/[dt]/g, "t")
+    .replace(/[gj]/g, "j")
+    .replace(/[aeiouy]/g, "")
+    .replace(/(.)\1+/g, "$1");
+}
+
+function voiceWordSimilarity(heard, target) {
+  if (!heard || !target) return 0;
+  if (heard === target) return 1;
+  const spelling = 1 - voiceEditDistance(heard, target) / Math.max(heard.length, target.length);
+  const heardShape = voicePhoneticShape(heard);
+  const targetShape = voicePhoneticShape(target);
+  const phonetic = heardShape && targetShape
+    ? 1 - voiceEditDistance(heardShape, targetShape) / Math.max(heardShape.length, targetShape.length)
+    : 0;
+  return Math.max(0, Math.min(1, spelling * 0.7 + phonetic * 0.3));
 }
 
 function markSolved(indices, revealed) {
@@ -3149,6 +3252,35 @@ elements.voiceToggle.addEventListener("change", () => {
     void stopVoiceRecognition("Off");
   }
 });
+const voiceSettingBindings = [
+  [elements.beamSetting, elements.beamValue, 0],
+  [elements.thresholdSetting, elements.thresholdValue, 2],
+  [elements.candidateSetting, elements.candidateValue, 2],
+];
+voiceSettingBindings.forEach(([input, output, digits]) => {
+  input.addEventListener("input", () => {
+    output.textContent = Number(input.value).toFixed(digits);
+  });
+});
+elements.applyVoiceSettings.addEventListener("click", () => {
+  const next = {
+    model: elements.voiceModel.value === "20m" ? "20m" : "full",
+    beam: integerBetween(elements.beamSetting.value, 12, 1, 32),
+    threshold: Math.max(0.01, Math.min(4, Number(elements.thresholdSetting.value) || 0.72)),
+    candidate: Math.max(0.01, Math.min(4, Number(elements.candidateSetting.value) || 0.08)),
+  };
+  const recognizerMustRestart = next.model !== state.voiceSettings.model || next.beam !== state.voiceSettings.beam;
+  state.voiceSettings = next;
+  localStorage.setItem(VOICE_SETTINGS_KEY, JSON.stringify(next));
+  localStorage.setItem("echostep-voice-model", next.model);
+  renderVoiceSettings();
+  if (recognizerMustRestart) {
+    renderVoiceStatus("Reloading model…", false);
+    window.location.reload();
+  } else {
+    renderVoiceStatus(state.voiceEnabled ? "Listening…" : "Off", Boolean(state.voiceRecognizerStream));
+  }
+});
 window.addEventListener("wasm-asr-status", (event) => {
   const status = event.detail?.status || "Loading…";
   if (!state.voiceModelReady && state.voiceEnabled) {
@@ -3198,6 +3330,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") void refreshProblemLease();
 });
 
+renderVoiceSettings();
 if (window.location.origin !== DEPLOYED_ORIGIN) {
   window.location.replace(`${DEPLOYED_ORIGIN}/`);
 } else {

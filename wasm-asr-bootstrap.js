@@ -22,7 +22,32 @@ Module.setStatus = function(status) {
 
 Module.onRuntimeInitialized = function() {
   sessionStorage.removeItem("echostep-asr-recovered");
-  window.wasmAsrRecognizer = createOnlineRecognizer(Module);
+  let beam = 12;
+  try {
+    const saved = JSON.parse(localStorage.getItem("echostep-voice-settings") || "{}");
+    beam = Math.max(1, Math.min(32, Math.round(Number(saved.beam) || 12)));
+  } catch (_error) {}
+  window.wasmAsrRecognizer = createOnlineRecognizer(Module, {
+    featConfig: { sampleRate: 16000, featureDim: 80 },
+    enableEndpoint: true,
+    rule1MinTrailingSilence: 2.4,
+    rule2MinTrailingSilence: 1.2,
+    rule3MinUtteranceLength: 20,
+    decodingMethod: "modified_beam_search",
+    maxActivePaths: beam,
+    modelConfig: {
+      debug: 0,
+      tokens: "./tokens.txt",
+      transducer: {
+        encoder: "./encoder.onnx",
+        decoder: "./decoder.onnx",
+        joiner: "./joiner.onnx",
+      },
+      numThreads: 1,
+      provider: "cpu",
+      modelType: "",
+    },
+  });
   window.dispatchEvent(new CustomEvent("wasm-asr-ready"));
 };
 

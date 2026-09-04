@@ -11,7 +11,12 @@ Chapter 5 attached to it. The Chapter 3/4 source data is not rebuilt here.
 - Two pre-generated SoulX takes are preloaded and alternated per sentence.
 - Typing and voice recognition use independent input paths.
 - Names, click-to-reveal, Again/Next, speed controls and saved position remain.
-- Voice recognition is off by default.
+- Voice recognition is off by default. The in-browser recognizer offers the
+  full 2023-06-21 English Zipformer and the smaller 20M 2023-02-17 model.
+- Beam controls modified-beam-search paths. Threshold controls the minimum
+  decoded-word match score, and Candidate controls the required lead over the
+  runner-up. Voice matching never edits or clears the typed-answer field.
+- Model downloads report progress and are retained in IndexedDB per model.
 
 ## Runtime layout on 192.168.0.67
 
