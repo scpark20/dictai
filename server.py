@@ -18,6 +18,7 @@ from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
 PRACTICE_ROOT = ROOT / "practice-ui"
+ASR_WASM_ROOT = Path("/home/scpark/dictai/asr-wasm")
 MANIFEST = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json")
 PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
 AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
@@ -119,7 +120,7 @@ SELECTED_COURSES: dict[str, tuple[str, str, str]] = {}
 SELECTED_BOOKS: dict[str, int] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
-app.mount("/asr-wasm", StaticFiles(directory=PRACTICE_ROOT / "asr-wasm"), name="asr-wasm")
+app.mount("/asr-wasm", StaticFiles(directory=ASR_WASM_ROOT), name="asr-wasm")
 app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
 
