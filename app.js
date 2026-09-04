@@ -137,6 +137,13 @@ const books = Object.freeze({
   ],
 });
 
+const chapterTitles = Object.freeze({
+  3: "The Advanced Guard",
+  4: "Number Twelve, Grimmauld Place",
+  5: "The Order of the Phoenix",
+  6: "The Noble and Most Ancient House of Black",
+});
+
 const coverArt = Object.freeze({
   "Harry Potter 5": `<svg viewBox="0 0 38 52"><path d="M7 46V9h24v37z" fill="#18294a"/><path d="m21 5-6 17h7l-6 20 15-24h-8l6-13z" fill="#e6bd55"/><path d="M5 47h28" stroke="#b68a43" stroke-width="3"/></svg>`,
   "The Happy Prince": `<svg viewBox="0 0 38 52"><circle cx="27" cy="10" r="6" fill="#f0ce71"/><path d="M16 43V19h7v24m-11 0h15M14 19l5-10 6 10z" fill="#d8bc68"/><path d="M4 35q6-8 12 0" fill="none" stroke="#4d7893" stroke-width="3"/></svg>`,
@@ -180,7 +187,11 @@ const coverArt = Object.freeze({
 
 function bookCard(book, index) {
   if (book.chapters) {
-    const chapters = book.chapters.map((chapter) => `<button class="chapter-card" type="button" data-chapter="${chapter}">Chapter ${chapter}</button>`).join("");
+    const chapters = book.chapters.map((chapter) => `<button class="chapter-card" type="button" data-chapter="${chapter}">
+      <span class="chapter-number"><small>CHAPTER</small>${String(chapter).padStart(2, "0")}</span>
+      <span class="chapter-title">${chapterTitles[chapter] || `Chapter ${chapter}`}</span>
+      <span class="chapter-arrow" aria-hidden="true">→</span>
+    </button>`).join("");
     return `<div class="book-entry" style="--row:${index}">
       <button class="book-card book-card-expandable" type="button" data-book="harry-potter-5" aria-expanded="false" aria-label="${book.title}">
         <span class="book-cover" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art">${coverArt[book.title] || ""}</i></span>
