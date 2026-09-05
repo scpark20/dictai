@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {Game,matchWords,voiceMatch,equivalent} from './core.js';
+let passed=0;function test(name,fn){fn();passed++;console.log('PASS',name);}
+const rows=Array.from({length:8},(_,i)=>({id:String(i),words:['Mr.','Weasley',"didn't",'leave'],duration:4}));
+const running=()=>{const g=new Game(rows);g.status='running';g.tick(0);return g;};
+test('first target automatic',()=>{assert.equal(running().active,'q0');});
+test('new spawn never steals selection',()=>{const g=running();g.tick(8);assert.equal(g.active,'q0');assert.equal(g.questions[1].state,'falling');});
+test('typed Mr and spoken Mister preserve display',()=>{assert(equivalent('Mr.','mister'));assert(equivalent('Mrs.','missus'));assert.equal(rows[0].words[0],'Mr.');});
+test('contractions accept expanded phrase',()=>{const q=running().current;assert.deepEqual(matchWords(q,'did not').indices,[2]);});
+test('no fuzzy matching keyboard channel',()=>{assert.equal(matchWords(running().current,'Weazley').kind,'wrong');});
+test('duplicate preserves state',()=>{const q=running().current;q.solved=[0];q.draft='Mr';assert.equal(matchWords(q,'Mr').kind,'duplicate');assert.equal(q.draft,'Mr');});
+test('partial wrong pasted phrase is atomic',()=>{const q=running().current;assert.equal(matchWords(q,'Mr banana').kind,'wrong');assert.deepEqual(q.solved,[]);});
+test('full solve scores once and exempts collision',()=>{const g=running();g.current.y=.999;g.mark([0,1,2,3]);g.tick(.2);assert.equal(g.score,100);assert.equal(g.life,5);assert.equal(g.questions[0].state,'solved');});
+test('ground miss costs one life only',()=>{const g=running();g.tick(40);const life=g.life;g.tick(.1);assert.equal(life,4);assert.equal(g.life,4);});
+test('pause freezes elapsed and falling positions',()=>{const g=running();g.status='paused';const y=g.current.y;g.tick(100);assert.equal(g.current.y,y);assert.equal(g.elapsed,0);});
+test('target switch preserves drafts',()=>{const g=running();g.current.draft='Weas';g.tick(8);g.select('q1');g.select('q0');assert.equal(g.current.draft,'Weas');});
+test('restore is paused',()=>{const g=running();g.current.draft='draft';const restored=Game.restore(JSON.parse(JSON.stringify(g)));assert.equal(restored.status,'paused');assert.equal(restored.current.draft,'draft');});
+test('hints cannot earn points',()=>{const g=running();g.mark([0],true);g.mark([1,2,3]);assert.equal(g.score,0);});
+test('lowest auto target on solve',()=>{const g=running();g.tick(8);g.tick(8);g.select('q2');g.mark([0,1,2,3]);assert.equal(g.active,'q0');});
+test('life floor and game over',()=>{const g=running();for(let i=0;i<5;i++){if(!g.current)g.tick(8);g.skip();}assert.equal(g.life,0);assert.equal(g.status,'over');g.tick(100);assert.equal(g.life,0);});
+test('last solve clears round',()=>{const g=new Game(rows.slice(0,1));g.status='running';g.tick(0);g.mark([0,1,2,3]);assert.equal(g.status,'clear');});
+test('voice threshold blocks fuzzy, exact remains',()=>{const q=running().current;const settings={beam:12,threshold:4,candidate:4};assert.equal(voiceMatch(q,'weazley',settings).kind,'wrong');assert.equal(voiceMatch(q,'mister',settings).kind,'correct');});
+test('maximum five falling targets',()=>{const g=new Game(rows.map(x=>({...x,duration:300})));g.status='running';for(let i=0;i<10;i++)g.tick(8);assert.equal(g.questions.filter(q=>q.state==='falling').length,5);});
+test('contraction can be entered a word at a time',()=>{const q=running().current;const a=matchWords(q,'did');assert.equal(a.kind,'correct');assert.deepEqual(a.indices,[]);q.partial=a.partial;assert.equal(matchWords(q,'did').kind,'duplicate');const b=matchWords(q,'not');assert.deepEqual(b.indices,[2]);});
+test('game-over has no active target',()=>{const g=running();g.life=1;g.tick(40);assert.equal(g.status,'over');assert.equal(g.active,null);});
+test('retry does not multiply falling time again',()=>{const g=running();const retry=new Game(g.questions);assert.equal(retry.questions[0].duration,g.questions[0].duration);assert.equal(retry.questions[0].audioDuration,g.questions[0].audioDuration);});
+console.log(`${passed} tests passed`);

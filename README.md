@@ -18,6 +18,12 @@
 
 ## Product overview
 
+> **Game Mode preview — Bubble Quest**
+>
+> This feature branch adds an isolated, theme-switchable portrait dictation game. Speech-bubble questions fall toward the ground; solve the selected question to fire an arrow, earn points and protect five hearts. Existing practice remains available and unchanged.
+>
+> [Game Mode guide, controls, architecture and review status](GAME_MODE.md) · [Open the LAN preview](https://192.168.0.68:8775/game)
+
 DictAI is a listening and dictation workspace with a course menu on the left and the active exercise on the right. The main product combines two learning paths:
 
 - **Conversation** — short two-speaker exercises organized by CEFR level and topic.
