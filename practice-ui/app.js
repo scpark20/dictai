@@ -5,8 +5,7 @@ const REQUEST_TIMEOUT_MS = 90000;
 const AUDIO_READY_TIMEOUT_MS = 15000;
 const MAX_AUDIO_BLOB_BYTES = 8 * 1024 * 1024;
 const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
-const DEFAULT_MAX_LEVEL = 191;
-const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
+const DEFAULT_MAX_LEVEL = 10000;
 const VOICE_SETTINGS_KEY = "dictai-voice-settings";
 const VOICE_RESTORE_KEY = "dictai-restore-voice-after-settings";
 const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
@@ -45,6 +44,7 @@ const API = {
 
 const state = {
   level: null,
+  positionKey: null,
   maxLevel: DEFAULT_MAX_LEVEL,
   maxWords: null,
   speedLevel: 3,
@@ -166,6 +166,8 @@ const elements = {
   candidateSetting: document.querySelector("#candidateSetting"),
   candidateValue: document.querySelector("#candidateValue"),
   applyVoiceSettings: document.querySelector("#applyVoiceSettings"),
+  voiceOptionsButton: document.querySelector("#voiceOptionsButton"),
+  voiceSettingsPanel: document.querySelector("#voiceSettings"),
 };
 
 const voiceRestoreValue = sessionStorage.getItem(VOICE_RESTORE_KEY);
@@ -226,7 +228,8 @@ function setStatus(message) {
 
 function savedSentencePosition() {
   try {
-    const saved = Number(window.localStorage.getItem(SENTENCE_POSITION_KEY));
+    if (!state.positionKey) return null;
+    const saved = Number(window.localStorage.getItem(state.positionKey));
     return Number.isInteger(saved) && saved >= 1 && saved <= state.maxLevel ? saved : null;
   } catch (_error) {
     return null;
@@ -235,7 +238,7 @@ function savedSentencePosition() {
 
 function saveSentencePosition(level) {
   try {
-    window.localStorage.setItem(SENTENCE_POSITION_KEY, String(level));
+    if (state.positionKey) window.localStorage.setItem(state.positionKey, String(level));
   } catch (_error) {
     // Server-side progress remains the fallback when browser storage is unavailable.
   }
@@ -437,6 +440,9 @@ function downsampleVoice(input, inputRate, outputRate = 16000) {
 
 function acceptVoiceTranscript(text, endpoint = false) {
   if (!state.problem || state.completing || state.problemLoading) return;
+  // Voice recognition owns only voice state. Never consume or clear a draft
+  // that the learner is entering through the independent keyboard channel.
+  const typedDraft = elements.answerInput.value;
   const previous = entryWords(state.voiceLastTranscript);
   const current = entryWords(text);
   let shared = 0;
@@ -445,6 +451,7 @@ function acceptVoiceTranscript(text, endpoint = false) {
     if (state.completing) break;
     commitVoiceWord(word);
   }
+  elements.answerInput.value = typedDraft;
   state.voiceLastTranscript = endpoint ? "" : String(text || "");
 }
 
@@ -792,7 +799,7 @@ async function apiRequest(path, options = {}) {
     const response = await fetch(path, {
       method: options.method || "GET",
       credentials: "same-origin",
-      cache: "no-store",
+      cache: "default",
       headers: options.body ? { "Content-Type": "application/json" } : undefined,
       body: options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
@@ -1185,7 +1192,7 @@ function configureCurrentAudio(problem, version, problemLoadingContext = null, t
       const loadTake = async (takeIndex) => {
         const response = await fetch(API.audio(problem.attemptId, takeIndex), {
           credentials: "same-origin",
-          cache: "no-store",
+          cache: "default",
           signal: fetchController.signal,
         });
         if (!response.ok) throw new ApiError("Could not load the original audio.", response.status);
@@ -1374,6 +1381,10 @@ const COLLOQUIAL_EXPANSIONS = Object.freeze({
 const ONE_WORD_ALIASES = Object.freeze({
   ok: Object.freeze(["okay"]),
   okay: Object.freeze(["ok"]),
+  mr: Object.freeze(["mister"]),
+  mister: Object.freeze(["mr"]),
+  mrs: Object.freeze(["missus"]),
+  missus: Object.freeze(["mrs"]),
 });
 
 function standardiseWordPunctuation(value) {
@@ -2312,9 +2323,7 @@ function markSolved(indices, revealed) {
   if (!solvedIndices.length) return;
 
   if (state.solved.size === state.problem.wordCount) {
-    elements.answerFeedback.textContent = "Sentence complete.";
     state.completionPending = true;
-    elements.card.classList.add("is-completion-pending");
     elements.answerInput.disabled = true;
     window.clearTimeout(state.completionStartTimer);
     state.completionStartTimer = window.setTimeout(() => {
@@ -2590,10 +2599,14 @@ function beginCompletion(usedAnswer = state.usedAnswer) {
   state.completionPending = false;
   elements.card.classList.remove("is-completion-pending");
   state.completing = true;
+  const quietSuccess = !usedAnswer;
   const voiceContextForChime = !usedAnswer && state.voiceAudioContext?.state === "running"
     ? state.voiceAudioContext
     : null;
-  if (voiceContextForChime) {
+  if (quietSuccess) {
+    // A correct answer keeps the exercise exactly where it is. Recognition is
+    // ignored while completing and is cleaned up on the next navigation.
+  } else if (voiceContextForChime) {
     window.clearTimeout(state.voiceCompletionStopTimer);
     state.voiceCompletionStopTimer = window.setTimeout(() => {
       state.voiceCompletionStopTimer = 0;
@@ -2604,36 +2617,34 @@ function beginCompletion(usedAnswer = state.usedAnswer) {
   }
   state.speedReplayIntent = null;
   state.completionReady = false;
-  elements.answerEntry.classList.add("is-completing");
   updateLevelInputDisabled();
   state.usedAnswer = usedAnswer;
   const answers = Object.freeze(problem.displayWords.map((word) => String(word)));
   state.completionAnswers = answers;
-  elements.answerInput.value = "";
   elements.answerInput.disabled = true;
-  elements.answerInputWrap.hidden = true;
-  elements.revealButton.hidden = true;
-  elements.properNounButton.hidden = true;
-  elements.nextButton.hidden = false;
-  elements.nextButton.disabled = true;
-  elements.nextButton.textContent = "Completing…";
-  elements.redoButton.hidden = false;
-  elements.redoButton.disabled = true;
+  if (!quietSuccess) {
+    elements.answerInput.value = "";
+    elements.answerEntry.classList.add("is-completing");
+    elements.answerInputWrap.hidden = true;
+    elements.revealButton.hidden = true;
+    elements.properNounButton.hidden = true;
+    elements.nextButton.hidden = false;
+    elements.nextButton.disabled = true;
+    elements.nextButton.textContent = "Completing…";
+    elements.redoButton.hidden = false;
+    elements.redoButton.disabled = true;
+  }
   setAnalysisControlsAvailable(false);
   prepareCompletionReplay(problem, version);
-  elements.card.classList.toggle("is-success", !usedAnswer);
   elements.card.classList.toggle("is-reveal-complete", usedAnswer);
   if (usedAnswer) {
     elements.answerFeedback.textContent = "Answer revealed. Review the full sentence.";
     setStatus("Processing the revealed answer.");
   } else {
-    elements.answerFeedback.textContent = "Sentence complete. Confirming the result.";
-    setStatus("Correct. Confirming the result.");
     launchCompletionConfetti();
     playSuccessChime(voiceContextForChime);
-    holdCompletionReplayForChime(problem, version);
   }
-  void completeProblem(problem, version, answers, usedAnswer);
+  void completeProblem(problem, version, answers, usedAnswer, quietSuccess);
 }
 
 function launchCompletionConfetti() {
@@ -2662,6 +2673,7 @@ async function completeProblem(
   version = state.problemVersion,
   answers = state.slots.map((slot) => slot.value),
   usedAnswer = state.usedAnswer,
+  quietSuccess = false,
 ) {
   if (!problem) return;
 
@@ -2672,7 +2684,7 @@ async function completeProblem(
     // If the original clip is still loading, let it finish before closing the
     // attempt so the completed screen can retain it for replay.
     // A ready/failed/already-absent source returns immediately.
-    await waitForCompletionAudio(problem, version);
+    if (!quietSuccess) await waitForCompletionAudio(problem, version);
     if (state.problem !== problem || state.problemVersion !== version || !state.completing) return;
     const result = await apiRequest(API.complete(problem.attemptId), {
       method: "POST",
@@ -2697,6 +2709,21 @@ async function completeProblem(
         : `Answer revealed. Staying on sentence ${nextLevel}.`
       : `Solved. Next is sentence ${nextLevel}.`;
     state.completionReady = true;
+    if (quietSuccess) {
+      elements.answerEntry.classList.add("is-completing");
+      elements.answerInputWrap.hidden = true;
+      elements.revealButton.hidden = true;
+      elements.properNounButton.hidden = true;
+      elements.redoButton.hidden = false;
+      elements.redoButton.disabled = false;
+      elements.nextButton.hidden = false;
+      elements.nextButton.disabled = false;
+      elements.nextButton.textContent = "Next →";
+      elements.answerFeedback.textContent = completionMessage;
+      setStatus("Complete. Move to the next sentence when ready.");
+      setAnalysisControlsAvailable(true);
+      return;
+    }
     elements.answerFeedback.textContent = completionMessage;
     elements.nextButton.textContent = "Next →";
     elements.nextButton.disabled = false;
@@ -2710,7 +2737,7 @@ async function completeProblem(
     if (state.problem !== problem || state.problemVersion !== version) return;
     const retry = error.status === 404 || error.status === 409
       ? () => loadProblem()
-      : () => completeProblem(problem, version, answers, usedAnswer);
+      : () => completeProblem(problem, version, answers, usedAnswer, quietSuccess);
     showError("Completion stopped", error.message, retry);
   }
 }
@@ -2981,6 +3008,9 @@ async function bootstrap(retryCount = 0) {
     if (!maxWords) throw new ApiError("The sentence length limit could not be verified.");
     state.maxWords = maxWords;
     state.maxLevel = integerBetween(payload?.max_level, DEFAULT_MAX_LEVEL, 1, DEFAULT_MAX_LEVEL);
+    state.positionKey = payload?.book && payload?.chapter
+      ? `dictai-position:book:${String(payload.book).toLowerCase().replace(/[^a-z0-9]+/g, "-")}:chapter:${payload.chapter}`
+      : `dictai-position:conversation:${payload?.learning_language || "en"}:${payload?.course_level || "A1"}:${payload?.topic || "default"}`;
     const serverLevel = integerBetween(payload?.level, 1, 1, state.maxLevel);
     const initialLevel = savedSentencePosition() ?? serverLevel;
     if (initialLevel !== serverLevel) {
@@ -3257,6 +3287,11 @@ elements.voiceToggle.addEventListener("change", () => {
   } else {
     void stopVoiceRecognition("Off");
   }
+});
+elements.voiceOptionsButton.addEventListener("click", () => {
+  const willOpen = elements.voiceSettingsPanel.hidden;
+  elements.voiceSettingsPanel.hidden = !willOpen;
+  elements.voiceOptionsButton.setAttribute("aria-expanded", String(willOpen));
 });
 const voiceSettingBindings = [
   [elements.beamSetting, elements.beamValue, 0],
