@@ -69,6 +69,13 @@ HARRY_CHAPTERS = {
         "audio_second": configured_path("DICTAI_CH7_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch7/audio-b"),
         "proper_nouns": configured_path("DICTAI_CH7_PROPER_NOUNS", "/home/scpark/harry-concise-ch7/ch007-proper-nouns.json"),
     },
+    8: {
+        "title": "The Hearing",
+        "manifest": configured_path("DICTAI_CH8_MANIFEST", "/home/scpark/harry-concise-ch8/ch008.json"),
+        "audio": configured_path("DICTAI_CH8_AUDIO_ROOT", "/home/scpark/harry-concise-ch8/audio-a"),
+        "audio_second": configured_path("DICTAI_CH8_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch8/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH8_PROPER_NOUNS", "/home/scpark/harry-concise-ch8/ch008-proper-nouns.json"),
+    },
 }
 GREETINGS_AUDIO_ROOT = configured_path("DICTAI_GREETINGS_AUDIO_ROOT", "/home/scpark/harry-dictation-data/a1-greetings")
 CONVERSATION_ROOT = configured_path("DICTAI_CONVERSATION_ROOT", "/home/scpark/echostep-data/conversation")

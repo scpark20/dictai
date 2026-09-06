@@ -32,6 +32,10 @@ PRONUNCIATIONS = {
     "Luh-strainj": "Lestrange", "Nev-uhl": "Neville", "Az-kuh-ban": "Azkaban",
     "Dum-bull-door": "Dumbledore", "Puh-troh-nus": "Patronus",
     "Muh-gon-uh-gull": "McGonagall",
+    "Pen-siv": "Pensieve", "Wee-zen-gah-mot": "Wizengamot",
+    "Duh-lor-us": "Dolores", "Um-bridge": "Umbridge", "Dob-ee": "Dobby",
+    "Dih-men-tors": "Dementors", "Win-jing": "Whinging",
+    "Skwibs": "Squibs", "Skwib": "Squib", "Durz-leez": "Dursleys",
 }
 PROPER_NAMES = {
     "Mr", "St", "Lupin", "Scrimgeour", "Amelia", "Bones", "Kingsley", "Shacklebolt",
@@ -44,6 +48,9 @@ PROPER_NAMES = {
     "Draco", "Bellatrix", "Lestrange", "Neville", "Longbottom", "Azkaban",
     "Privet", "Drive", "Dumbledore", "Patronus", "Ginny", "Snape", "Professor",
     "McGonagall", "Arthur", "Ministry", "Wednesday",
+    "Pensieve", "Wizengamot", "Cornelius", "Fudge", "Magical", "Law",
+    "Enforcement", "Dolores", "Umbridge", "Albus", "Dobby", "Little",
+    "Whinging", "Figg", "Dudley", "Dursleys", "Marge",
 }
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
 
