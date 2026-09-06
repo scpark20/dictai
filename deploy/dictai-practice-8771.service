@@ -1,0 +1,13 @@
+[Unit]
+Description=DictAI HTTPS practice server on port 8771
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/scpark/apps/echostep-dev
+ExecStart=/bin/bash /home/scpark/apps/echostep-dev/start-https.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
