@@ -32,6 +32,20 @@ There are five implemented themes, not ten independently finished art sets. Sky,
 
 ## Input and audio behavior
 
+### Arcade motion update
+
+- Each newly solved slot pulses and sends an energy orb into the launcher. Charge is computed from solved slots / total slots, so short and long questions reach full charge at their own final answer.
+- The last slot triggers launcher compression, recoil, an arrow, an impact ring, particles and a reward label. Scoring and collision immunity take effect immediately; the visual flight never blocks typing into the next target.
+- Bubble bodies dance independently of their button coordinates. Cyan/coral eyes blink at staggered intervals; smiling/sleeping characters keep their existing expressions. Near-ground movement becomes tense instead of playful.
+- Themes have slow background movement, ambient particles and a subtle time-based light shift. The input dock itself never shakes.
+- Questions are grouped into waves of five. After all five are resolved, a four-second breather precedes the next wave. Later waves slightly increase fall speed and shorten the spawn interval.
+- An unhinted solve at 85% or more of the falling distance earns a **+50 Close Call** bonus. Its blast moves nearby live bubbles upward without changing their answers or drafts. Hinted solves get neither bonus nor blast.
+- Combo rewards remain attached to the individual solved bubble, even when multiple answers complete quickly. A game-only personal best is saved locally.
+- Low / Normal / Rich effects are selectable from setup and pause. The operating system's reduced-motion preference forces Low. Pausing freezes CSS motion and active Web Animations together with gameplay.
+- Optional quiet charge tones start off. They are suppressed whenever question audio is playing or Voice is enabled, and stopped on pause, playback or microphone activation. No background music or new TTS was introduced.
+
+This update implements the recommended initial arcade set. Bosses, special reward bombs, manual freeze skills and comeback healing remain design ideas, not shipped mechanics.
+
 - Voice is **off by default**. It is optional; keyboard play does not load the recognition model.
 - Voice settings use the existing local WASM Zipformer runtime, with the full and 20M English models. The full model identifier is shown in the selector.
 - Beam controls decoding/search breadth. Threshold and candidate margin control the existing transcript-to-target similarity decision; these are **not acoustic likelihood probabilities**. Exact aliases remain accepted independently of fuzzy matching thresholds.
@@ -51,6 +65,7 @@ There are five implemented themes, not ten independently finished art sets. Sky,
 | `game/game.js` | Rendering, draft ownership, controls, audio prefetch, themes and lifecycle |
 | `game/voice.js` | Microphone/runtime adapter and recognition-context isolation |
 | `game/game.css` | Portrait layout, theme variables, controls and effects |
+| `game/motion.js` / `game/motion.css` | Decorative animation lifecycle, charge/impact effects and motion preferences |
 | `game/assets/` | Generated backgrounds and transparent bubble-character atlas |
 
 Game browser storage is namespaced with `dictai-game-*`. The game APIs do not update practice selection, sentence indices or progress. The new server is a separate worktree/process; no files in the live port-8771 checkout were edited for this feature.
@@ -75,8 +90,8 @@ node game/voice.test.mjs
 /home/scpark/miniconda3/envs/soulx/bin/python game/server_smoke.py
 ```
 
-- **21 state/matching tests:** selection, misses, scoring, aliases, contractions, duplicate handling, pausing, persistence, round completion and retry timing.
-- **13 DOM-adapter integration tests:** real application handlers with synthetic DOM/audio, including initialization, prepared audio, typing, themes, IME, settings and new rounds.
+- **27 state/matching tests:** selection, misses, scoring, aliases, contractions, duplicate handling, pausing, persistence, round completion, retry timing, wave breaks, close calls, blast timing and legacy saves.
+- **17 DOM-adapter integration tests:** real application handlers with synthetic DOM/audio, including initialization, prepared audio, typing, charge, effects, themes, IME, settings, records and new rounds.
 - **6 voice-adapter tests:** synthetic audio buffers, stream lifecycle, duplicate partials, context isolation, suspension and model-load failure recovery. These tests do not record a person.
 - **6 server smoke-test groups:** real A1–C2 and Chapter 3–6 content/audio routes, valid range responses, malformed requests, asset delivery, both recognition packages, isolated settings, unchanged practice data and unchanged live source.
 
@@ -96,3 +111,11 @@ Assets were generated with the image-generation tool specifically for this proje
 - **Space:** clean 9:16 starfield with small peripheral planets and a glowing planetary horizon, open center, no characters or text.
 
 To add a theme, add a key to `THEMES`, a label in `themeNames`, scoped `body[data-theme=...]` styles and any local assets. Theme changes must not modify question state, timing, draft ownership, matching or voice settings.
+
+### Blink frame provenance
+
+Project asset: `game/assets/bubbles-blink.png` (deployed at `/home/scpark/apps/dictai-game/game/assets/bubbles-blink.png`). Created with the built-in image-generation tool. The source atlas is retained unchanged. The generated alternate frame is clipped to the eye region in CSS; its generated checkerboard exterior is not rendered. The follow-up transparency attempt was inspected and discarded because it had no alpha channel.
+
+Final selected-frame prompt:
+
+> Use case: precise-object-edit. Asset type: animation sprite atlas closed-eye frame. Input image 1 is the edit target: four existing cute speech bubble bomb characters on transparent background. Change ONLY the eyes of the first cyan and second coral character to small closed curved eyelids for a blink. Preserve the already closed smiling eyes of yellow and sleeping eyes of purple. Keep EXACT image dimensions, exact character positions, sizes, silhouettes, body colors, mouths, highlights, fuses, sparks, sleep marks, transparent alpha and all other pixels as close as possible to the source. This is an alternate animation frame, NOT a redesign. No new elements, no background, no text.

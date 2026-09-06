@@ -47,6 +47,8 @@ class GameSmoke(unittest.TestCase):
         self.client.post('/game-api/round',json=dict(mode='book',chapter=5,count=1))
         self.assertEqual(hashlib.sha256(database.read_bytes()).hexdigest(),before)
     def test_routes_and_assets(self):
+        for path in ['/game/motion.js','/game/motion.css','/game/assets/bubbles-blink.png']:
+            self.assertEqual(self.client.get(path).status_code,200,path)
         for path in ['/game','/game/game.js','/game/core.js','/game/voice.js','/game/game.css','/game/assets/sky.png','/game/assets/bubbles.png','/game/assets/neon.png','/game/assets/space.png','/game-voice-loader.js','/game-voice-bootstrap.js']:
             with self.subTest(path=path):
                 r=self.client.get(path)

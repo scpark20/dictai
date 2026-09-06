@@ -5,7 +5,7 @@ const realTimeout=setTimeout;
 class Classes {constructor(){this.set=new Set();}add(...xs){xs.forEach(x=>this.set.add(x));}remove(...xs){xs.forEach(x=>this.set.delete(x));}contains(x){return this.set.has(x);}toggle(x,yes){if(yes??!this.set.has(x))this.set.add(x);else this.set.delete(x);}}
 const nodes=new Map();
 class Element extends EventTarget {
- constructor(tag='div'){super();this.tag=tag;this.children=[];this.style={};this.dataset={};this.classList=new Classes();this.hidden=false;this.disabled=false;this.value='';this.textContent='';this.selectionStart=0;this.clientWidth=420;this.clientHeight=440;this.options=[];this.attributes={};}
+ constructor(tag='div'){super();this.tag=tag;this.children=[];this.style={setProperty(k,v){this[k]=v;}};this.dataset={};this.classList=new Classes();this.hidden=false;this.disabled=false;this.value='';this.textContent='';this.selectionStart=0;this.clientWidth=420;this.clientHeight=440;this.options=[];this.attributes={};}
  set id(v){this._id=v;nodes.set(v,this);}get id(){return this._id;}
  set className(v){this._classes=v;this.classList=new Classes();v.split(' ').forEach(x=>this.classList.add(x));}get className(){return this._classes||'';}
  append(...children){for(const child of children){child.parent=this;this.children.push(child);}}
@@ -14,6 +14,7 @@ class Element extends EventTarget {
  querySelector(tag){return this.children.find(c=>c.tag===tag)||null;}
  add(option){this.options.push(option);if(this.options.length===1)this.value=option.value;}
  focus(){}setSelectionRange(a,b){this.selectionStart=a;this.selectionEnd=b;}scrollIntoView(){}
+ getBoundingClientRect(){return {left:0,top:100,width:100,height:32};}
  remove(){if(this.parent)this.parent.children=this.parent.children.filter(c=>c!==this);nodes.delete(this.id);}
  animate(){const a={onfinish:null};queueMicrotask(()=>a.onfinish?.());return a;}
 }
@@ -42,16 +43,21 @@ await el('start').onclick();
 ok('round starts with audio prepared and real input enabled',()=>{assert.equal(snapshot().status,'running');assert.equal(el('answer').disabled,false);assert.equal(el('words').children.length,3);});
 el('answer').value='How';el('answerForm').onsubmit({preventDefault(){}});
 ok('typed success opens slot and clears only submitted draft',()=>{assert.equal(el('answer').value,'');assert.deepEqual(snapshot().questions[0].solved,[0]);});
+ok('a correct slot visibly charges only its own target',()=>{assert.equal(el('powerText').textContent,'33%');assert.equal(snapshot().score,0);assert.equal(el('launcher').style['--power'],1/3);});
 el('answer').value='How';el('answerForm').onsubmit({preventDefault(){}});
 ok('duplicate leaves input intact and shows warning',()=>{assert.equal(el('answer').value,'How');assert.equal(el('feedback').dataset.kind,'duplicate');});
 el('answer').value='ar';el('answer').selectionStart=2;el('answer').dispatchEvent(new Event('input'));
 el('pause').onclick();
 ok('pause saves draft and caret without solving it',()=>{assert.equal(snapshot().status,'paused');assert.equal(snapshot().questions[0].draft,'ar');assert.equal(snapshot().questions[0].caret,2);});
+ok('pause freezes decorative motion as well as game time',()=>{assert.equal(body.dataset.running,'false');});
 el('themes').children.find(b=>b.dataset.themeChoice==='neon').onclick();
 ok('theme change preserves round and draft',()=>{assert.equal(body.dataset.theme,'neon');assert.equal(el('answer').value,'ar');assert.equal(snapshot().score,0);});
+el('pauseEffects').value='low';el('pauseEffects').onchange();
+ok('motion intensity changes without discarding draft or charge',()=>{assert.equal(body.dataset.effects,'low');assert.equal(el('answer').value,'ar');assert.deepEqual(snapshot().questions[0].solved,[0]);});
 await el('resume').onclick();
 el('answer').value='are you';el('answerForm').onsubmit({preventDefault(){}});
 ok('full answer scores and never stalls on Completing',()=>{assert.equal(snapshot().score,100);assert.equal(snapshot().questions[0].state,'solved');assert(!el('feedback').textContent.includes('Completing'));});
+ok('record uses game-only storage and reward stays with the solved bubble',()=>{assert.equal(storage.get('dictai-game-best'),'100');assert.equal(snapshot().questions[0].reward.points,100);});
 let now=performance.now();for(let i=0;i<35;i++){now+=250;raf(now);}
 ok('next bubble auto-selects after solve',()=>{assert.equal(snapshot().active,'q1');assert.equal(el('answer').disabled,false);});
 el('answer').value='my draft';el('answer').selectionStart=5;el('answer').dispatchEvent(new Event('input'));el('optionsButton').onclick();

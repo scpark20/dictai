@@ -112,7 +112,7 @@ def game_page():
 
 @app.get('/game/{name}')
 def game_file(name: str):
-    if name not in {'game.js','core.js','voice.js','game.css'}:
+    if name not in {'game.js','core.js','voice.js','game.css','motion.js','motion.css'}:
         raise HTTPException(404)
     return FileResponse(ROOT / 'game' / name, headers={'Cache-Control':'no-store'})
 
