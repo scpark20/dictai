@@ -36,6 +36,8 @@ PRONUNCIATIONS = {
     "Duh-lor-us": "Dolores", "Um-bridge": "Umbridge", "Dob-ee": "Dobby",
     "Dih-men-tors": "Dementors", "Win-jing": "Whinging",
     "Skwibs": "Squibs", "Skwib": "Squib", "Durz-leez": "Dursleys",
+    "Im-peer-ee-us": "Imperius", "Grim-old": "Grimmauld",
+    "Grif-in-dor": "Gryffindor", "Kwir-ul": "Quirrell",
 }
 PROPER_NAMES = {
     "Mr", "St", "Lupin", "Scrimgeour", "Amelia", "Bones", "Kingsley", "Shacklebolt",
@@ -51,6 +53,10 @@ PROPER_NAMES = {
     "Pensieve", "Wizengamot", "Cornelius", "Fudge", "Magical", "Law",
     "Enforcement", "Dolores", "Umbridge", "Albus", "Dobby", "Little",
     "Whinging", "Figg", "Dudley", "Dursleys", "Marge",
+    "Grimmauld", "Place", "Imperius", "Gryffindor", "Quirrell", "Bill",
+    "Charlie", "Molly", "Marlene", "McKinnon", "Benjy", "Fenwick", "Edgar",
+    "Gideon", "Fabian", "Prewett", "Frank", "Alice", "Lily", "Peter",
+    "Pettigrew", "Phoenix",
 }
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
 
@@ -150,6 +156,7 @@ def main() -> None:
     parser.add_argument("--tts", type=Path, required=True)
     parser.add_argument("--chapter", type=int, required=True)
     parser.add_argument("--title", required=True)
+    parser.add_argument("--tts-title", help="Spoken title as written in the source TTS script")
     parser.add_argument("--next-title", required=True)
     parser.add_argument("--page-start", type=int, required=True)
     parser.add_argument("--page-end", type=int, required=True)
@@ -163,15 +170,19 @@ def main() -> None:
         raise RuntimeError('Add an explicit spoken chapter number before building this chapter')
     chapter_word = chapter_words[args.chapter]
     heading = f"Chapter {chapter_word}. {args.title}."
+    spoken_heading = f"Chapter {chapter_word}. {args.tts_title or args.title}."
+    restored_heading, heading_changes = readable(spoken_heading)
+    if comparable(restored_heading) != comparable(heading):
+        raise RuntimeError("Display/TTS chapter titles disagree after pronunciation restoration")
     next_heading = args.next_title
     displays = pdf_sentences(args.pdf, args.page_start, args.page_end, args.body_sentences)
-    speaks = tts_sentences(args.tts, heading, next_heading, args.body_sentences)
+    speaks = tts_sentences(args.tts, spoken_heading, next_heading, args.body_sentences)
     rows = []
     title_row = {
         "sentence_id": f"ch{args.chapter:03d}-s0001", "sentence_ordinal": 1,
         "kind": "title", "source_display_text": heading, "display_text": heading,
-        "speak_text": heading, "display_hash": digest(heading), "speak_hash": digest(heading),
-        "pronunciation_changes": [],
+        "speak_text": spoken_heading, "display_hash": digest(heading), "speak_hash": digest(spoken_heading),
+        "pronunciation_changes": heading_changes,
     }
     rows.append(title_row)
     for ordinal, (display, speak) in enumerate(zip(displays, speaks), 2):
