@@ -156,7 +156,7 @@ SELECTED_BOOKS: dict[str, int] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
 app.mount("/asr-wasm", StaticFiles(directory=ASR_WASM_ROOT), name="asr-wasm")
-app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
+app.mount("/asr-wasm-ko", StaticFiles(directory=configured_path("DICTAI_ASR_WASM_KO_ROOT", ROOT / "asr-wasm-ko")), name="asr-wasm-ko")
 
 
 KOREAN_WHISPER_LOADER = r'''"use strict";

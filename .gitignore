@@ -9,3 +9,7 @@ certs/
 /asr-wasm
 asr-wasm-source/
 .DS_Store
+/.venv/
+/runtime/
+/asr-wasm-ko/
+/logs/

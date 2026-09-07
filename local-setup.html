@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DictAI · Continue your progress</title>
+<style>
+body{font:17px system-ui;color:#17243a;background:#eef4ff;margin:0;padding:48px 20px}main{max-width:760px;margin:auto;background:white;padding:32px;border:1px solid #c6d9f7;border-radius:24px}h1{margin:0 0 12px}p{color:#52627a;line-height:1.6}.profiles{display:grid;gap:12px}button{font:inherit;text-align:left;border:1px solid #b9d2fa;border-radius:14px;background:#f4f8ff;color:#143f79;padding:18px;cursor:pointer}button:hover{background:#e3efff}small{display:block;margin-top:5px;color:#52627a}.new{margin-top:22px;background:white}#error{color:#b42318}
+</style>
+<main><h1>DictAI · Local</h1><p>Choose the saved progress you want to continue on this Mac. Every original record is preserved; choosing one does not erase the others.</p><div class="profiles" id="profiles"></div><button class="new" id="new">Start a new local profile</button><p id="error"></p><small>This web app runs only on this Mac. No connection to server 68 is needed.</small></main>
+<script>
+async function choose(id){try{const r=await fetch('/local-profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});if(!r.ok)throw Error('Could not select progress.');location.href='/';}catch(e){document.querySelector('#error').textContent=e.message;}}
+fetch('/local-profiles').then(r=>r.json()).then(rows=>{for(const row of rows){const b=document.createElement('button');b.textContent=row.books.length?row.books.map(x=>`Chapter ${x.chapter} · Sentence ${x.sentence}`).join(' / '):`Conversation profile ${row.id+1}`;const s=document.createElement('small');s.textContent=`${row.saved_positions} saved positions · Imported profile ${row.id+1}`;b.append(s);b.onclick=()=>choose(row.id);document.querySelector('#profiles').append(b);}}).catch(e=>document.querySelector('#error').textContent=e.message);
+document.querySelector('#new').onclick=()=>choose(-1);
+</script></html>
