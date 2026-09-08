@@ -83,6 +83,13 @@ HARRY_CHAPTERS = {
         "audio_second": configured_path("DICTAI_CH9_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch9/audio-b"),
         "proper_nouns": configured_path("DICTAI_CH9_PROPER_NOUNS", "/home/scpark/harry-concise-ch9/ch009-proper-nouns.json"),
     },
+    10: {
+        "title": "Luna Lovegood",
+        "manifest": configured_path("DICTAI_CH10_MANIFEST", "/home/scpark/harry-concise-ch10/ch010.json"),
+        "audio": configured_path("DICTAI_CH10_AUDIO_ROOT", "/home/scpark/harry-concise-ch10/audio-a"),
+        "audio_second": configured_path("DICTAI_CH10_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch10/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH10_PROPER_NOUNS", "/home/scpark/harry-concise-ch10/ch010-proper-nouns.json"),
+    },
 }
 GREETINGS_AUDIO_ROOT = configured_path("DICTAI_GREETINGS_AUDIO_ROOT", "/home/scpark/harry-dictation-data/a1-greetings")
 CONVERSATION_ROOT = configured_path("DICTAI_CONVERSATION_ROOT", "/home/scpark/echostep-data/conversation")

@@ -38,6 +38,11 @@ PRONUNCIATIONS = {
     "Skwibs": "Squibs", "Skwib": "Squib", "Durz-leez": "Dursleys",
     "Im-peer-ee-us": "Imperius", "Grim-old": "Grimmauld",
     "Grif-in-dor": "Gryffindor", "Kwir-ul": "Quirrell",
+    "Pod-more": "Podmore", "Ray-ven-claw": "Ravenclaw",
+    "Mim-byoo-lus": "Mimbulus", "mim-bul-toe-nee-uh": "mimbletonia",
+    "Choh": "Cho", "Slith-er-in": "Slytherin", "Slith-er-ins": "Slytherins",
+    "Kwib-ler": "Quibbler", "Gring-otts": "Gringotts", "Kwid-itch": "Quidditch",
+    "Hag-rid": "Hagrid", "Grub-lee Plank": "Grubbly-Plank",
 }
 PROPER_NAMES = {
     "Mr", "St", "Lupin", "Scrimgeour", "Amelia", "Bones", "Kingsley", "Shacklebolt",
@@ -57,6 +62,11 @@ PROPER_NAMES = {
     "Charlie", "Molly", "Marlene", "McKinnon", "Benjy", "Fenwick", "Edgar",
     "Gideon", "Fabian", "Prewett", "Frank", "Alice", "Lily", "Peter",
     "Pettigrew", "Phoenix",
+    "Luna", "Lovegood", "Sturgis", "Podmore", "King", "Cross", "Express",
+    "Trevor", "Ravenclaw", "Mimbulus", "mimbletonia", "Cho", "Chang",
+    "Slytherin", "Slytherins", "Pansy", "Parkinson", "Yule", "Ball", "Padma",
+    "Patil", "Goyle", "Quibbler", "Gringotts", "Quidditch", "Crabbe",
+    "Hagrid", "Grubbly-Plank", "Care", "Creatures",
 }
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
 
@@ -187,13 +197,14 @@ def main() -> None:
     rows.append(title_row)
     for ordinal, (display, speak) in enumerate(zip(displays, speaks), 2):
         restored, changes = readable(speak)
-        # Past-tense "read" may be spelled "red" only in the pronunciation script.
+        # "read" may be spelled "red" or "reed" only in the pronunciation script.
         # Accept that pronunciation only when it restores the exact PDF sentence.
         if comparable(restored) != comparable(display):
-            candidate = re.sub(r"\bred\b", "read", restored)
+            candidate = re.sub(r"\b(?:red|reed)\b", "read", restored)
             if comparable(candidate) == comparable(display):
                 restored = candidate
-                changes.append({"display": "read", "speak": "red"})
+                changes.extend({"display": "read", "speak": form}
+                               for form in set(re.findall(r"\b(?:red|reed)\b", speak)))
         if comparable(restored) != comparable(display):
             raise RuntimeError(
                 f"sentence {ordinal - 1}: PDF/TTS mismatch after pronunciation restoration: "
