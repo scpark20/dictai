@@ -53,7 +53,8 @@
 .empty-stage>span{display:grid;place-items:center;width:60px;height:44px;border-radius:12px;color:white;background:#96b9e6;font-size:22px}
 .empty-stage>p{font-size:14px;line-height:1.5}
 .practice-card,body.embedded .practice-card{position:relative;top:0;width:100%;max-width:none;padding:clamp(22px,3vw,38px);border:1px solid rgba(24,119,232,.28);border-radius:24px;box-shadow:0 22px 64px rgba(10,38,77,.16);background:rgba(255,255,255,.97)}
-.practice-heading{justify-content:flex-end;margin:0 0 18px}
+.practice-heading{justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.practice-heading .clip-nav,.practice-heading .clip-time{flex-shrink:0;white-space:nowrap}
 .clip-progress{display:none}
 .clip-time{font-size:12px;background:#eff5ff;padding:6px 10px}
 .word-grid{gap:8px;min-height:40px}

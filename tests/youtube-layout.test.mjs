@@ -32,6 +32,11 @@ const before=(a,b)=>Boolean(d.querySelector(a).compareDocumentPosition(d.querySe
 assert.ok(before('#importForm','.video-frame'));
 assert.ok(before('.video-frame','#practiceCard'));
 assert.ok(before('#answerEntry','#playbackButtons'));
+assert.ok(d.querySelector('.practice-heading #previousClip'));
+assert.ok(d.querySelector('.practice-heading #forwardClip'));
+assert.ok(before('#clipCounter','#wordGrid'));
+assert.equal(d.querySelectorAll('.clip-nav').length,1);
+assert.equal(d.querySelector('.practice-footer'),null);
 assert.equal(d.querySelector('#timelineDetails'),null);assert.equal(d.querySelector('#rangeForm'),null);
 assert.equal(d.querySelector('#importTitle').className,'sr-only');
 assert.equal(d.querySelectorAll('#playbackButtons button').length,5);

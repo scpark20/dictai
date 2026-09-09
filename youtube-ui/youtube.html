@@ -6,7 +6,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#1877e8">
   <title>YouTube · DictAI</title>
-  <link rel="stylesheet" href="/youtube-assets/youtube.css?v=integrated-3">
+  <link rel="stylesheet" href="/youtube-assets/youtube.css?v=nav-top-1">
 </head>
 <body>
   <main class="youtube-page">
@@ -41,7 +41,11 @@
       </section>
 
       <section class="practice-card" id="practiceCard" aria-labelledby="practiceTitle">
-        <div class="practice-heading"><h2 id="practiceTitle" class="sr-only">Dictation</h2><span class="clip-time" id="clipTime"></span></div>
+        <div class="practice-heading">
+          <h2 id="practiceTitle" class="sr-only">Dictation</h2>
+          <span class="clip-time" id="clipTime"></span>
+          <nav class="clip-nav" aria-label="Clip navigation"><button id="previousClip" type="button" aria-label="Previous clip">←</button><span id="clipCounter"></span><button id="forwardClip" type="button" aria-label="Next clip">→</button></nav>
+        </div>
         <div class="clip-progress"><span id="clipProgress"></span></div>
         <div id="wordGrid" class="word-grid" role="list" aria-label="Word slots"></div>
         <p class="slot-hint">Tap a box to reveal that word.</p>
@@ -65,7 +69,7 @@
         <div class="playback-buttons" id="playbackButtons" role="group" aria-label="Replay this clip at a chosen speed">
           <button type="button" data-rate="0.5" disabled>▶ 0.5</button><button type="button" data-rate="0.75" disabled>▶ 0.75</button><button type="button" data-rate="1" aria-pressed="true" disabled>▶ 1.0</button><button type="button" data-rate="1.25" disabled>▶ 1.25</button><button type="button" data-rate="1.5" disabled>▶ 1.5</button>
         </div>
-        <footer class="practice-footer"><span id="saveStatus">Progress saved on this browser.</span><nav class="clip-nav" aria-label="Clip navigation"><button id="previousClip" type="button" aria-label="Previous clip">←</button><span id="clipCounter"></span><button id="forwardClip" type="button" aria-label="Next clip">→</button></nav></footer>
+        <span id="saveStatus" class="sr-only">Progress saved on this browser.</span>
         <div id="celebration" class="celebration" aria-hidden="true"></div>
       </section>
     </div>
