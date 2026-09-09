@@ -8,9 +8,9 @@
       <p id="importStatus" class="status" role="status" aria-live="polite">Captions, answers and progress stay in this browser. Original YouTube audio.</p>
       <div class="browser-tools"><span id="extensionState" role="status">Checking browser extension…</span><button id="restoreCaption" type="button">Use saved captions</button></div>
       <details id="extensionSetup">
-        <summary>Browser extension setup</summary>
-        <ol><li><a href="/youtube-assets/dictai-caption-bridge.zip" download>Download DictAI Caption Bridge</a> and unzip it.</li><li>In Chrome or Edge, open Extensions → Manage extensions. Enable Developer mode → Load unpacked → choose the unzipped folder containing manifest.json.</li><li>Reload DictAI in that browser. Paste a link and choose Open YouTube.</li><li>On YouTube, expand the description → Show transcript. Select your caption language and leave timestamps visible. Click the DictAI extension → Send displayed transcript.</li></ol>
-        <p>The extension reads only the displayed transcript when you click Send. It does not fetch hidden caption endpoints or copy cookies. If YouTube does not show a transcript, use a caption file below. Built-in app browsers may not support extensions.</p>
+        <summary>Install DictAI for YouTube</summary>
+        <ol><li><a href="/youtube-assets/dictai-caption-bridge.zip" download>Download DictAI for YouTube</a> and unzip it.</li><li>In Chrome, Edge or Opera, open Extensions → Manage extensions. Enable Developer mode → Load unpacked → choose the unzipped folder containing manifest.json.</li><li>Open any normal YouTube video. The DictAI practice panel appears automatically on the right.</li></ol>
+        <p>The current video's caption track is read once in your browser and then reused from browser storage. No transcript is collected by the DictAI server. Built-in app browsers may not support extensions.</p>
       </details>
       <details id="manualDetails">
         <summary>Have a caption file? Use SRT / VTT</summary>
@@ -21,6 +21,8 @@
         </div>
       </details>
     </section>
+
+    <section id="extensionSurfaceStatus" class="extension-surface-status" hidden aria-live="polite"><strong>DictAI</strong><p>Preparing this video…</p></section>
 
     <div class="empty-stage" id="emptyStage"><span>▶</span><p>Paste a YouTube link above to load your video.</p></div>
 

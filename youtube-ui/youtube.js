@@ -1,9 +1,11 @@
 import {timeLabel} from './youtube-core.mjs?v=shared-1';
 import {createYouTubeProvider} from './practice-provider.mjs?v=local-1';
 import {parseVideo,parseSubtitles,packageCaptions} from './local-captions.mjs?v=local-1';
-import {extensionRequest,receiveCaptions} from './browser-bridge.mjs?v=local-1';
+import {receiveCaptions,panelSend,receivePanelEvents} from './browser-bridge.mjs?v=lr-2';
 
 const $ = id => document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const extensionSurface=params.get('surface')==='extension';
 const state = {data:null,index:0,request:0,busy:false};
 let player=null, playerReady=false, playerLoad=null, stopAt=null, clipLoading=false;
 let timer=null, readyTimeout=null;
@@ -17,11 +19,12 @@ const provider = createYouTubeProvider({
 window.dictaiPracticeProvider=provider;
 document.querySelector('.youtube-navigation').append(document.getElementById('headerStep'));
 
-if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embedded');
+if (params.get('embed') === '1') document.body.classList.add('embedded');
+if(extensionSurface)document.body.classList.add('extension-surface');
 
 function message(id, text, kind='') { const el=$(id); el.textContent=text; el.className=el.className.replace(/\b(error|success|warning)\b/g,'').trim(); if(kind)el.classList.add(kind); }
 function current() { return state.data?.segments[state.index]; }
-function stopClip() {stopAt=null;clipLoading=false;try {player?.pauseVideo?.();}catch{} provider.mediaState(playerReady,false);}
+function stopClip() {stopAt=null;clipLoading=false;if(extensionSurface)panelSend('media',{action:'pause'});else try {player?.pauseVideo?.();}catch{} provider.mediaState(playerReady,false);}
 
 function loadPlayerAPI() {
   if(window.YT?.Player)return Promise.resolve();
@@ -47,6 +50,10 @@ function playerError(event) {
 async function mountPlayer(request) {
   clearTimeout(readyTimeout);
   playerReady=false;stopClip();
+  if(extensionSurface){
+    if(request!==state.request)return;
+    playerReady=true;provider.mediaState(true,false,[.5,.75,1,1.25,1.5]);cueCurrent();return;
+  }
   message('playerStatus','Loading the YouTube player…');
   try {
     await loadPlayerAPI();if(request!==state.request)return;
@@ -81,11 +88,13 @@ function clipBounds(){const s=current();return {start:Math.max(0,s.start-.12),en
 function cueCurrent() {
   if(!playerReady||!current())return;
   stopClip();const {start,end}=clipBounds();
+  if(extensionSurface){panelSend('media',{action:'cue',start,end});return;}
   player.cueVideoById({videoId:state.data.video_id,startSeconds:start,endSeconds:end});
 }
 function replay() {
   if(!playerReady||!current())return;
   const {start,end}=clipBounds();stopAt=end;clipLoading=true;provider.mediaState(true,true);
+  if(extensionSurface){panelSend('media',{action:'play',start,end,rate:playbackRate});return;}
   player.loadVideoById({videoId:state.data.video_id,startSeconds:start,endSeconds:end});
   player.setPlaybackRate(playbackRate);
   message('playerStatus','Loading this clip…');
@@ -123,9 +132,8 @@ async function loadVideo(manual=false) {
       const data=await packageCaptions({...parsed,language,cues:parseSubtitles($('subtitleText').value),source:'browser-file'});
       activate(data,request);
     }else{
-      const result=await extensionRequest('open',{videoId:parsed.videoId,language},8000);
-      pendingImport={...parsed,language,request,requestId:result.requestId};
-      message('importStatus','On YouTube: show the transcript in your chosen language, then click the DictAI extension → Send displayed transcript. No server request is made.');
+      window.open(`https://www.youtube.com/watch?v=${encodeURIComponent(parsed.videoId)}`,'_blank','noopener');
+      message('importStatus','YouTube opened. DictAI appears inside that video when the extension is installed.');
     }
   }catch(error){
     message('importStatus',error.message,'error');
@@ -136,6 +144,13 @@ async function loadVideo(manual=false) {
   }
 }
 receiveCaptions(async payload=>{
+  if(extensionSurface){
+    const videoId=params.get('video');
+    if(!/^[A-Za-z0-9_-]{11}$/.test(videoId||'')||payload?.videoId!==videoId)throw new Error('The YouTube video changed.');
+    const request=++state.request;
+    const data=await packageCaptions({...payload,start:0,language:payload.language||'en',source:'youtube-browser'});
+    activate(data,request);$('extensionSurfaceStatus').hidden=true;panelSend('ready',{cached:false,count:data.count});return;
+  }
   const expected=pendingImport;
   if(!expected||state.busy||expected.request!==state.request||payload?.videoId!==expected.videoId||payload?.requestId!==expected.requestId)throw new Error('This import is no longer active. Open the video from DictAI again.');
   const data=await packageCaptions({...payload,start:expected.start,language:expected.language});
@@ -158,9 +173,35 @@ window.addEventListener('pagehide',()=>{stopClip();clearInterval(timer);clearTim
 await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/practice/app.js?v=shared-1';script.onload=resolve;script.onerror=reject;document.body.append(script);});
 const voiceLoader=document.createElement('script');voiceLoader.src='/practice/persistent-model-loader.js?v=shared-1';document.body.append(voiceLoader);
 $('properNounButton').title='Local name hints use capitalization and titles; they may miss or include words. No text is sent to the server.';
-void extensionRequest('hello').then(()=>{$('extensionState').textContent='Browser extension connected';}).catch(()=>{$('extensionState').textContent='Chrome / Edge extension required for automatic import';});
+if(!extensionSurface)$('extensionState').textContent='Install DictAI for YouTube once, then use YouTube normally';
 
-try{
+receivePanelEvents(event=>{
+  if(event.type==='error'){
+    const el=$('extensionSurfaceStatus');el.hidden=false;el.classList.add('error');el.querySelector('p').textContent=event.message;
+  }
+  if(event.type==='media-state'){
+    clipLoading=false;provider.mediaState(true,Boolean(event.playing));
+  }
+});
+
+if(extensionSurface){
+  const videoId=params.get('video'),status=$('extensionSurfaceStatus');status.hidden=false;
+  if(!/^[A-Za-z0-9_-]{11}$/.test(videoId||'')){status.classList.add('error');status.querySelector('p').textContent='Open a YouTube video.';}
+  else{
+    let saved=null;
+    try{
+      const prefix=`dictai:youtube:caption:${videoId}:`;
+      const keys=Array.from({length:localStorage.length},(_,i)=>localStorage.key(i)).filter(key=>key?.startsWith(prefix));
+      const preferred=keys.find(key=>key===prefix+'en')||keys[0];
+      if(preferred)saved=JSON.parse(localStorage.getItem(preferred));
+    }catch{}
+    if(saved&&saved.video_id===videoId&&Array.isArray(saved.segments)&&saved.segments.length){
+      activate({...saved,start_hint:0},++state.request);status.hidden=true;panelSend('ready',{cached:true,count:saved.count});
+    }else{
+      status.querySelector('p').textContent='Reading this video’s captions in your browser…';panelSend('ready',{cached:false});panelSend('need-captions',{videoId});
+    }
+  }
+}else try{
   const last=JSON.parse(localStorage.getItem('dictai:youtube:last')||'null');
   if(last&&/^[A-Za-z0-9_-]{11}$/.test(last.video_id)&&Array.isArray(last.segments)&&last.segments.length&&last.segments.every(s=>typeof s.text==='string'&&Number.isFinite(s.start)&&Number.isFinite(s.end))){
     $('videoUrl').value=`https://www.youtube.com/watch?v=${last.video_id}`;

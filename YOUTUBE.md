@@ -1,6 +1,6 @@
 # YouTube dictation
 
-**Current import mode: browser-local.** Install the [Caption Bridge](YOUTUBE-BROWSER-LOCAL.md) once in Chrome/Edge. The server serves assets only for this flow; it receives no transcript, file upload, Names text, answer or progress requests from the YouTube UI. Legacy server API details below are compatibility documentation, not the current browser import path.
+**Current mode: browser-local LR surface.** Install [DictAI for YouTube](YOUTUBE-BROWSER-LOCAL.md) version 2.0.0 once in Chrome, Edge or Opera. DictAI then appears automatically on normal YouTube watch pages and loads only the current caption track in that browser. The server serves assets; it receives no transcript, Names text, answer or progress requests from this flow. Legacy server API details below are compatibility documentation.
 
 Open **YouTube** between Conversation and Book, or visit `/youtube` directly. Both keep the main sidebar. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
 
@@ -10,9 +10,9 @@ The address field sits above the video and the shared Book/Conversation practice
 
 English numeric and orthographic alternatives are accepted without rewriting captions. Examples: $25 / twenty-five dollars, 2026 / twenty twenty-six, 3:30 / three thirty, and didn't / did not. Numeric expressions remain atomic, incomplete alternatives stay in the input on Space, and Enter explicitly submits. See [audit, acceptance policy, guardrails and migration](YOUTUBE-MULTI-ANSWER.md). Book/Conversation and ASR are unchanged.
 
-1. Open the video from DictAI, display its transcript on YouTube in the selected language, and click the extension to send it back. Original text is retained; no translation is generated. Displayed timestamps give approximate clip ends. Saved captions and SRT/VTT files are also read locally.
+1. Open a normal YouTube video. The extension panel appears automatically, checks saved captions, and—only when absent—loads that current video's preferred English or available caption track once. No transcript menu or popup click is required. Original text and supplied caption timing are retained; no translation is generated.
 2. Start from the saved sentence or the timestamp in the pasted link, then use Previous / Next to move through the full video in order.
-3. Replay that clip using the official YouTube iframe player. The original video audio is used: no download, TTS generation or GPU job.
+3. Replay controls seek and play the original YouTube page's video element for that clip. The original video audio is used: no download, TTS generation or GPU job.
 4. The answer row follows the existing Book / Conversation layout: Type a word with an in-field Space / Enter hint, Names and Give Up alongside it, and joined Again / Next buttons in the same row on completion. Type words or paste a phrase. Space / Enter submits; each occurrence of a repeated word needs an entry. Case, ordinary punctuation and common title forms are normalized for matching, while caption wording is preserved. YouTube Names now uses local capitalization/title hints (with possible omissions/false positives), not server spaCy; it never replaces the typed draft.
 5. Solving keeps the screen in place, briefly celebrates, and exposes Again / Next. Tapping a word or revealing an answer marks it as revealed rather than solved. Next proceeds through the full video; Previous / Next also allow manual navigation.
 
@@ -20,13 +20,13 @@ Answers stay hidden until solved or revealed. There is no transcript list or Sho
 
 ## Isolation and persistence
 
-- New module `youtube_api.py`, assets under `youtube-ui/`, routes under `/api/youtube/`.
+- The LR extension is under `browser-extension/`; shared practice assets are under `youtube-ui/`. `youtube_api.py` remains only for legacy clients/tools.
 - Existing Book / Conversation APIs, audio and progress database are unchanged.
 - YouTube progress is device/browser-local, keyed by video ID, caption language and transcript hash. The most recently loaded transcript is also stored for refresh/return. Unavailable or full browser storage produces a warning.
-- Public caption fetches use a one-hour, 32-entry in-memory cache. Uploaded captions are not stored on the server. No cookies, credentials or proxies are extracted or configured.
-- Only validated YouTube IDs reach the importer. Arbitrary URLs and playlist-only links are rejected. Caption imports are limited to 15,000 cues / 12 hours; manual uploads to 2 MB. A shared persistent guard provides permanent caption caching, one upstream job, duplicate-request joining, a minimum 60-second interval, 10-job hourly cap, and a durable 24-hour pause after blocking. These are local safeguards, not a promised YouTube unblock time. [Request guard](YOUTUBE-REQUEST-GUARD.md)
+- Current LR flow stores captions in the browser and never calls the DictAI caption importer. It accepts only the current watch-page video and a same-origin `/api/timedtext` caption URL, makes one track request, and has no crawler or retry loop.
+- The legacy importer still validates YouTube IDs and uses the persistent request guard. Those safeguards do not describe or authorize the current extension flow. [Request guard](YOUTUBE-REQUEST-GUARD.md)
 
-## Dependencies and deployment
+## Legacy importer dependencies
 
 The recognition / generation environment is not upgraded. Install the importer in an isolated directory:
 

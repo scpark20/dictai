@@ -4,7 +4,7 @@
 
 ### One workspace for conversations, books and YouTube listening practice
 
-YouTube practice now runs [in the user's browser](YOUTUBE-BROWSER-LOCAL.md): a small Chrome/Edge extension reads the transcript displayed on YouTube, and DictAI handles captions, matching and progress locally. The website serves code, not caption-fetch requests. Existing shared Voice / Again / Next controls are retained. The [request guard](YOUTUBE-REQUEST-GUARD.md) remains for legacy server clients only.
+YouTube practice now uses a [Language Reactor-style browser surface](YOUTUBE-BROWSER-LOCAL.md): after one Chrome/Edge/Opera extension installation, DictAI appears inside each YouTube watch page. It reads only that video's caption track once in the user's browser, reuses saved captions, and handles matching/progress locally. Existing shared Voice / Again / Next controls are retained. The [request guard](YOUTUBE-REQUEST-GUARD.md) remains for legacy server clients only.
 
 **A1–C2 courses · English and Korean · browser speech recognition · multi-chapter books**
 
@@ -24,7 +24,7 @@ DictAI is a listening and dictation workspace with a course menu on the left and
 
 - **Conversation** — short two-speaker exercises organized by CEFR level and topic.
 - **Book** — long-form dictation organized by title and chapter, with direct sentence navigation.
-- **YouTube** — integrated between Conversation and Book in the main sidebar. Paste a video link above the full-width player, then solve chronological clips in the familiar answer card below. Use Previous / Next to navigate; no timeline or range panel. [YouTube guide](YOUTUBE.md)
+- **YouTube** — available from the main sidebar and, with the extension installed, as an automatic right-side panel on normal YouTube watch pages. Solve chronological clips with the familiar answer card; use Previous / Next to navigate. [YouTube guide](YOUTUBE.md)
 
 Conversation, Book and YouTube use one practice template, stylesheet and engine (`practice-ui/`). Voice, its two English models and three settings, input isolation, hints, word slots, Again / Next and numeric sentence navigation are shared—not copied. YouTube supplies only caption data, original-video playback and per-video local progress through a content adapter. English YouTube answers retain explicit numeric and orthographic alternatives. [Shared-engine contract](SHARED-PRACTICE.md) · [Evidence and matching policy](YOUTUBE-MULTI-ANSWER.md).
 
@@ -49,7 +49,7 @@ flowchart LR
 | Level | A1, A2, B1, B2, C1, and C2 themes |
 | Conversation | Always-visible compact topic list with five curated topics plus Random |
 | Book | Compact title list; supported titles expand into a chapter submenu |
-| YouTube | Link import, timed clips, Previous / Next navigation, original-video replay and per-video browser-local progress |
+| YouTube | Automatic on-page panel, one current-track browser request, timed clips, original-video replay and per-video browser-local progress |
 | Practice | Current DictAI word-slot interface shared by Conversation and Book |
 | Input isolation | Voice recognition and typed input remain independent |
 | Progress | Each conversation topic and each book chapter retain separate positions |
