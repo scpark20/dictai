@@ -22,7 +22,7 @@ assert.match(youtubeCSS,/practice-card>\.step-label\{display:flex!important;marg
 const payload={videoId:'jNQXAC9IVRw',title:'Fixture',language:'en',cues:[{start:1,duration:2,text:'Hello world.'},{start:4,duration:2,text:'Next line.'}]};
 for(const listener of messageListeners)listener({source:fakeParent,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-panel-event-v2',type:'captions',payload}});
 await new Promise(r=>setTimeout(r,30));
-assert.equal(d.getElementById('wordGrid').children.length,2);assert.equal(d.getElementById('answerInput').disabled,false);assert.equal(fetches,0);
+assert.equal(d.getElementById('wordGrid').children.length,1);assert.equal(d.getElementById('answerInput').disabled,false);assert.equal(fetches,0);
 d.querySelector('[data-speed-level="3"]').click();await new Promise(r=>setTimeout(r,5));
 assert.ok(messages.some(x=>x.message.type==='media'&&x.message.action==='play'&&x.message.start===.88));
 assert.equal(d.getElementById('voiceToggle').checked,false);assert.equal(d.getElementById('redoButton').hidden,true);

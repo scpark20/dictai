@@ -1,6 +1,6 @@
 import {timeLabel} from './youtube-core.mjs?v=shared-1';
-import {createYouTubeProvider} from './practice-provider.mjs?v=local-1';
-import {parseVideo,parseSubtitles,packageCaptions} from './local-captions.mjs?v=local-1';
+import {createYouTubeProvider} from './practice-provider.mjs?v=keyword-1';
+import {parseVideo,parseSubtitles,packageCaptions} from './local-captions.mjs?v=keyword-1';
 import {receiveCaptions,panelSend,receivePanelEvents} from './browser-bridge.mjs?v=lr-2';
 
 const $ = id => document.getElementById(id);

@@ -30,7 +30,7 @@ w.eval(app+'\nwindow.testPractice={state,acceptVoiceTranscript,strictRequestedLe
 w.eval('playWordSuccessTick = () => {};');
 await tick(); assert.equal(d.querySelector('.practice-card').hidden,true);
 await provider.activate(data); provider.mediaState(true,false,[.5,.75,1,1.25,1.5]); await tick();
-assert.equal($('wordGrid').children.length,5);
+assert.equal($('wordGrid').children.length,3);
 assert.equal($('answerInput').disabled,false);
 assert.equal($('voiceToggle').checked,false);
 assert.equal($('voiceModel').options.length,2);
@@ -43,9 +43,9 @@ const space=text=>{input.value=text;input.dispatchEvent(new w.KeyboardEvent('key
 space('twenty');assert.equal(input.value,'twenty ');
 space('twenty five');assert.equal(input.value,'twenty five ');
 space('twenty five dollars');assert.equal(input.value,'');
-assert.equal(w.testPractice.state.solved.has(2),true);
+assert.equal(w.testPractice.state.solved.has(1),true);
 enter('twenty five dollars');assert.equal(input.value,'twenty five dollars');
-enter('I paid at three thirty'); await tick(480);
+enter('paid at three thirty'); await tick(480);
 assert.equal($('redoButton').hidden,false,'Again visible after correct answer');
 assert.equal($('redoButton').disabled,false);
 assert.equal($('nextButton').hidden,false,'Next visible after correct answer');

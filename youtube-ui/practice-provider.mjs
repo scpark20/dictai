@@ -2,6 +2,7 @@ import {tokens, migrateOpened, TOKEN_VERSION} from './youtube-core.mjs?v=shared-
 import {localNameIndices} from './local-names.mjs?v=local-1';
 import * as answerVariants from '../practice-ui/answer-variants.mjs';
 import {progressKey, indexAtTime} from './youtube-core.mjs?v=shared-1';
+import {keywordText} from './keyword-targets.mjs?v=keyword-1';
 
 // YouTube owns transcript transport, clip playback and its local progress only.
 // Slot rendering, input, Voice, reveal and completion belong to practice/app.js.
@@ -9,6 +10,7 @@ export function createYouTubeProvider(media, storage = localStorage) {
   let data = null, index = 0, answers = {}, callbacks = {}, usedAnswer = false;
   const attempts = new Map(), names = new Map();
   let generation = 0;
+  const practiceText = segment => data?.language?.startsWith('en') ? (segment.keyword_text || keywordText(segment.text)) : segment.text;
   const persist = () => {
     if (!data) return;
     try { storage.setItem(progressKey(data), JSON.stringify({index, answers, tokenVersion:TOKEN_VERSION})); }
@@ -25,7 +27,7 @@ export function createYouTubeProvider(media, storage = localStorage) {
       index = Number.isInteger(saved.index) && data.segments[saved.index] ? saved.index : 0;
       if (data.start_hint > 0) index = indexAtTime(data.segments, data.start_hint);
       for (const [key, value] of Object.entries(saved.answers || {})) {
-        if (data.segments[key]) answers[key] = migrateOpened(data.segments[key].text, value, saved.tokenVersion);
+        if (data.segments[key]) answers[key] = migrateOpened(practiceText(data.segments[key]), value, saved.tokenVersion);
       }
       persist();
       await callbacks.reload?.();
@@ -55,11 +57,12 @@ export function createYouTubeProvider(media, storage = localStorage) {
         if (!segment) throw new Error('The selected caption is unavailable.');
         usedAnswer = Boolean(answers[index]?.includes('revealed'));
         const id = `youtube-${generation}-${index}`;
-        attempts.set(id, {index, words:tokens(segment.text)});
+        const text=practiceText(segment);
+        attempts.set(id, {index, words:tokens(text)});
         if (data.language.startsWith('en') && !names.has(index)) {
-          names.set(index,localNameIndices(segment.text));
+          names.set(index,localNameIndices(text));
         }
-        return {attempt_id:id, level, text:segment.text, word_count:tokens(segment.text).length, target_language:options.body?.target_language, proper_noun_indices:names.get(index) || []};
+        return {attempt_id:id, level, text, source_text:segment.text, word_count:tokens(text).length, target_language:options.body?.target_language, proper_noun_indices:names.get(index) || []};
       }
       const match = path.match(/^\/api\/problem\/([^/]+)\/(touch|reveal|complete)$/);
       const attempt = match && attempts.get(decodeURIComponent(match[1]));

@@ -5,6 +5,7 @@ import {readFile} from 'node:fs/promises';
 import {parseVideo,cleanCaption,buildSegments,parseSubtitles,packageCaptions} from '../youtube-ui/local-captions.mjs';
 import {dictaiURL,youtubeID} from '../browser-extension/policy.mjs';
 import {localNameIndices} from '../youtube-ui/local-names.mjs';
+import {keywordText,selectKeywordTokens} from '../youtube-ui/keyword-targets.mjs';
 test('strict YouTube links and time hints',()=>{
   assert.deepEqual(parseVideo('https://youtu.be/jNQXAC9IVRw?t=2m3s'),{videoId:'jNQXAC9IVRw',start:123});
   assert.equal(parseVideo('https://www.youtube.com/shorts/jNQXAC9IVRw').videoId,'jNQXAC9IVRw');
@@ -23,9 +24,22 @@ test('SRT and VTT stay local and preserve original display text',async()=>{
   const cues=parseSubtitles('WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nMr. Green paid $25.');
   const data=await packageCaptions({videoId:'jNQXAC9IVRw',cues});
   assert.equal(data.segments[0].text,'Mr. Green paid $25.');
+  assert.equal(data.segments[0].keyword_text,'Mr. Green paid $25');
+  assert.equal(data.keyword_version,1);
   assert.equal(data.version,(await packageCaptions({videoId:'jNQXAC9IVRw',cues})).version);
   assert.throws(()=>parseSubtitles('no timestamps'));
   assert.throws(()=>parseSubtitles('00:60:00.000 --> 00:61:01.000\ninvalid'));
+});
+test('keyword dictation keeps exact surfaces and prioritizes content words',()=>{
+  assert.deepEqual(selectKeywordTokens('The quick brown fox jumps over the lazy dog.'),['quick','brown','fox','jumps','lazy','dog']);
+  assert.deepEqual(selectKeywordTokens('She has been running fast.'),['running','fast']);
+  assert.deepEqual(selectKeywordTokens("Don't forget to bring your umbrella."),['forget','bring','umbrella']);
+  assert.deepEqual(selectKeywordTokens('NASA launched the new AI satellite.'),['NASA','launched','new','AI','satellite']);
+  assert.deepEqual(selectKeywordTokens('The state-of-the-art technology is impressive.'),['state-of-the-art','technology','impressive']);
+  assert.deepEqual(selectKeywordTokens('Mr. Green paid $25.'),['Mr.','Green','paid','$25']);
+  assert.deepEqual(selectKeywordTokens('They turned off the lights.'),['turned','off','lights']);
+  assert.deepEqual(selectKeywordTokens('Um, I think we should go now.'),['think','go']);
+  assert.equal(keywordText('The 2021 report shows a 5% increase.'),'2021 report shows 5% increase');
 });
 test('bridge targets restrict host, port and path',()=>{
   assert.ok(dictaiURL('https://192.168.0.68:8771/youtube?embed=1'));

@@ -39,7 +39,7 @@ assert.equal(openedURL,'https://www.youtube.com/watch?v=jNQXAC9IVRw');assert.equ
 $('subtitleText').value='1\n00:00:01.000 --> 00:00:04.000\nHello world.\n\n2\n00:00:05.000 --> 00:00:10.000\nThe bird came back.';
 $('useSubtitles').click();await tick();
 assert.equal(engineLoads,1);assert.equal(modelLoads,1);assert.equal(imports,0);assert.equal(players,1);
-assert.equal($('answerInput').disabled,false);assert.equal($('wordGrid').children.length,2);
+assert.equal($('answerInput').disabled,false);assert.equal($('wordGrid').children.length,1);
 assert.equal($('levelInput').value,'1');assert.ok(d.querySelector('.youtube-navigation #levelInput'));
 d.querySelector('[data-speed-level="4"]').click();assert.equal(lastPlayer.rate,1.25);
 assert.equal(lastPlayer.loaded.startSeconds,.88);assert.equal(lastPlayer.loaded.endSeconds,4.12);

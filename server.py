@@ -956,7 +956,7 @@ def youtube_page(request: Request) -> Response:
         source = source.replace('<main class="page" id="practice">', (ROOT / "youtube-ui" / "youtube.html").read_text(encoding="utf-8") + '<main class="page" id="practice">')
         source = source.replace('<div class="listen-stage">', '<div class="youtube-navigation"><span id="clipTime" class="clip-time"></span></div><div class="listen-stage">')
         source = source.replace('</head>', '<meta name="referrer" content="strict-origin-when-cross-origin"><link rel="stylesheet" href="/youtube-assets/youtube.css?v=lr-5"></head>')
-        source = re.sub(r'<script src="\./app\.js[^\"]*"></script>', '<script type="module" src="/youtube-assets/youtube.js?v=lr-5"></script>', source)
+        source = re.sub(r'<script src="\./app\.js[^\"]*"></script>', '<script type="module" src="/youtube-assets/youtube.js?v=keyword-1"></script>', source)
         source = re.sub(r'<script src="\./persistent-model-loader\.js[^\"]*"></script>', '', source)
         source = source.replace('DictAI · Chapter 5 Dictation', 'YouTube · DictAI')
         source = source.replace('href="./"', 'href="/" target="_top"')

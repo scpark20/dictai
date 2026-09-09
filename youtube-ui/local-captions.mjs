@@ -1,3 +1,5 @@
+import {KEYWORD_VERSION,keywordText} from './keyword-targets.mjs?v=keyword-1';
+
 // Caption ingestion is deliberately network-free. Text is never evaluated as HTML.
 export function parseVideo(value) {
   let input=String(value).trim();
@@ -66,8 +68,8 @@ export function parseSubtitles(value) {
 }
 export async function packageCaptions({videoId,start=0,language='en',title,cues,source='browser-transcript',timingEstimated=false}) {
   if(!/^[\w-]{11}$/.test(videoId)||!/^[\w-]{1,30}$/.test(language))throw new Error('Invalid video or caption language.');
-  const segments=buildSegments(cues);
-  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(segments)));
+  const segments=buildSegments(cues).map(segment=>({...segment,keyword_text:language.startsWith('en')?keywordText(segment.text):segment.text}));
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify({segments,keywordVersion:KEYWORD_VERSION})));
   const version='local-'+Array.from(new Uint8Array(digest)).map(n=>n.toString(16).padStart(2,'0')).join('').slice(0,16);
-  return {video_id:videoId,start_hint:start,language,title:String(title||`YouTube · ${videoId}`).slice(0,300),source,generated:false,tracks:[],version,segments,count:segments.length,end:Math.max(...segments.map(s=>s.end)),timing_estimated:timingEstimated};
+  return {video_id:videoId,start_hint:start,language,title:String(title||`YouTube · ${videoId}`).slice(0,300),source,generated:false,tracks:[],version,keyword_version:KEYWORD_VERSION,segments,count:segments.length,end:Math.max(...segments.map(s=>s.end)),timing_estimated:timingEstimated};
 }
