@@ -1,6 +1,6 @@
 (()=>{
   const EXTENSION_ORIGIN=chrome.runtime.getURL('').replace(/\/$/,'');
-  let host=null,frame=null,channel=null,videoId=null,scan=null,stopTimer=null;
+  let host=null,frame=null,channel=null,videoId=null,scan=null,stopTimer=null,generation=0;
   const currentId=()=>{try{const u=new URL(location.href);return u.origin==='https://www.youtube.com'&&u.pathname==='/watch'&&/^[\w-]{11}$/.test(u.searchParams.get('v')||'')?u.searchParams.get('v'):null;}catch{return null;}};
   const send=(type,payload={})=>frame?.contentWindow?.postMessage({channel:'dictai-youtube-event-v2',panel:channel,type,...payload},EXTENSION_ORIGIN);
   const stop=()=>{clearInterval(stopTimer);stopTimer=null;const video=document.querySelector('video');if(video&&!video.paused)video.pause();send('media-state',{playing:false});};
@@ -16,20 +16,23 @@
     stopTimer=setInterval(()=>{if(video.currentTime>=message.end||video.ended){video.pause();clearInterval(stopTimer);stopTimer=null;send('media-state',{playing:false,finished:true});}},60);
   };
   const capture=async(force=false)=>{
-    if(scan&&!force)return scan;
+    if(scan&&!force)return scan.promise;
+    const requestGeneration=generation,requestVideoId=videoId,requestChannel=channel,requestFrame=frame;
+    const requestSend=(type,payload={})=>requestFrame?.contentWindow?.postMessage({channel:'dictai-youtube-event-v2',panel:requestChannel,type,...payload},EXTENSION_ORIGIN);
     send('status',{text:'Reading this video’s captions in your browser…'});
-    scan=chrome.runtime.sendMessage({type:'dictai-scan-current',videoId}).then(reply=>{
+    const active={generation:requestGeneration,promise:null};
+    active.promise=chrome.runtime.sendMessage({type:'dictai-scan-current',videoId:requestVideoId}).then(reply=>{
+      if(generation!==requestGeneration||currentId()!==requestVideoId)return null;
       if(reply?.error)throw new Error(reply.error);
-      if(currentId()!==videoId)throw new Error('The video changed while captions were loading.');
-      send('captions',{payload:reply.result});return reply.result;
-    }).catch(error=>{send('error',{message:error.message});throw error;}).finally(()=>{scan=null;});
-    return scan;
+      requestSend('captions',{payload:reply.result});return reply.result;
+    }).catch(error=>{if(generation===requestGeneration&&currentId()===requestVideoId)requestSend('error',{message:error.message});return null;}).finally(()=>{if(scan===active)scan=null;});
+    scan=active;return active.promise;
   };
   const mount=()=>{
     const next=currentId();
     if(!next){stop();host?.remove();host=frame=null;videoId=channel=null;return;}
     if(host&&next===videoId)return;
-    stop();host?.remove();videoId=next;channel=crypto.randomUUID();
+    stop();host?.remove();generation++;scan=null;videoId=next;channel=crypto.randomUUID();
     host=document.createElement('aside');host.id='dictai-youtube-host';host.setAttribute('aria-label','DictAI YouTube practice');
     const tab=document.createElement('button');tab.id='dictai-youtube-tab';tab.type='button';tab.textContent='D';tab.title='Open DictAI';tab.addEventListener('click',()=>host.classList.remove('dictai-collapsed'));
     frame=document.createElement('iframe');frame.id='dictai-youtube-frame';frame.title='DictAI YouTube practice';frame.allow='microphone; autoplay';

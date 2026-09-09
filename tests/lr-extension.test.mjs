@@ -64,6 +64,29 @@ test('content script mounts one automatic panel and requests one scan',async()=>
   dom.window.close();
 });
 
+test('content script discards a stale caption result after YouTube SPA navigation',async()=>{
+  const first='jNQXAC9IVRw',second='aircAruvnKk';
+  const dom=new JSDOM('<video></video>',{url:`https://www.youtube.com/watch?v=${first}`,runScripts:'outside-only',pretendToBeVisual:true});
+  const w=dom.window;const pending=[];let messageListener;
+  w.crypto.randomUUID=()=>String(pending.length+1).padStart(36,'0');
+  w.chrome={runtime:{getURL:path=>'chrome-extension://abcdefghijklmnopabcdefghijklmnop/'+path,onMessage:{addListener:()=>{}},sendMessage:message=>new Promise(resolve=>pending.push({message,resolve}))}};
+  const add=w.addEventListener.bind(w);w.addEventListener=(type,listener,options)=>{if(type==='message')messageListener=listener;return add(type,listener,options);};
+  w.HTMLMediaElement.prototype.pause=()=>{};w.HTMLMediaElement.prototype.play=async()=>{};w.eval(contentScript);
+  let frame=w.document.getElementById('dictai-youtube-frame'),panel=new URL(frame.src).searchParams.get('panel');
+  messageListener({source:frame.contentWindow,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-youtube-command-v2',panel,type:'need-captions'}});
+  assert.equal(pending[0].message.videoId,first);
+  dom.reconfigure({url:`https://www.youtube.com/watch?v=${second}`});w.dispatchEvent(new w.Event('yt-navigate-finish'));
+  await new Promise(resolve=>setTimeout(resolve,180));
+  frame=w.document.getElementById('dictai-youtube-frame');panel=new URL(frame.src).searchParams.get('panel');const delivered=[];frame.contentWindow.postMessage=message=>delivered.push(message);
+  messageListener({source:frame.contentWindow,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-youtube-command-v2',panel,type:'need-captions'}});
+  assert.equal(pending[1].message.videoId,second);
+  pending[0].resolve({error:'The active YouTube video changed.'});await new Promise(resolve=>setTimeout(resolve,0));
+  assert.equal(delivered.some(message=>message.type==='error'),false);
+  pending[1].resolve({result:{videoId:second,cues:[{start:1,duration:1,text:'Current.'}]}});await new Promise(resolve=>setTimeout(resolve,0));
+  assert.equal(delivered.some(message=>message.type==='captions'),true);
+  dom.window.close();
+});
+
 test('panel relays only between its YouTube parent and DictAI frame',()=>{
   const id='abcdefghijklmnopabcdefghijklmnop',token='00000000-0000-4000-8000-000000000000';
   const dom=new JSDOM(panelHTML,{url:`chrome-extension://${id}/panel.html?video=jNQXAC9IVRw&panel=${token}`,runScripts:'outside-only'});
