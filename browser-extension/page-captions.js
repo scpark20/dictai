@@ -10,7 +10,10 @@
   if(trackUrl.origin!==location.origin||trackUrl.pathname!=='/api/timedtext')return {videoId,error:'YouTube returned an unsupported caption source.'};
   trackUrl.searchParams.set('fmt','json3');
   const requestId=`${videoId}:${selected.languageCode||'und'}:${selected.vssId||''}`;
-  const responseText=await fetch(trackUrl,{credentials:'include',referrer:location.href}).then(async r=>{if(!r.ok)throw new Error(`Caption request failed (${r.status}).`);return r.text();});
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);let responseText;
+  try{responseText=await fetch(trackUrl,{credentials:'include',referrer:location.href,signal:controller.signal}).then(async r=>{if(!r.ok)throw new Error(`Caption request failed (${r.status}).`);return r.text();});}
+  catch(error){if(error?.name==='AbortError')return {videoId,error:'YouTube caption request timed out.'};throw error;}
+  finally{clearTimeout(timeout);}
   if(new URL(location.href).searchParams.get('v')!==videoId)return {videoId,error:'The video changed while captions were loading.'};
   if(responseText.length>2000000)return {videoId,error:'This transcript is too large.'};
   if(!responseText.trim())return {videoId,error:'This video does not provide usable captions.'};

@@ -47,6 +47,13 @@ test('caption reader reports an empty response as unavailable captions',async()=
   fixture.dom.window.close();
 });
 
+test('caption reader turns a stalled request into a clear timeout',async()=>{
+  const fixture=captionDOM();fixture.dom.window.fetch=async()=>{const error=new Error('aborted');error.name='AbortError';throw error;};
+  const result=await fixture.dom.window.eval(pageCaptions);
+  assert.equal(result.error,'YouTube caption request timed out.');
+  fixture.dom.window.close();
+});
+
 test('content script mounts one automatic panel and requests one scan',async()=>{
   const dom=new JSDOM('<video></video>',{url:'https://www.youtube.com/watch?v=jNQXAC9IVRw',runScripts:'outside-only',pretendToBeVisual:true});
   const w=dom.window;let runtimeListener,messageListener,scanCalls=0;
