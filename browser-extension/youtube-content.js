@@ -44,6 +44,7 @@
     if(!frame||event.source!==frame.contentWindow||event.origin!==EXTENSION_ORIGIN||message?.channel!=='dictai-youtube-command-v2'||message.panel!==channel)return;
     if(message.type==='need-captions'||message.type==='retry')void capture(message.type==='retry');
     if(message.type==='media')void control(message).catch(error=>send('error',{message:error.message}));
+    if(message.type==='panel-size'&&Number.isFinite(message.height))host.style.height=`${Math.max(420,Math.min(Math.ceil(message.height)+52,window.innerHeight-84))}px`;
     if(message.type==='hide')host?.classList.toggle('dictai-collapsed',true);
   });
   chrome.runtime.onMessage.addListener(message=>{if(message?.type==='dictai-toggle')host?.classList.toggle('dictai-collapsed');});

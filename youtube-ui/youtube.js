@@ -22,6 +22,13 @@ if(!extensionSurface)document.querySelector('.youtube-navigation').append(docume
 if (params.get('embed') === '1') document.body.classList.add('embedded');
 if(extensionSurface)document.body.classList.add('extension-surface');
 
+function reportPanelHeight(){
+  if(!extensionSurface)return;
+  const page=document.querySelector('.page'),card=document.querySelector('.practice-card');if(!page||!card)return;
+  const style=window.getComputedStyle(page),padding=Number.parseFloat(style.paddingTop||0)+Number.parseFloat(style.paddingBottom||0);
+  panelSend('panel-size',{height:Math.ceil(card.getBoundingClientRect().height+padding)});
+}
+
 function message(id, text, kind='') { const el=$(id); el.textContent=text; el.className=el.className.replace(/\b(error|success|warning)\b/g,'').trim(); if(kind)el.classList.add(kind); }
 function current() { return state.data?.segments[state.index]; }
 function stopClip() {stopAt=null;clipLoading=false;if(extensionSurface)panelSend('media',{action:'pause'});else try {player?.pauseVideo?.();}catch{} provider.mediaState(playerReady,false);}
@@ -171,6 +178,10 @@ $('subtitleFile').addEventListener('change',async e=>{const file=e.target.files[
 window.addEventListener('pagehide',()=>{stopClip();clearInterval(timer);clearTimeout(readyTimeout);});
 
 await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/practice/app.js?v=shared-1';script.onload=resolve;script.onerror=reject;document.body.append(script);});
+if(extensionSurface){
+  window.requestAnimationFrame(reportPanelHeight);
+  if('ResizeObserver'in window)new window.ResizeObserver(()=>window.requestAnimationFrame(reportPanelHeight)).observe(document.querySelector('.practice-card'));
+}
 const voiceLoader=document.createElement('script');voiceLoader.src='/practice/persistent-model-loader.js?v=shared-1';document.body.append(voiceLoader);
 $('properNounButton').title='Local name hints use capitalization and titles; they may miss or include words. No text is sent to the server.';
 if(!extensionSurface)$('extensionState').textContent='Install DictAI for YouTube once, then use YouTube normally';

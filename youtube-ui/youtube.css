@@ -32,7 +32,7 @@
 .empty-stage{text-align:center;padding:64px 20px;color:#64738d}
 .empty-stage>span{font-size:40px;color:#1877e8}
 .youtube-mode [hidden]{display:none!important}
-.youtube-mode.extension-surface{min-height:100dvh;padding:0;background:#edf4ff}
+.youtube-mode.extension-surface{min-height:0;padding:0;background:#edf4ff}
 .youtube-mode.extension-surface .import-card,.youtube-mode.extension-surface .empty-stage,.youtube-mode.extension-surface .video-card,.youtube-mode.extension-surface .youtube-navigation{display:none!important}
 .youtube-mode.extension-surface .page{display:block;min-height:0;padding:12px}
 .youtube-mode.extension-surface .practice-card{display:block;min-height:0;margin:0;padding:20px 18px;background:#fff;border:1px solid #c5d9f8;border-radius:20px;box-shadow:0 12px 34px rgba(12,54,112,.1)}

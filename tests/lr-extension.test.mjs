@@ -12,7 +12,7 @@ const panelHTML=await readFile(new URL('panel.html',root),'utf8');
 const panelScript=await readFile(new URL('panel.js',root),'utf8');
 
 test('manifest is a minimal YouTube-only LR surface',()=>{
-  assert.equal(manifest.version,'2.2.2');
+  assert.equal(manifest.version,'2.3.0');
   assert.deepEqual(manifest.permissions,['scripting']);
   assert.deepEqual(manifest.host_permissions,['https://www.youtube.com/*']);
   assert.equal(manifest.content_scripts.length,2);
@@ -97,6 +97,8 @@ test('content script mounts one automatic panel and requests one scan',async()=>
   const panel=new URL(frame.src).searchParams.get('panel');
   messageListener({source:frame.contentWindow,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-youtube-command-v2',panel,type:'need-captions'}});
   await new Promise(r=>setTimeout(r,10));assert.equal(scanCalls,1);
+  messageListener({source:frame.contentWindow,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-youtube-command-v2',panel,type:'panel-size',height:560}});
+  assert.equal(host.style.height,'612px');
   runtimeListener({type:'dictai-toggle'});assert.ok(host.classList.contains('dictai-collapsed'));runtimeListener({type:'dictai-toggle'});assert.ok(!host.classList.contains('dictai-collapsed'));
   dom.window.close();
 });
