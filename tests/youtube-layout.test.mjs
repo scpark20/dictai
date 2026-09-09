@@ -32,8 +32,8 @@ const before=(a,b)=>Boolean(d.querySelector(a).compareDocumentPosition(d.querySe
 assert.ok(before('#importForm','.video-frame'));
 assert.ok(before('.video-frame','#practiceCard'));
 assert.ok(before('#answerEntry','#playbackButtons'));
-assert.equal(d.querySelector('#timelineDetails').open,false);
+assert.equal(d.querySelector('#timelineDetails'),null);assert.equal(d.querySelector('#rangeForm'),null);
 assert.equal(d.querySelector('#importTitle').className,'sr-only');
 assert.equal(d.querySelectorAll('#playbackButtons button').length,5);
 yt.window.close();
-console.log('Integrated shell unit checks passed: Conversation → YouTube → Book, direct entry, mode switching, address → video → practice, collapsed timeline, speed row below input.');
+console.log('Integrated shell unit checks passed: Conversation → YouTube → Book, direct entry, mode switching, address → video → practice, no timeline, speed row below input.');

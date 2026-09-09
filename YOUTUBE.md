@@ -2,17 +2,17 @@
 
 Open **YouTube** between Conversation and Book, or visit `/youtube` directly. Both keep the main sidebar. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
 
-The integrated layout places the address field above the full-width video and the familiar dictation card below it. Timeline and time-range controls are collapsed until needed. The bottom speed row replays the current clip at a YouTube-supported rate (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. YouTube remains type-only; Book/Conversation voice settings are unchanged. `/youtube?embed=1` serves only the inner workspace, while `/youtube` serves the complete app shell.
+The integrated layout places the address field above the full-width video and the familiar dictation card below it. The timeline, transcript list and range controls are removed; navigate sentences with Previous / Next. The bottom speed row replays the current clip at a YouTube-supported rate (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. YouTube remains type-only; Book/Conversation voice settings are unchanged. `/youtube?embed=1` serves only the inner workspace, while `/youtube` serves the complete app shell.
 
 ## Learning flow
 
 1. Load the original captions, preferring creator-provided captions in the requested language. No translation is generated. Other available caption languages are shown if the selected one is missing.
-2. Set a From / To range, click a timeline entry, or use the video's current time. Clips remain chronological. A range includes captions whose start lies inside it; caption boundaries are not cut mid-word, so the last clip can extend beyond the typed end time.
+2. Start from the saved sentence or the timestamp in the pasted link, then use Previous / Next to move through the full video in order.
 3. Replay that clip using the official YouTube iframe player. The original video audio is used: no download, TTS generation or GPU job.
 4. The answer row follows the existing Book / Conversation layout: Type a word with an in-field Space / Enter hint, Names and Give Up alongside it, and joined Again / Next buttons in the same row on completion. Type words or paste a phrase. Space / Enter submits; each occurrence of a repeated word needs an entry. Case, ordinary punctuation and common title forms are normalized for matching, while caption wording is preserved. Names uses the same English spaCy PERSON/PROPN criteria as the Book metadata builder; it never replaces the typed draft.
-5. Solving keeps the screen in place, briefly celebrates, and exposes Again / Next. Tapping a word or revealing an answer marks it as revealed rather than solved. Next proceeds within the chosen range; Previous / Next also allow manual navigation.
+5. Solving keeps the screen in place, briefly celebrates, and exposes Again / Next. Tapping a word or revealing an answer marks it as revealed rather than solved. Next proceeds through the full video; Previous / Next also allow manual navigation.
 
-The script is hidden in the timeline by default. **Show script** reveals it. Auto-generated captions are labeled as potentially inaccurate; captions are not claimed to be verified transcripts of the audio.
+Answers stay hidden until solved or revealed. There is no transcript list or Show script control.
 
 ## Isolation and persistence
 
@@ -38,13 +38,12 @@ Use the existing 8771 deployment. Preserve the Chapter 10 repaired-audio service
 
 ## Checks
 
-- `node tests/youtube-layout.test.mjs`: sidebar order, direct YouTube entry, Book/Conversation switching, address/video/practice ordering, collapsed timeline and the speed row. This is a mocked DOM unit test, not browser visual QA.
+- `node tests/youtube-layout.test.mjs`: sidebar order, direct YouTube entry, Book/Conversation switching, address/video/practice ordering, absence of timeline/range controls and the speed row. This is a mocked DOM unit test, not browser visual QA.
 
 - `python tests/test_youtube.py -v`: URL validation, caption grouping, rolling-caption overlap, original title/contraction spelling, SRT/VTT parsing, import timeout/errors/cache and Chapter 11 progress isolation.
 - `node --test tests/youtube-core.test.mjs`: answer matching, repeated words, aliases, time parsing, range ordering and per-video progress keys.
-- Optional DOM unit test: install the test-only dependencies in `tests/`, then run `node tests/youtube-dom.test.mjs`. It checks import, matching, duplicate-input retention, Again / Next, range changes, reload restoration and player remounting with a mocked YouTube player. It does not test real YouTube playback or rendered layout.
+- Optional DOM unit test: install the test-only dependencies in `tests/`, then run `node tests/youtube-dom.test.mjs`. It checks import, matching, duplicate-input retention, Again / Next, sentence navigation, reload restoration and player remounting with a mocked YouTube player. It does not test real YouTube playback or rendered layout.
 - Live HTTP import of a public captioned video succeeds from server 68. Browser video playback still depends on YouTube embedding permission, network, browser autoplay/referrer policy and any content blockers. No claim of manual listening or browser visual verification is made.
-- Optional WebMCP range selection uses the same state/action as the form, when available. A supported WebMCP execution context was unavailable; that optional integration is not verified.
 
 ## Primary references
 

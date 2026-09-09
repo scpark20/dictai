@@ -1,4 +1,4 @@
-import {tokens, submitWords, parseTime, timeLabel, rangeIndices, indexAtTime, progressKey} from './youtube-core.mjs';
+import {tokens, submitWords, timeLabel, rangeIndices, indexAtTime, progressKey} from './youtube-core.mjs';
 
 const $ = id => document.getElementById(id);
 const state = {data:null, index:0, indices:[], answers:{}, start:0, end:0, request:0, busy:false};
@@ -18,8 +18,8 @@ function save() {
 function loadProgress(data) {
   let saved={};
   try { saved=JSON.parse(localStorage.getItem(progressKey(data))||'{}'); } catch {}
-  state.start=Number.isFinite(saved.start)&&saved.start>=0?saved.start:0;
-  state.end=Number.isFinite(saved.end)&&saved.end>state.start?Math.min(saved.end,data.end+.01):data.end+.01;
+  state.start=0;
+  state.end=data.end+.01;
   state.indices=rangeIndices(data.segments,state.start,state.end);
   if (!state.indices.length) {state.start=0;state.end=data.end+.01;state.indices=rangeIndices(data.segments,0,state.end);}
   state.index=state.indices.includes(saved.index)?saved.index:state.indices[0];
@@ -31,8 +31,7 @@ function loadProgress(data) {
   }
   if (data.start_hint > 0) {
     const i=indexAtTime(data.segments,data.start_hint);
-    state.start=data.segments[i].start;state.end=data.end+.01;
-    state.indices=rangeIndices(data.segments,state.start,state.end);state.index=i;
+    state.index=i;
   }
 }
 function openedWords() {
@@ -108,20 +107,6 @@ function replay() {
   player.setPlaybackRate(Number($('playbackRate').value)||1);
   message('playerStatus','Loading this clip…');
 }
-function renderTimeline() {
-  const fragment=document.createDocumentFragment(),inRange=new Set(state.indices);
-  state.data.segments.forEach((segment,i)=>{
-    const button=document.createElement('button');button.type='button';button.className='timeline-row';button.dataset.index=i;
-    button.setAttribute('role','listitem');button.setAttribute('aria-current',String(i===state.index));
-    button.classList.toggle('outside',!inRange.has(i));
-    button.setAttribute('aria-label',`Start at ${timeLabel(segment.start)}, clip ${i+1}${!inRange.has(i)?', outside selected range':''}`);
-    const time=document.createElement('time');time.textContent=timeLabel(segment.start);
-    const text=document.createElement('span');text.className='cue-text';text.textContent=$('showScript').checked?segment.text:`Clip ${i+1} · ${tokens(segment.text).length} words`;
-    const check=document.createElement('span');check.className='cue-state';check.textContent=isComplete(i)?'✓':'';
-    button.append(time,text,check);fragment.append(button);
-  });
-  $('timeline').replaceChildren(fragment);
-}
 function confetti() {
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const el=$('celebration');el.replaceChildren();
@@ -144,30 +129,19 @@ function renderExercise({focus=false}={}) {
   $('namesButton').disabled=!state.data.language.startsWith('en');
   $('namesButton').title=state.data.language.startsWith('en')?'Reveal names in this caption':'Names helper supports English captions';
   $('nextButton').disabled=position>=state.indices.length-1;
-  $('nextButton').textContent=position>=state.indices.length-1?'Range complete ✓':'Next →';
+  $('nextButton').textContent=position>=state.indices.length-1?'Video complete ✓':'Next →';
   $('captionAnswer').hidden=!done;$('captionAnswer').textContent=s.text;
   if(done){message('answerFeedback',allSolved?'Solved! Replay, try again, or move to the next clip.':'Answer revealed. Try again or move to the next clip.',allSolved?'success':'warning');if(allSolved&&!celebrated){celebrated=true;confetti();}}
   if(focus&&!done)$('answerInput').focus({preventScroll:true});
-  renderTimeline();save();
+  save();
 }
 function selectClip(index, {play=false}={}) {
   if(!state.data?.segments[index])return;
   stopClip();state.index=index;celebrated=isComplete(index);$('answerInput').value='';
   message('answerFeedback','Type a word. Press Space or Enter.');renderExercise({focus:true});
   if(play)replay();else cueCurrent();
-  const row=$('timeline').querySelector(`[data-index="${index}"]`);
-  if(row){const list=$('timeline'),r=row.getBoundingClientRect(),l=list.getBoundingClientRect();if(r.top<l.top||r.bottom>l.bottom)list.scrollTop+=r.top-l.top-30;}
 }
 function navigate(delta){const i=state.indices.indexOf(state.index)+delta;if(i>=0&&i<state.indices.length)selectClip(state.indices[i],{play:true});}
-function renderRange(){
-  $('rangeStart').value=timeLabel(state.start);$('rangeEnd').value=timeLabel(Math.ceil(state.end));
-  message('rangeStatus',`${state.indices.length} clips, in time order. Whole captions are kept at the boundaries.`);
-}
-function setRange(start,end){
-  const indices=rangeIndices(state.data.segments,start,end);
-  if(!indices.length)throw new Error('No captions start in that range. Choose a wider range.');
-  state.start=start;state.end=end;state.indices=indices;renderRange();selectClip(indices[0]);
-}
 function options(tracks, chosen) {
   const choices=new Map([['en','English'],['ko','한국어']]);
   for(const t of tracks||[])choices.set(t.code,t.name);
@@ -181,9 +155,8 @@ function activate(data, request) {
   $('workspace').hidden=false;$('emptyStage').hidden=true;$('videoTitle').textContent=data.title;
   $('originalLink').href=`https://www.youtube.com/watch?v=${data.video_id}`;
   options(data.tracks,data.language);
-  $('captionNote').textContent=data.source==='uploaded'?'Your caption file · Original wording and timestamps.':`${data.generated?'Auto-generated captions · May contain recognition errors.':'Creator-provided captions.'} ${data.count} practice clips.`;
-  $('showScript').checked=false;$('answerInput').value='';renderRange();renderExercise();
-  message('importStatus',`${data.count} clips loaded. Choose a time range, then play the first clip.`,'success');
+  $('answerInput').value='';renderExercise();
+  message('importStatus',`${data.count} clips loaded. Choose a sentence or play the current clip.`,'success');
   try{localStorage.setItem('dictai:youtube:last',JSON.stringify(data));}catch{message('saveStatus','This transcript is too large to restore automatically. Its progress is still saved.');}
   void mountPlayer(request);
 }
@@ -213,11 +186,6 @@ async function loadVideo(manual=false) {
 $('importForm').addEventListener('submit',e=>{e.preventDefault();void loadVideo();});
 $('useSubtitles').addEventListener('click',()=>void loadVideo(true));
 $('subtitleFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(file.size>2000000){message('importStatus','Use a caption file smaller than 2 MB.','error');return;}$('subtitleText').value=await file.text();});
-$('showScript').addEventListener('change',()=>{if(state.data)renderTimeline();});
-$('timeline').addEventListener('click',e=>{const b=e.target.closest('[data-index]');if(!b)return;const i=Number(b.dataset.index);if(!state.indices.includes(i)){state.start=state.data.segments[i].start;state.end=state.data.end+.01;state.indices=rangeIndices(state.data.segments,state.start,state.end);renderRange();}selectClip(i,{play:true});});
-$('rangeForm').addEventListener('submit',e=>{e.preventDefault();try{setRange(parseTime($('rangeStart').value),parseTime($('rangeEnd').value));}catch(error){message('rangeStatus',error.message,'error');}});
-$('fullRange').addEventListener('click',()=>{if(state.data)setRange(0,state.data.end+.01);});
-$('useCurrentTime').addEventListener('click',()=>{if(!playerReady){message('rangeStatus','Wait for the video player to load.','error');return;}const i=indexAtTime(state.data.segments,player.getCurrentTime());setRange(state.data.segments[i].start,state.data.end+.01);});
 $('replayButton').addEventListener('click',replay);
 $('playbackButtons').addEventListener('click',event=>{const button=event.target.closest('[data-rate]');if(!button||button.disabled)return;$('playbackRate').value=button.dataset.rate;$('playbackButtons').querySelectorAll('[data-rate]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));replay();});
 $('playbackRate').addEventListener('change',()=>{if(playerReady)player.setPlaybackRate(Number($('playbackRate').value));});
@@ -258,12 +226,7 @@ $('againButton').addEventListener('click',()=>{state.answers[state.index]=Array(
 $('nextButton').addEventListener('click',()=>navigate(1));$('forwardClip').addEventListener('click',()=>navigate(1));$('previousClip').addEventListener('click',()=>navigate(-1));
 window.addEventListener('pagehide',()=>{save();stopClip();clearInterval(timer);clearTimeout(readyTimeout);});
 
-// Optional agent access uses exactly the same page actions; unsupported browsers are unaffected.
-if(document.modelContext?.registerTool){
-  const lifecycle=new AbortController();
-  try{void Promise.resolve(document.modelContext.registerTool({name:'set_youtube_practice_range',description:'Set the time range on the currently loaded YouTube video and select its first caption.',inputSchema:{type:'object',properties:{startSeconds:{type:'number',minimum:0},endSeconds:{type:'number',minimum:0}},required:['startSeconds','endSeconds'],additionalProperties:false},annotations:{readOnlyHint:false},execute(input){if(!state.data)throw new Error('Load a YouTube video first.');setRange(input.startSeconds,input.endSeconds);return {clips:state.indices.length,start:state.start,end:state.end};}},{signal:lifecycle.signal})).catch(()=>{});}catch{}
-  window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
-}
+
 try{
   const last=JSON.parse(localStorage.getItem('dictai:youtube:last')||'null');
   if(last&&/^[A-Za-z0-9_-]{11}$/.test(last.video_id)&&Array.isArray(last.segments)&&last.segments.length&&last.segments.every(s=>typeof s.text==='string'&&Number.isFinite(s.start)&&Number.isFinite(s.end))){

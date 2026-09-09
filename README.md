@@ -22,7 +22,7 @@ DictAI is a listening and dictation workspace with a course menu on the left and
 
 - **Conversation** — short two-speaker exercises organized by CEFR level and topic.
 - **Book** — long-form dictation organized by title and chapter, with direct sentence navigation.
-- **YouTube** — integrated between Conversation and Book in the main sidebar. Paste a video link above the full-width player, then solve chronological clips in the familiar answer card below. Timeline and time-range controls expand when needed. [YouTube guide](YOUTUBE.md)
+- **YouTube** — integrated between Conversation and Book in the main sidebar. Paste a video link above the full-width player, then solve chronological clips in the familiar answer card below. Use Previous / Next to navigate; no timeline or range panel. [YouTube guide](YOUTUBE.md)
 
 Conversation and Book use the same current DictAI practice interface, keyboard matching, speech recognition controls, hints, playback speeds, and completion flow. YouTube retains the familiar answer row (Space / Enter, Names / Give Up, Again / Next), with an original-video player and time-indexed caption list. YouTube currently uses typed answers; it does not synthesize replacement audio.
 
@@ -47,7 +47,7 @@ flowchart LR
 | Level | A1, A2, B1, B2, C1, and C2 themes |
 | Conversation | Always-visible compact topic list with five curated topics plus Random |
 | Book | Compact title list; supported titles expand into a chapter submenu |
-| YouTube | Link import, timed captions, From / To range, original-video replay and per-video browser-local progress |
+| YouTube | Link import, timed clips, Previous / Next navigation, original-video replay and per-video browser-local progress |
 | Practice | Current DictAI word-slot interface shared by Conversation and Book |
 | Input isolation | Voice recognition and typed input remain independent |
 | Progress | Each conversation topic and each book chapter retain separate positions |
