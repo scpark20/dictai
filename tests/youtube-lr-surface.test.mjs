@@ -15,6 +15,7 @@ const messages=[],fakeParent={postMessage:(message,origin)=>messages.push({messa
 const append=d.body.append.bind(d.body);d.body.append=(...nodes)=>{append(...nodes);for(const node of nodes)if(node.tagName==='SCRIPT'&&node.src.includes('/practice/app.js')){w.eval(appSource);queueMicrotask(()=>node.onload());}};
 await import('../youtube-ui/youtube.js?lr-surface-test');await new Promise(r=>setTimeout(r,20));
 assert.ok(d.body.classList.contains('extension-surface'));assert.ok(messages.some(x=>x.message.type==='need-captions'));assert.equal(fetches,0);
+assert.equal(d.getElementById('headerStep').parentElement.className,'practice-card');
 const payload={videoId:'jNQXAC9IVRw',title:'Fixture',language:'en',cues:[{start:1,duration:2,text:'Hello world.'},{start:4,duration:2,text:'Next line.'}]};
 for(const listener of messageListeners)listener({source:fakeParent,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-panel-event-v2',type:'captions',payload}});
 await new Promise(r=>setTimeout(r,30));

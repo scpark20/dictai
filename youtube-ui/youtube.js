@@ -17,7 +17,7 @@ const provider = createYouTubeProvider({
   storageError() {message('importStatus','Browser storage is unavailable. Keep this page open to retain progress.','warning');},
 });
 window.dictaiPracticeProvider=provider;
-document.querySelector('.youtube-navigation').append(document.getElementById('headerStep'));
+if(!extensionSurface)document.querySelector('.youtube-navigation').append(document.getElementById('headerStep'));
 
 if (params.get('embed') === '1') document.body.classList.add('embedded');
 if(extensionSurface)document.body.classList.add('extension-surface');

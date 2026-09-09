@@ -12,7 +12,7 @@ const panelHTML=await readFile(new URL('panel.html',root),'utf8');
 const panelScript=await readFile(new URL('panel.js',root),'utf8');
 
 test('manifest is a minimal YouTube-only LR surface',()=>{
-  assert.equal(manifest.version,'2.2.0');
+  assert.equal(manifest.version,'2.2.1');
   assert.deepEqual(manifest.permissions,['scripting']);
   assert.deepEqual(manifest.host_permissions,['https://www.youtube.com/*']);
   assert.equal(manifest.content_scripts.length,2);
