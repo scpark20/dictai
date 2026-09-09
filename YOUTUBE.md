@@ -6,6 +6,8 @@ The integrated layout places the address field above the full-width video and th
 
 ## Learning flow
 
+English numeric and orthographic alternatives are accepted without rewriting captions. Examples: $25 / twenty-five dollars, 2026 / twenty twenty-six, 3:30 / three thirty, and didn't / did not. Numeric expressions remain atomic, incomplete alternatives stay in the input on Space, and Enter explicitly submits. See [audit, acceptance policy, guardrails and migration](YOUTUBE-MULTI-ANSWER.md). Book/Conversation and ASR are unchanged.
+
 1. Load the original captions, preferring creator-provided captions in the requested language. No translation is generated. Other available caption languages are shown if the selected one is missing.
 2. Start from the saved sentence or the timestamp in the pasted link, then use Previous / Next to move through the full video in order.
 3. Replay that clip using the official YouTube iframe player. The original video audio is used: no download, TTS generation or GPU job.

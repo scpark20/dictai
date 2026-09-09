@@ -1,21 +1,4 @@
-export function tokens(text) {
-  return String(text).normalize('NFKC').replace(/[’‘]/g, "'").match(/[\p{L}\p{N}]+(?:['-][\p{L}\p{N}]+)*/gu) || [];
-}
-export function normalize(word) {
-  const value = tokens(word).join('').toLocaleLowerCase().replace(/['-]/g, '');
-  return ({mr:'mister', mrs:'missus', dr:'doctor'})[value] || value;
-}
-export function submitWords(words, opened, answer) {
-  const next = [...opened]; let matched = 0, duplicate = 0, missed = 0;
-  for (const entered of tokens(answer)) {
-    const key = normalize(entered);
-    const index = words.findIndex((w,i) => !next[i] && normalize(w) === key);
-    if (index >= 0) { next[index] = 'solved'; matched++; }
-    else if (words.some(w => normalize(w) === key)) duplicate++;
-    else missed++;
-  }
-  return {opened:next, matched, duplicate, missed, complete:next.length > 0 && next.every(Boolean)};
-}
+export {tokens, normalize, submitWords, migrateOpened, mapLegacyIndices, TOKEN_VERSION} from './youtube-answers.mjs?v=multi-1';
 export function parseTime(value) {
   const s = String(value).trim();
   if (!s || !/^\d+(?::\d{1,2}){0,2}(?:\.\d+)?$/.test(s)) return NaN;

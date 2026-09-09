@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {tokens,normalize,submitWords,parseTime,timeLabel,rangeIndices,indexAtTime,progressKey} from '../youtube-ui/youtube-core.mjs';
 test('original wording, contractions, names and punctuation',()=>{
-  assert.deepEqual(tokens("Mr. Green didn’t go."),['Mr','Green',"didn't",'go']);
+  assert.deepEqual(tokens("Mr. Green didn’t go."),['Mr.','Green',"didn't",'go']);
   assert.equal(normalize('Mr.'),normalize('Mister'));
   assert.equal(normalize("didn't"),normalize('didnt'));
   assert.deepEqual(tokens('안녕하세요 여러분 2026'),['안녕하세요','여러분','2026']);

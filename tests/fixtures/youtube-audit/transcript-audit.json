@@ -1,0 +1,1048 @@
+[
+  {
+    "id": "hVimVzgtD6w",
+    "url": "https://www.youtube.com/watch?v=hVimVzgtD6w",
+    "title": "The best stats you've ever seen | Hans Rosling",
+    "generated": true,
+    "clips": 181,
+    "words": 3237,
+    "counts": {
+      "digits": 38,
+      "currency": 4,
+      "percent": 13,
+      "time": 0,
+      "ordinal": 6,
+      "decimal": 2,
+      "scale": 0,
+      "abbreviation": 10,
+      "contraction": 56,
+      "fraction": 2,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 30.11,
+        "text": "20"
+      },
+      {
+        "kind": "currency",
+        "at": 387.55,
+        "text": "$1"
+      },
+      {
+        "kind": "percent",
+        "at": 404.74,
+        "text": "percent"
+      },
+      {
+        "kind": "ordinal",
+        "at": 183.12,
+        "text": "first"
+      },
+      {
+        "kind": "decimal",
+        "at": 97.82,
+        "text": "point eight"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 252.389,
+        "text": "UN"
+      },
+      {
+        "kind": "contraction",
+        "at": 77.39,
+        "text": "it's"
+      },
+      {
+        "kind": "fraction",
+        "at": 122.0,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "OT9poH_D2Iw",
+    "url": "https://www.youtube.com/watch?v=OT9poH_D2Iw",
+    "title": "Hans Rosling: The good news of the decade?",
+    "generated": false,
+    "clips": 200,
+    "words": 2551,
+    "counts": {
+      "digits": 32,
+      "currency": 0,
+      "percent": 15,
+      "time": 0,
+      "ordinal": 7,
+      "decimal": 6,
+      "scale": 0,
+      "abbreviation": 2,
+      "contraction": 57,
+      "fraction": 1,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 64.26,
+        "text": "1990"
+      },
+      {
+        "kind": "percent",
+        "at": 74.26,
+        "text": "percent"
+      },
+      {
+        "kind": "ordinal",
+        "at": 58.26,
+        "text": "second"
+      },
+      {
+        "kind": "decimal",
+        "at": 315.26,
+        "text": "0.9"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 355.26,
+        "text": "HIV"
+      },
+      {
+        "kind": "contraction",
+        "at": 23.26,
+        "text": "They're"
+      },
+      {
+        "kind": "fraction",
+        "at": 64.26,
+        "text": "thirds"
+      }
+    ]
+  },
+  {
+    "id": "spUNpyF58BY",
+    "url": "https://www.youtube.com/watch?v=spUNpyF58BY",
+    "title": "But what is the Fourier Transform?  A visual introduction.",
+    "generated": false,
+    "clips": 170,
+    "words": 3528,
+    "counts": {
+      "digits": 35,
+      "currency": 0,
+      "percent": 0,
+      "time": 1,
+      "ordinal": 26,
+      "decimal": 3,
+      "scale": 0,
+      "abbreviation": 0,
+      "contraction": 63,
+      "fraction": 3,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 50.52,
+        "text": "440"
+      },
+      {
+        "kind": "time",
+        "at": 824.44,
+        "text": "am"
+      },
+      {
+        "kind": "ordinal",
+        "at": 50.52,
+        "text": "second"
+      },
+      {
+        "kind": "decimal",
+        "at": 167.82,
+        "text": "4.5"
+      },
+      {
+        "kind": "contraction",
+        "at": 4.32,
+        "text": "we're"
+      },
+      {
+        "kind": "fraction",
+        "at": 209.64,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "aircAruvnKk",
+    "url": "https://www.youtube.com/watch?v=aircAruvnKk",
+    "title": "But what is a neural network? | Deep learning chapter 1",
+    "generated": false,
+    "clips": 159,
+    "words": 3357,
+    "counts": {
+      "digits": 54,
+      "currency": 0,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 15,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 0,
+      "contraction": 55,
+      "fraction": 0,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 4.22,
+        "text": "3"
+      },
+      {
+        "kind": "ordinal",
+        "at": 216.72,
+        "text": "first"
+      },
+      {
+        "kind": "contraction",
+        "at": 6.06,
+        "text": "It's"
+      }
+    ]
+  },
+  {
+    "id": "IlU-zDU6aQ0",
+    "url": "https://www.youtube.com/watch?v=IlU-zDU6aQ0",
+    "title": "Marty Lobdell - Study Less Study Smart",
+    "generated": false,
+    "clips": 343,
+    "words": 9228,
+    "counts": {
+      "digits": 135,
+      "currency": 0,
+      "percent": 4,
+      "time": 6,
+      "ordinal": 23,
+      "decimal": 5,
+      "scale": 0,
+      "abbreviation": 14,
+      "contraction": 428,
+      "fraction": 21,
+      "units": 3
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 33.685,
+        "text": "5"
+      },
+      {
+        "kind": "percent",
+        "at": 427.362,
+        "text": "100%"
+      },
+      {
+        "kind": "time",
+        "at": 278.374,
+        "text": "6:30"
+      },
+      {
+        "kind": "ordinal",
+        "at": 72.956,
+        "text": "4th"
+      },
+      {
+        "kind": "decimal",
+        "at": 171.431,
+        "text": "1.0"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 668.267,
+        "text": "TV"
+      },
+      {
+        "kind": "contraction",
+        "at": 1.301,
+        "text": "don't"
+      },
+      {
+        "kind": "fraction",
+        "at": 171.431,
+        "text": "quarter"
+      },
+      {
+        "kind": "units",
+        "at": 324.644,
+        "text": "degree"
+      }
+    ]
+  },
+  {
+    "id": "T7M3PpjBZzw",
+    "url": "https://www.youtube.com/watch?v=T7M3PpjBZzw",
+    "title": "How I Get Over 100,000,000 Views Per Video",
+    "generated": true,
+    "clips": 71,
+    "words": 1967,
+    "counts": {
+      "digits": 22,
+      "currency": 3,
+      "percent": 1,
+      "time": 0,
+      "ordinal": 7,
+      "decimal": 0,
+      "scale": 8,
+      "abbreviation": 10,
+      "contraction": 51,
+      "fraction": 2,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 0.04,
+        "text": "100"
+      },
+      {
+        "kind": "currency",
+        "at": 173.959,
+        "text": "dollars"
+      },
+      {
+        "kind": "percent",
+        "at": 166.04,
+        "text": "100%"
+      },
+      {
+        "kind": "ordinal",
+        "at": 180.44,
+        "text": "first"
+      },
+      {
+        "kind": "scale",
+        "at": 0.04,
+        "text": "million"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 82.52,
+        "text": "AV"
+      },
+      {
+        "kind": "contraction",
+        "at": 7.04,
+        "text": "you'll"
+      },
+      {
+        "kind": "fraction",
+        "at": 371.56,
+        "text": "24/7"
+      }
+    ]
+  },
+  {
+    "id": "48h57PspBec",
+    "url": "https://www.youtube.com/watch?v=48h57PspBec",
+    "title": "$1 vs $1,000,000,000 Yacht!",
+    "generated": false,
+    "clips": 395,
+    "words": 3110,
+    "counts": {
+      "digits": 51,
+      "currency": 34,
+      "percent": 1,
+      "time": 1,
+      "ordinal": 4,
+      "decimal": 0,
+      "scale": 31,
+      "abbreviation": 9,
+      "contraction": 136,
+      "fraction": 0,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 0.0,
+        "text": "1"
+      },
+      {
+        "kind": "currency",
+        "at": 0.0,
+        "text": "$1"
+      },
+      {
+        "kind": "percent",
+        "at": 686.73,
+        "text": "100%"
+      },
+      {
+        "kind": "time",
+        "at": 247.14,
+        "text": "am"
+      },
+      {
+        "kind": "ordinal",
+        "at": 401.49,
+        "text": "4th"
+      },
+      {
+        "kind": "scale",
+        "at": 0.0,
+        "text": "billion"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 100.876,
+        "text": "Mr."
+      },
+      {
+        "kind": "contraction",
+        "at": 0.0,
+        "text": "it's"
+      }
+    ]
+  },
+  {
+    "id": "rDrw3kkqKac",
+    "url": "https://www.youtube.com/watch?v=rDrw3kkqKac",
+    "title": "The Proven, Reliable Path to Earn $1M (Step By Step)",
+    "generated": true,
+    "clips": 777,
+    "words": 15582,
+    "counts": {
+      "digits": 238,
+      "currency": 34,
+      "percent": 33,
+      "time": 0,
+      "ordinal": 31,
+      "decimal": 2,
+      "scale": 33,
+      "abbreviation": 21,
+      "contraction": 650,
+      "fraction": 3,
+      "units": 1
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 14.4,
+        "text": "21"
+      },
+      {
+        "kind": "currency",
+        "at": 0.08,
+        "text": "dollars"
+      },
+      {
+        "kind": "percent",
+        "at": 467.44,
+        "text": "40%"
+      },
+      {
+        "kind": "ordinal",
+        "at": 0.08,
+        "text": "first"
+      },
+      {
+        "kind": "decimal",
+        "at": 2480.48,
+        "text": "0.5"
+      },
+      {
+        "kind": "scale",
+        "at": 0.08,
+        "text": "million"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 116.32,
+        "text": "US"
+      },
+      {
+        "kind": "contraction",
+        "at": 0.08,
+        "text": "we're"
+      },
+      {
+        "kind": "fraction",
+        "at": 1659.6,
+        "text": "half"
+      },
+      {
+        "kind": "units",
+        "at": 1308.559,
+        "text": "degree"
+      }
+    ]
+  },
+  {
+    "id": "Ufe0B6cG9gg",
+    "error": "VideoUnavailable"
+  },
+  {
+    "id": "eIrMbAQSU34",
+    "url": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+    "title": "Java Full Course for Beginners",
+    "generated": false,
+    "clips": 888,
+    "words": 24994,
+    "counts": {
+      "digits": 274,
+      "currency": 17,
+      "percent": 15,
+      "time": 0,
+      "ordinal": 114,
+      "decimal": 24,
+      "scale": 15,
+      "abbreviation": 31,
+      "contraction": 665,
+      "fraction": 1,
+      "units": 1
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 48.719,
+        "text": "3"
+      },
+      {
+        "kind": "currency",
+        "at": 267.98,
+        "text": "pounds"
+      },
+      {
+        "kind": "percent",
+        "at": 91.59,
+        "text": "10%"
+      },
+      {
+        "kind": "ordinal",
+        "at": 42.3,
+        "text": "first"
+      },
+      {
+        "kind": "decimal",
+        "at": 2538.64,
+        "text": "point one"
+      },
+      {
+        "kind": "scale",
+        "at": 48.719,
+        "text": "million"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 74.31,
+        "text": "VPN"
+      },
+      {
+        "kind": "contraction",
+        "at": 0.03,
+        "text": "you're"
+      },
+      {
+        "kind": "fraction",
+        "at": 4855.25,
+        "text": "half"
+      },
+      {
+        "kind": "units",
+        "at": 267.98,
+        "text": "kilograms"
+      }
+    ]
+  },
+  {
+    "id": "H14bBuluwB8",
+    "url": "https://www.youtube.com/watch?v=H14bBuluwB8",
+    "title": "Grit: The Power of Passion and Perseverance | Angela Lee Duckworth | TED",
+    "generated": false,
+    "clips": 62,
+    "words": 867,
+    "counts": {
+      "digits": 1,
+      "currency": 0,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 0,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 5,
+      "contraction": 18,
+      "fraction": 0,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 12.863,
+        "text": "27"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 36.763,
+        "text": "IQ"
+      },
+      {
+        "kind": "contraction",
+        "at": 50.33,
+        "text": "weren't"
+      }
+    ]
+  },
+  {
+    "id": "8S0FDjFBj8o",
+    "url": "https://www.youtube.com/watch?v=8S0FDjFBj8o",
+    "title": "How to sound smart in your TEDx Talk | Will Stephen | TEDxNewYork",
+    "generated": false,
+    "clips": 97,
+    "words": 819,
+    "counts": {
+      "digits": 20,
+      "currency": 0,
+      "percent": 0,
+      "time": 2,
+      "ordinal": 0,
+      "decimal": 2,
+      "scale": 1,
+      "abbreviation": 1,
+      "contraction": 30,
+      "fraction": 1,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 154.925,
+        "text": "70.5"
+      },
+      {
+        "kind": "time",
+        "at": 53.238,
+        "text": "am"
+      },
+      {
+        "kind": "decimal",
+        "at": 154.925,
+        "text": "70.5"
+      },
+      {
+        "kind": "scale",
+        "at": 186.157,
+        "text": "million"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 235.326,
+        "text": "TED"
+      },
+      {
+        "kind": "contraction",
+        "at": 21.762,
+        "text": "That's"
+      },
+      {
+        "kind": "fraction",
+        "at": 252.443,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "iG9CE55wbtY",
+    "url": "https://www.youtube.com/watch?v=iG9CE55wbtY",
+    "title": "Do schools kill creativity? | Sir Ken Robinson | TED",
+    "generated": false,
+    "clips": 262,
+    "words": 3126,
+    "counts": {
+      "digits": 9,
+      "currency": 0,
+      "percent": 0,
+      "time": 2,
+      "ordinal": 8,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 10,
+      "contraction": 125,
+      "fraction": 0,
+      "units": 3
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 136.873,
+        "text": "2065"
+      },
+      {
+        "kind": "time",
+        "at": 115.346,
+        "text": "am"
+      },
+      {
+        "kind": "ordinal",
+        "at": 61.158,
+        "text": "second"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 281.185,
+        "text": "II"
+      },
+      {
+        "kind": "contraction",
+        "at": 31.129,
+        "text": "It's"
+      },
+      {
+        "kind": "units",
+        "at": 757.708,
+        "text": "degrees"
+      }
+    ]
+  },
+  {
+    "id": "arj7oStGLkU",
+    "url": "https://www.youtube.com/watch?v=arj7oStGLkU",
+    "title": "Inside the Mind of a Master Procrastinator | Tim Urban | TED",
+    "generated": false,
+    "clips": 157,
+    "words": 2248,
+    "counts": {
+      "digits": 6,
+      "currency": 0,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 4,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 8,
+      "contraction": 88,
+      "fraction": 1,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 51.638,
+        "text": "90"
+      },
+      {
+        "kind": "ordinal",
+        "at": 26.748,
+        "text": "first"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 143.276,
+        "text": "OK"
+      },
+      {
+        "kind": "contraction",
+        "at": 51.638,
+        "text": "you're"
+      },
+      {
+        "kind": "fraction",
+        "at": 524.13,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "iCvmsMzlF7o",
+    "url": "https://www.youtube.com/watch?v=iCvmsMzlF7o",
+    "title": "The Power of Vulnerability | Brené Brown | TED",
+    "generated": false,
+    "clips": 240,
+    "words": 3087,
+    "counts": {
+      "digits": 4,
+      "currency": 0,
+      "percent": 0,
+      "time": 4,
+      "ordinal": 9,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 0,
+      "contraction": 113,
+      "fraction": 1,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 195.673,
+        "text": "10"
+      },
+      {
+        "kind": "time",
+        "at": 69.854,
+        "text": "am"
+      },
+      {
+        "kind": "ordinal",
+        "at": 63.648,
+        "text": "second"
+      },
+      {
+        "kind": "contraction",
+        "at": 16.86,
+        "text": "I'll"
+      },
+      {
+        "kind": "fraction",
+        "at": 893.074,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "qp0HIF3SfI4",
+    "url": "https://www.youtube.com/watch?v=qp0HIF3SfI4",
+    "title": "How Great Leaders Inspire Action | Simon Sinek | TED",
+    "generated": false,
+    "clips": 222,
+    "words": 3011,
+    "counts": {
+      "digits": 20,
+      "currency": 3,
+      "percent": 9,
+      "time": 0,
+      "ordinal": 11,
+      "decimal": 2,
+      "scale": 1,
+      "abbreviation": 10,
+      "contraction": 103,
+      "fraction": 1,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 142.257,
+        "text": "100"
+      },
+      {
+        "kind": "currency",
+        "at": 529.69,
+        "text": "dollars"
+      },
+      {
+        "kind": "percent",
+        "at": 142.257,
+        "text": "percent"
+      },
+      {
+        "kind": "ordinal",
+        "at": 501.89,
+        "text": "20th"
+      },
+      {
+        "kind": "decimal",
+        "at": 672.757,
+        "text": "2.5"
+      },
+      {
+        "kind": "scale",
+        "at": 559.757,
+        "text": "hundred"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 149.257,
+        "text": "USP"
+      },
+      {
+        "kind": "contraction",
+        "at": 16.257,
+        "text": "don't"
+      },
+      {
+        "kind": "fraction",
+        "at": 81.39,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "RcGyVTAoXEU",
+    "url": "https://www.youtube.com/watch?v=RcGyVTAoXEU",
+    "title": "How to Make Stress Your Friend | Kelly McGonigal | TED",
+    "generated": false,
+    "clips": 150,
+    "words": 2002,
+    "counts": {
+      "digits": 12,
+      "currency": 1,
+      "percent": 2,
+      "time": 1,
+      "ordinal": 4,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 4,
+      "contraction": 44,
+      "fraction": 0,
+      "units": 1
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 51.699,
+        "text": "10"
+      },
+      {
+        "kind": "currency",
+        "at": 535.796,
+        "text": "pound"
+      },
+      {
+        "kind": "percent",
+        "at": 113.211,
+        "text": "percent"
+      },
+      {
+        "kind": "time",
+        "at": 42.997,
+        "text": "am"
+      },
+      {
+        "kind": "ordinal",
+        "at": 16.968,
+        "text": "first"
+      },
+      {
+        "kind": "abbreviation",
+        "at": 171.117,
+        "text": "HIV"
+      },
+      {
+        "kind": "contraction",
+        "at": 23.779,
+        "text": "you've"
+      },
+      {
+        "kind": "units",
+        "at": 839.919,
+        "text": "KM"
+      }
+    ]
+  },
+  {
+    "id": "j0wJBEZdwLs",
+    "url": "https://www.youtube.com/watch?v=j0wJBEZdwLs",
+    "title": "But what is a Laplace Transform?",
+    "generated": false,
+    "clips": 303,
+    "words": 6287,
+    "counts": {
+      "digits": 71,
+      "currency": 0,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 6,
+      "decimal": 10,
+      "scale": 0,
+      "abbreviation": 0,
+      "contraction": 106,
+      "fraction": 8,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "digits",
+        "at": 570.04,
+        "text": "0"
+      },
+      {
+        "kind": "ordinal",
+        "at": 145.32,
+        "text": "second"
+      },
+      {
+        "kind": "decimal",
+        "at": 1470.08,
+        "text": "1.5"
+      },
+      {
+        "kind": "contraction",
+        "at": 0.0,
+        "text": "you're"
+      },
+      {
+        "kind": "fraction",
+        "at": 190.5,
+        "text": "half"
+      }
+    ]
+  },
+  {
+    "id": "jNQXAC9IVRw",
+    "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "title": "Me at the zoo",
+    "generated": false,
+    "clips": 3,
+    "words": 39,
+    "counts": {
+      "digits": 0,
+      "currency": 0,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 0,
+      "decimal": 0,
+      "scale": 0,
+      "abbreviation": 0,
+      "contraction": 2,
+      "fraction": 0,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "contraction",
+        "at": 7.974,
+        "text": "that's"
+      }
+    ]
+  },
+  {
+    "id": "Ak22eaBVPXs",
+    "url": "https://www.youtube.com/watch?v=Ak22eaBVPXs",
+    "title": "How to make $100 TRILLION 😂💸",
+    "generated": true,
+    "clips": 6,
+    "words": 142,
+    "counts": {
+      "digits": 0,
+      "currency": 4,
+      "percent": 0,
+      "time": 0,
+      "ordinal": 0,
+      "decimal": 0,
+      "scale": 15,
+      "abbreviation": 0,
+      "contraction": 8,
+      "fraction": 0,
+      "units": 0
+    },
+    "examples": [
+      {
+        "kind": "currency",
+        "at": 0.0,
+        "text": "dollars"
+      },
+      {
+        "kind": "scale",
+        "at": 0.0,
+        "text": "million"
+      },
+      {
+        "kind": "contraction",
+        "at": 0.0,
+        "text": "that's"
+      }
+    ]
+  }
+]

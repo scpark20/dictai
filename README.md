@@ -24,7 +24,7 @@ DictAI is a listening and dictation workspace with a course menu on the left and
 - **Book** — long-form dictation organized by title and chapter, with direct sentence navigation.
 - **YouTube** — integrated between Conversation and Book in the main sidebar. Paste a video link above the full-width player, then solve chronological clips in the familiar answer card below. Use Previous / Next to navigate; no timeline or range panel. [YouTube guide](YOUTUBE.md)
 
-Conversation and Book use the same current DictAI practice interface, keyboard matching, speech recognition controls, hints, playback speeds, and completion flow. YouTube retains the familiar answer row (Space / Enter, Names / Give Up, Again / Next), with an original-video player and time-indexed caption list. YouTube currently uses typed answers; it does not synthesize replacement audio.
+Conversation and Book use the same current DictAI practice interface, keyboard matching, speech recognition controls, hints, playback speeds, and completion flow. YouTube retains the familiar answer row (Space / Enter, Names / Give Up, Again / Next), with an original-video player and top-right sentence navigation. English YouTube answers accept explicit numeric and orthographic alternatives while preserving subtitle display and progress. [Evidence and matching policy](YOUTUBE-MULTI-ANSWER.md). YouTube currently uses typed answers; it does not synthesize replacement audio.
 
 ```mermaid
 flowchart LR

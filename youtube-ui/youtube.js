@@ -1,4 +1,4 @@
-import {tokens, submitWords, timeLabel, rangeIndices, indexAtTime, progressKey} from './youtube-core.mjs';
+import {tokens, submitWords, timeLabel, rangeIndices, indexAtTime, progressKey, migrateOpened, mapLegacyIndices, TOKEN_VERSION} from './youtube-core.mjs?v=multi-1';
 
 const $ = id => document.getElementById(id);
 const state = {data:null, index:0, indices:[], answers:{}, start:0, end:0, request:0, busy:false};
@@ -11,7 +11,7 @@ function current() { return state.data?.segments[state.index]; }
 function save() {
   if (!state.data) return;
   try {
-    localStorage.setItem(progressKey(state.data), JSON.stringify({index:state.index,start:state.start,end:state.end,answers:state.answers}));
+    localStorage.setItem(progressKey(state.data), JSON.stringify({index:state.index,start:state.start,end:state.end,answers:state.answers,tokenVersion:TOKEN_VERSION}));
     $('saveStatus').textContent='Progress saved on this browser.';
   } catch { $('saveStatus').textContent='Browser storage is unavailable. Keep this page open to retain progress.'; }
 }
@@ -26,7 +26,7 @@ function loadProgress(data) {
   state.answers={};
   if (saved.answers && typeof saved.answers==='object') {
     for (const [index, opened] of Object.entries(saved.answers)) {
-      if (data.segments[index] && Array.isArray(opened) && opened.length===tokens(data.segments[index].text).length && opened.every(s=>s===null||s==='solved'||s==='revealed')) state.answers[index]=opened;
+      if(data.segments[index]){const migrated=migrateOpened(data.segments[index].text,opened,saved.tokenVersion);if(migrated)state.answers[index]=migrated;}
     }
   }
   if (data.start_hint > 0) {
@@ -189,12 +189,13 @@ $('subtitleFile').addEventListener('change',async e=>{const file=e.target.files[
 $('replayButton').addEventListener('click',replay);
 $('playbackButtons').addEventListener('click',event=>{const button=event.target.closest('[data-rate]');if(!button||button.disabled)return;$('playbackRate').value=button.dataset.rate;$('playbackButtons').querySelectorAll('[data-rate]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));replay();});
 $('playbackRate').addEventListener('change',()=>{if(playerReady)player.setPlaybackRate(Number($('playbackRate').value));});
-function submitAnswer(){
+function submitAnswer({deferIncomplete=false}={}){
   if(!current()||isComplete(state.index))return;
   const answer=$('answerInput').value.trim();if(!answer)return;
-  const result=submitWords(tokens(current().text),openedWords(),answer);
+  const result=submitWords(tokens(current().text),openedWords(),answer,{deferIncomplete,language:state.data.language});
   state.answers[state.index]=result.opened;
-  if(result.matched)$('answerInput').value='';
+  if(result.pending){$('answerInput').value=(result.remaining||answer)+' ';renderExercise({focus:true});message('answerFeedback','Keep typing the expression, or press Enter to submit.');return;}
+  if(result.matched)$('answerInput').value=result.remaining||'';
   renderExercise({focus:true});
   if(!result.complete){
     if(result.matched)message('answerFeedback',`${result.matched} word${result.matched===1?'':'s'} found. ${result.opened.filter(v=>!v).length} left.${result.missed?' Some words did not match.':''}`,'success');
@@ -203,7 +204,7 @@ function submitAnswer(){
   }
 }
 $('answerForm').addEventListener('submit',e=>{e.preventDefault();submitAnswer();});
-$('answerInput').addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing){e.preventDefault();submitAnswer();}});
+$('answerInput').addEventListener('keydown',e=>{if(e.key===' '&&!e.isComposing){e.preventDefault();submitAnswer({deferIncomplete:true});}});
 $('wordGrid').addEventListener('click',e=>{const b=e.target.closest('[data-slot]');if(!b)return;const i=Number(b.dataset.slot);if(openedWords()[i])return;openedWords()[i]='revealed';renderExercise();});
 $('giveUpButton').addEventListener('click',()=>{state.answers[state.index]=openedWords().map(v=>v||'revealed');renderExercise();});
 $('namesButton').addEventListener('click',async()=>{
@@ -216,7 +217,7 @@ $('namesButton').addEventListener('click',async()=>{
     if(request!==state.request||index!==state.index)return;
     if(!response.ok)throw new Error(result.detail?.message||'Names could not be loaded.');
     let count=0;
-    for(const i of result.indices){if(Number.isInteger(i)&&i>=0&&i<openedWords().length&&!openedWords()[i]){openedWords()[i]='revealed';count++;}}
+    for(const i of mapLegacyIndices(text,result.indices||[])){if(i>=0&&i<openedWords().length&&!openedWords()[i]){openedWords()[i]='revealed';count++;}}
     renderExercise();
     if(!isComplete(index))message('answerFeedback',count?`${count} name word${count===1?'':'s'} revealed.`:'No new names to reveal.',count?'':'warning');
   }catch(error){if(request===state.request&&index===state.index)message('answerFeedback',error.message,'error');}
