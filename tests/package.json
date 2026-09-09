@@ -1,0 +1,1 @@
+{"private":true,"type":"module","scripts":{"test":"node --test youtube-core.test.mjs && node youtube-dom.test.mjs"},"devDependencies":{"jsdom":"30.0.1"}}

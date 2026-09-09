@@ -39,6 +39,12 @@
 
       <section class="paths" aria-label="Choose practice type">
         <div class="path-group">
+          <button class="path path-button" id="youtubePath" type="button" aria-label="Open YouTube practice">
+            <span class="path-icon" aria-hidden="true">▶</span>
+            <span><strong>YouTube</strong><small>Practice any captioned video</small></span>
+          </button>
+        </div>
+        <div class="path-group">
           <button class="path path-button" id="conversationPath" type="button" aria-label="Open Conversation practice">
             <span class="path-icon" aria-hidden="true">••</span>
             <span><strong>Conversation</strong><small>Everyday listening</small></span>
@@ -60,9 +66,9 @@
         <strong id="practiceCourseTopic">Greetings</strong>
         <small id="practiceCourseCount">1 sample conversation</small>
       </header>
-      <iframe id="practiceFrame" title="DictAI practice" src="./practice/"></iframe>
+      <iframe id="practiceFrame" title="DictAI practice" src="./practice/" allow="autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
     </section>
     </div>
-    <script src="./app.js?v=cefr-sample-1"></script>
+    <script src="./app.js?v=youtube-1"></script>
   </body>
 </html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#1877e8">
+  <title>YouTube · DictAI</title>
+  <link rel="stylesheet" href="/youtube-assets/youtube.css?v=1">
+</head>
+<body>
+  <main class="youtube-page">
+    <header class="page-head"><a href="/" target="_top" class="brand">DictAI</a><span class="mode-badge">▶ YouTube</span></header>
+    <section class="import-card" aria-labelledby="importTitle">
+      <h1 id="importTitle">Turn a video into listening practice.</h1>
+      <form id="importForm" class="import-form">
+        <label class="url-field"><span>YouTube link</span><input id="videoUrl" type="text" inputmode="url" placeholder="Paste a YouTube link…" maxlength="2000" required autocomplete="off"></label>
+        <label><span>Captions</span><select id="captionLanguage"><option value="en">English</option><option value="ko">한국어</option></select></label>
+        <button id="loadButton" class="primary" type="submit">Load video →</button>
+      </form>
+      <p id="importStatus" class="status" role="status" aria-live="polite">Use a video with captions. Original video audio — no generated voices.</p>
+      <details id="manualDetails">
+        <summary>Have a caption file? Use SRT / VTT</summary>
+        <div class="manual-import">
+          <label>Caption file<input type="file" id="subtitleFile" accept=".srt,.vtt,text/vtt,application/x-subrip"></label>
+          <label>Or paste timed captions<textarea id="subtitleText" rows="4" placeholder="00:00:01.000 --> 00:00:04.000&#10;The original caption goes here." maxlength="2000000"></textarea></label>
+          <button id="useSubtitles" type="button">Use these captions</button>
+        </div>
+      </details>
+    </section>
+
+    <div class="workspace" id="workspace" hidden>
+      <section class="media-column" aria-label="Video and timeline">
+        <div class="video-card">
+          <div class="video-frame"><div id="youtubePlayer"></div></div>
+          <div class="video-info"><h2 id="videoTitle"></h2><a id="originalLink" target="_blank" rel="noopener noreferrer">Open on YouTube ↗</a></div>
+          <p class="status player-status" id="playerStatus" role="status">Loading the YouTube player…</p>
+        </div>
+        <section class="timeline-card" aria-labelledby="timelineTitle">
+          <div class="section-heading"><h2 id="timelineTitle">Timeline</h2><label class="check-label"><input id="showScript" type="checkbox">Show script</label></div>
+          <p class="caption-note" id="captionNote"></p>
+          <form id="rangeForm" class="range-form">
+            <label><span>From</span><input id="rangeStart" type="text" inputmode="decimal" value="0:00" aria-label="Practice start time"></label>
+            <label><span>To</span><input id="rangeEnd" type="text" inputmode="decimal" aria-label="Practice end time"></label>
+            <button type="submit">Set range</button>
+          </form>
+          <div class="range-extra"><button id="useCurrentTime" type="button" class="text-button">Start at video time</button><button id="fullRange" type="button" class="text-button">Full video</button></div>
+          <p id="rangeStatus" class="status" role="status"></p>
+          <div class="timeline" id="timeline" role="list" aria-label="Caption clips in chronological order"></div>
+        </section>
+      </section>
+
+      <section class="practice-card" id="practiceCard" aria-labelledby="practiceTitle">
+        <div class="practice-heading"><div><p class="eyebrow">LISTEN · TYPE · NEXT</p><h2 id="practiceTitle">Listen to this clip</h2></div><span class="clip-time" id="clipTime"></span></div>
+        <div class="clip-progress"><span id="clipProgress"></span></div>
+        <div class="playback-controls"><button id="replayButton" class="primary replay" type="button" disabled>▶ Replay clip</button><label><span>Speed</span><select id="playbackRate" aria-label="Video playback speed"><option value="1">1×</option></select></label></div>
+        <p class="play-hint">Replay plays only this caption’s original video segment.</p>
+        <div id="wordGrid" class="word-grid" role="list" aria-label="Word slots"></div>
+        <p class="slot-hint">Tap a box to reveal that word.</p>
+        <div class="answer-entry" id="answerEntry">
+          <form id="answerForm" class="answer-entry-control" autocomplete="off">
+            <div class="answer-input-wrap" id="answerInputWrap">
+              <label class="sr-only" for="answerInput">Type a word or phrase you heard</label>
+              <input id="answerInput" type="text" placeholder="Type a word" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="1000" aria-describedby="answerFeedback">
+              <span class="answer-entry-key" aria-hidden="true"><kbd>Space</kbd><span>/</span><kbd>Enter</kbd></span>
+            </div>
+            <button id="namesButton" class="proper-noun-button" type="button">Names</button>
+            <button id="giveUpButton" class="reveal-all-button" type="button">Give Up</button>
+            <button id="againButton" class="redo-inline-button" type="button" hidden>↻ Again</button>
+            <button id="nextButton" class="next-inline-button" type="button" hidden>Next →</button>
+            <button class="sr-only" type="submit" tabindex="-1">Submit word</button>
+          </form>
+          <p id="answerFeedback" class="answer-feedback" role="status" aria-live="polite">Type a word. Press Space or Enter.</p>
+        </div>
+        <div class="caption-answer" id="captionAnswer" hidden></div>
+        <footer class="practice-footer"><span id="saveStatus">Progress saved on this browser.</span><nav class="clip-nav" aria-label="Clip navigation"><button id="previousClip" type="button" aria-label="Previous clip">←</button><span id="clipCounter"></span><button id="forwardClip" type="button" aria-label="Next clip">→</button></nav></footer>
+        <div id="celebration" class="celebration" aria-hidden="true"></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/youtube-assets/youtube.js?v=1"></script>
+</body>
+</html>

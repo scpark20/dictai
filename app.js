@@ -259,6 +259,14 @@ languages.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
+document.querySelector('#youtubePath').addEventListener('click', () => {
+  practiceCourseLevel.textContent = '▶';
+  practiceCourseTopic.textContent = 'YouTube';
+  practiceCourseCount.textContent = 'Original video · Timed captions';
+  practiceFrame.src = './youtube?embed=1';
+  practiceFrame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
 async function openConversation(button) {
   const requestedTopic = button.dataset.topic;
   button.disabled = true;

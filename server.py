@@ -18,6 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from dictai_pipeline import load_validated_manifest, validate_proper_nouns, next_conversation_index
+from youtube_api import router as youtube_router
 
 ROOT = Path(__file__).resolve().parent
 PRACTICE_ROOT = ROOT / "practice-ui"
@@ -169,6 +170,8 @@ SELECTED_COURSES: dict[str, tuple[str, str, str]] = {}
 SELECTED_BOOKS: dict[str, int] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
+app.include_router(youtube_router)
+app.mount("/youtube-assets", StaticFiles(directory=ROOT / "youtube-ui"), name="youtube-assets")
 app.mount("/asr-wasm", StaticFiles(directory=ASR_WASM_ROOT), name="asr-wasm")
 app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
@@ -933,8 +936,15 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
     return FileResponse(PRACTICE_ROOT / name)
 
 
+@app.get("/youtube/")
+def youtube_page() -> FileResponse:
+    return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+
+
 @app.get("/{name}")
 def static(name: str) -> FileResponse:
+    if name == "youtube":
+        return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
     if name not in {"index.html", "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js", "build-status.html", "build-status.js", "build-status.css", "tts-eval.html", "tts-eval.js", "tts-eval.css"}:
         raise HTTPException(404)
     return FileResponse(ROOT / name)
