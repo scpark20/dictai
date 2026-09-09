@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const template=await readFile(new URL('../practice-ui/index.html',import.meta.url),'utf8');
 const fragment=await readFile(new URL('../youtube-ui/youtube.html',import.meta.url),'utf8');
 const appSource=await readFile(new URL('../practice-ui/app.js',import.meta.url),'utf8');
+const youtubeCSS=await readFile(new URL('../youtube-ui/youtube.css',import.meta.url),'utf8');
 const html=template.replace('<main class="page" id="practice">',fragment+'<main class="page" id="practice">').replace('<div class="listen-stage">','<div class="youtube-navigation"><span id="clipTime"></span></div><div class="listen-stage">');
 const url='https://192.168.0.68:8771/youtube?embed=1&surface=extension&video=jNQXAC9IVRw&bridge=abcdefghijklmnopabcdefghijklmnop';
 const dom=new JSDOM(html,{url,referrer:'chrome-extension://abcdefghijklmnopabcdefghijklmnop/panel.html',runScripts:'outside-only',pretendToBeVisual:true});
@@ -16,6 +17,8 @@ const append=d.body.append.bind(d.body);d.body.append=(...nodes)=>{append(...nod
 await import('../youtube-ui/youtube.js?lr-surface-test');await new Promise(r=>setTimeout(r,20));
 assert.ok(d.body.classList.contains('extension-surface'));assert.ok(messages.some(x=>x.message.type==='need-captions'));assert.equal(fetches,0);
 assert.equal(d.getElementById('headerStep').parentElement.className,'practice-card');
+assert.match(youtubeCSS,/extension-surface \.practice-card\{display:block;min-height:0/);
+assert.match(youtubeCSS,/practice-card>\.step-label\{display:flex!important;margin:18px 0 0 auto!important/);
 const payload={videoId:'jNQXAC9IVRw',title:'Fixture',language:'en',cues:[{start:1,duration:2,text:'Hello world.'},{start:4,duration:2,text:'Next line.'}]};
 for(const listener of messageListeners)listener({source:fakeParent,origin:'chrome-extension://abcdefghijklmnopabcdefghijklmnop',data:{channel:'dictai-panel-event-v2',type:'captions',payload}});
 await new Promise(r=>setTimeout(r,30));

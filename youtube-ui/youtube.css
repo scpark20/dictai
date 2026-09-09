@@ -34,14 +34,14 @@
 .youtube-mode [hidden]{display:none!important}
 .youtube-mode.extension-surface{min-height:100dvh;padding:0;background:#edf4ff}
 .youtube-mode.extension-surface .import-card,.youtube-mode.extension-surface .empty-stage,.youtube-mode.extension-surface .video-card,.youtube-mode.extension-surface .youtube-navigation{display:none!important}
-.youtube-mode.extension-surface .page{display:flex;align-items:stretch;min-height:100dvh;padding:12px}
-.youtube-mode.extension-surface .practice-card{display:flex;flex-direction:column;min-height:calc(100dvh - 24px);margin:0;padding:20px 18px;background:#fff;border:1px solid #c5d9f8;border-radius:20px;box-shadow:0 12px 34px rgba(12,54,112,.1)}
+.youtube-mode.extension-surface .page{display:block;min-height:0;padding:12px}
+.youtube-mode.extension-surface .practice-card{display:block;min-height:0;margin:0;padding:20px 18px;background:#fff;border:1px solid #c5d9f8;border-radius:20px;box-shadow:0 12px 34px rgba(12,54,112,.1)}
 .youtube-mode.extension-surface .answer-form{width:100%}
 .youtube-mode.extension-surface .voice-control-row{margin-bottom:16px}
 .youtube-mode.extension-surface .word-grid{gap:8px;align-content:flex-start;min-height:88px}
 .youtube-mode.extension-surface .answer-entry{margin-top:18px}
 .youtube-mode.extension-surface .playback-buttons{width:100%;max-width:none;margin-top:14px}
-.youtube-mode.extension-surface .practice-card>.step-label{display:flex!important;margin:auto 0 0 auto!important;padding:7px 10px}
+.youtube-mode.extension-surface .practice-card>.step-label{display:flex!important;margin:18px 0 0 auto!important;padding:7px 10px}
 .extension-surface-status{display:grid;place-content:center;min-height:240px;text-align:center;padding:24px;color:#65738b}
 .extension-surface-status strong{font-size:22px;color:#1260c8}.extension-surface-status.error p{color:#b42318}
-@media(max-width:700px){.youtube-mode{padding:10px}.youtube-mode.extension-surface{padding:0}.youtube-mode.extension-surface .page{width:100%;padding:8px}.youtube-mode.extension-surface .practice-card{min-height:calc(100dvh - 16px);padding:16px 14px;border-radius:16px}.import-form{grid-template-columns:minmax(0,1fr) auto}.url-field{grid-column:1/-1}.import-card{padding:16px}.video-info{align-items:flex-start;flex-direction:column}}
+@media(max-width:700px){.youtube-mode{padding:10px}.youtube-mode.extension-surface{padding:0}.youtube-mode.extension-surface .page{width:100%;padding:8px}.youtube-mode.extension-surface .practice-card{min-height:0;padding:16px 14px;border-radius:16px}.import-form{grid-template-columns:minmax(0,1fr) auto}.url-field{grid-column:1/-1}.import-card{padding:16px}.video-info{align-items:flex-start;flex-direction:column}}
