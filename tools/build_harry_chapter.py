@@ -43,6 +43,8 @@ PRONUNCIATIONS = {
     "Choh": "Cho", "Slith-er-in": "Slytherin", "Slith-er-ins": "Slytherins",
     "Kwib-ler": "Quibbler", "Gring-otts": "Gringotts", "Kwid-itch": "Quidditch",
     "Hag-rid": "Hagrid", "Grub-lee Plank": "Grubbly-Plank",
+    "Huf-ful-puff": "Hufflepuff", "Shay-mus": "Seamus", "Fin-ih-gun": "Finnigan",
+    "tair": "tear",
 }
 PROPER_NAMES = {
     "Mr", "St", "Lupin", "Scrimgeour", "Amelia", "Bones", "Kingsley", "Shacklebolt",
@@ -67,6 +69,9 @@ PROPER_NAMES = {
     "Slytherin", "Slytherins", "Pansy", "Parkinson", "Yule", "Ball", "Padma",
     "Patil", "Goyle", "Quibbler", "Gringotts", "Quidditch", "Crabbe",
     "Hagrid", "Grubbly-Plank", "Care", "Creatures",
+    "Hufflepuff", "Seamus", "Finnigan", "Great", "Hall", "Sorting", "Hat",
+    "Nearly", "Headless", "Nick", "Euan", "Abercrombie", "Bloody", "Baron",
+    "Forbidden", "Forest", "Tower", "Dean", "Thomas", "Cedric",
 }
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
 
@@ -99,7 +104,7 @@ def pdf_sentences(pdf: Path, page_start: int, page_end: int, expected: int) -> l
         extracted = None
     if extracted is not None:
         found = {}
-        for number, sentence in re.findall(r"^\s*(\d{3})\s+([^\n]+)$", extracted, re.MULTILINE):
+        for number, sentence in re.findall(r"^[ \t]*(\d{3})[ \t]+([^\r\n]+)$", extracted, re.MULTILINE):
             if re.match(r"short A1 sentences\b", sentence):
                 continue
             ordinal = int(number)
