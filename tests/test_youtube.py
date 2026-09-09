@@ -86,6 +86,17 @@ class CaptionTests(unittest.TestCase):
                     frame=c.get('/youtube?embed=1').text
                     self.assertIn('id="youtubePlayer"',frame)
                     self.assertNotIn('id="bookList"',frame)
+                    self.assertEqual(frame.count('id="answerForm"'),1)
+                    self.assertEqual(frame.count('id="voiceToggle"'),1)
+                    self.assertIn('id="levelInput"',frame)
+                    self.assertIn('/practice/styles.css',frame)
+                    self.assertIn('type="module" src="/youtube-assets/youtube.js',frame)
+                    self.assertNotIn('src="./app.js',frame)
+                    self.assertNotIn('id="againButton"',frame)
+                    self.assertNotIn('id="timeline"',frame)
+                    for path in ('/practice/app.js','/practice/styles.css','/practice/persistent-model-loader.js','/practice/wasm-asr-bootstrap.js','/youtube-assets/practice-provider.mjs','/practice-ui/answer-variants.mjs'):
+                        self.assertEqual(c.get(path).status_code,200)
+                    self.assertIn('function acceptVoiceTranscript',c.get('/practice/app.js?course=ko-A1-Greetings').text)
                     self.assertEqual(c.post('/api/youtube/subtitles',json={'url':'jNQXAC9IVRw','subtitles':SRT}).status_code,200)
                     self.assertEqual(c.get('/api/bootstrap').json()['level'],18)
                     self.assertEqual(c.get('/api/bootstrap').json()['chapter'],11)

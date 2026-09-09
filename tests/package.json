@@ -1,1 +1,1 @@
-{"private":true,"type":"module","scripts":{"test":"node --test youtube-core.test.mjs youtube-answers.test.mjs && node youtube-dom.test.mjs && node youtube-layout.test.mjs && node youtube-numbers-dom.test.mjs"},"devDependencies":{"jsdom":"30.0.1"}}
+{"private":true,"type":"module","scripts":{"test":"node --test youtube-core.test.mjs youtube-answers.test.mjs && node shared-practice.test.mjs && node youtube-media.test.mjs && node book-engine.test.mjs && node youtube-layout.test.mjs"},"devDependencies":{"jsdom":"30.0.1"}}

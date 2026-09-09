@@ -737,6 +737,7 @@ def practice_static(name: str, request: Request) -> FileResponse:
     allowed = {
         "app.js", "styles.css", "wasm-asr-bootstrap.js",
         "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js",
+        "answer-variants.mjs",
     }
     if name not in allowed:
         raise HTTPException(404)
@@ -860,8 +861,11 @@ def practice_static(name: str, request: Request) -> FileResponse:
   elements.answerInput.value = typedDraft;
   state.voiceLastTranscript = endpoint ? "" : compact;
 }"""
-            if original_voice_handler not in source:
-                raise RuntimeError("voice transcript handler was not found")
+            # Replace only this named handler; other providers may add a shared
+            # transcript hook without changing the Korean recognition adapter.
+            start = source.index("function acceptVoiceTranscript(")
+            end = source.index("\nasync function stopVoiceRecognition(", start)
+            original_voice_handler = source[start:end]
             source = source.replace(original_voice_handler, korean_voice_handler)
             source = source.replace("}, 700);", "}, 5000);")
         return Response(source, media_type="application/javascript")
@@ -936,10 +940,27 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
     return FileResponse(PRACTICE_ROOT / name)
 
 
+@app.get("/practice-ui/answer-variants.mjs")
+def shared_answer_variants() -> FileResponse:
+    return FileResponse(PRACTICE_ROOT / "answer-variants.mjs", media_type="application/javascript")
+
+
 @app.get("/youtube/")
 def youtube_page(request: Request) -> Response:
     if request.query_params.get("embed") == "1":
-        return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+        # One exercise template for Book, Conversation and YouTube. The fragment
+        # below contains only the video/link controls, never a copied answer UI.
+        source = (PRACTICE_ROOT / "index.html").read_text(encoding="utf-8")
+        source = source.replace('href="./styles.css', 'href="/practice/styles.css')
+        source = source.replace('<body>', '<body class="youtube-mode">')
+        source = source.replace('<main class="page" id="practice">', (ROOT / "youtube-ui" / "youtube.html").read_text(encoding="utf-8") + '<main class="page" id="practice">')
+        source = source.replace('<div class="listen-stage">', '<div class="youtube-navigation"><span id="clipTime" class="clip-time"></span></div><div class="listen-stage">')
+        source = source.replace('</head>', '<meta name="referrer" content="strict-origin-when-cross-origin"><link rel="stylesheet" href="/youtube-assets/youtube.css?v=shared-1"></head>')
+        source = re.sub(r'<script src="\./app\.js[^\"]*"></script>', '<script type="module" src="/youtube-assets/youtube.js?v=shared-1"></script>', source)
+        source = re.sub(r'<script src="\./persistent-model-loader\.js[^\"]*"></script>', '', source)
+        source = source.replace('DictAI · Chapter 5 Dictation', 'YouTube · DictAI')
+        source = source.replace('href="./"', 'href="/" target="_top"')
+        return Response(source, media_type="text/html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     source = source.replace('href="./', 'href="/').replace('src="./', 'src="/')
     source = source.replace('src="/practice/"', 'src="/youtube?embed=1"')

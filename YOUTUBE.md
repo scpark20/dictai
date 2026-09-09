@@ -2,7 +2,7 @@
 
 Open **YouTube** between Conversation and Book, or visit `/youtube` directly. Both keep the main sidebar. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
 
-The integrated layout places the address field above the full-width video and the familiar dictation card below it. The timeline, transcript list and range controls are removed; navigate sentences with Previous / Next. The bottom speed row replays the current clip at a YouTube-supported rate (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. YouTube remains type-only; Book/Conversation voice settings are unchanged. `/youtube?embed=1` serves only the inner workspace, while `/youtube` serves the complete app shell.
+The address field sits above the video and the shared Book/Conversation practice card. The timeline, transcript list and range controls stay removed. Navigate with Previous / Next or enter a sentence number. The shared speed row uses YouTube-supported rates (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. Voice uses the same English recognition models, settings, microphone pipeline and independent draft handling as Book/Conversation. `/youtube?embed=1` assembles the shared practice template plus video controls; `/youtube` retains the complete app shell. See [the shared-engine contract](SHARED-PRACTICE.md).
 
 ## Learning flow
 
@@ -44,8 +44,8 @@ Use the existing 8771 deployment. Preserve the Chapter 10 repaired-audio service
 
 - `python tests/test_youtube.py -v`: URL validation, caption grouping, rolling-caption overlap, original title/contraction spelling, SRT/VTT parsing, import timeout/errors/cache and Chapter 11 progress isolation.
 - `node --test tests/youtube-core.test.mjs`: answer matching, repeated words, aliases, time parsing, range ordering and per-video progress keys.
-- Optional DOM unit test: install the test-only dependencies in `tests/`, then run `node tests/youtube-dom.test.mjs`. It checks import, matching, duplicate-input retention, Again / Next, sentence navigation, reload restoration and player remounting with a mocked YouTube player. It does not test real YouTube playback or rendered layout.
-- Live HTTP import of a public captioned video succeeds from server 68. Browser video playback still depends on YouTube embedding permission, network, browser autoplay/referrer policy and any content blockers. No claim of manual listening or browser visual verification is made.
+- Install test-only dependencies in `tests/`, then run `npm test` there. Shared engine and media-adapter tests cover typed and microphone-driven input, draft isolation, numeric aliases, completion, Again / Next, direct jumps, restoration and player remounting. Microphone/audio/player are mocked; these are not listening or browser visual tests.
+- Public-caption imports have also encountered YouTube IP blocking; successful prior imports do not guarantee current availability. Saved captions and SRT/VTT import remain usable. Browser playback depends on embedding permission, network, autoplay/referrer policy and content blockers. No claim of manual listening or browser visual verification is made.
 
 ## Primary references
 
