@@ -22,7 +22,7 @@ Answers stay hidden until solved or revealed. There is no transcript list or Sho
 - Existing Book / Conversation APIs, audio and progress database are unchanged.
 - YouTube progress is device/browser-local, keyed by video ID, caption language and transcript hash. The most recently loaded transcript is also stored for refresh/return. Unavailable or full browser storage produces a warning.
 - Public caption fetches use a one-hour, 32-entry in-memory cache. Uploaded captions are not stored on the server. No cookies, credentials or proxies are extracted or configured.
-- Only validated YouTube IDs reach the importer. Arbitrary URLs and playlist-only links are rejected. Caption imports are limited to 15,000 cues / 12 hours; manual uploads to 2 MB. Two bounded workers and a 45-second deadline prevent indefinite import loading.
+- Only validated YouTube IDs reach the importer. Arbitrary URLs and playlist-only links are rejected. Caption imports are limited to 15,000 cues / 12 hours; manual uploads to 2 MB. A shared persistent guard provides permanent caption caching, one upstream job, duplicate-request joining, a minimum 60-second interval, 10-job hourly cap, and a durable 24-hour pause after blocking. These are local safeguards, not a promised YouTube unblock time. [Request guard](YOUTUBE-REQUEST-GUARD.md)
 
 ## Dependencies and deployment
 

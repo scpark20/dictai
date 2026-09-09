@@ -7,10 +7,9 @@ import json
 import math
 import os
 import re
+import sqlite3
 import subprocess
 import sys
-import threading
-import time
 import unicodedata
 from functools import lru_cache
 from pathlib import Path
@@ -18,13 +17,11 @@ from urllib.parse import parse_qs, urlparse
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+from youtube_guard import CaptionGuard
 
 router = APIRouter(prefix="/api/youtube")
 MAX_SECONDS = 43200
 MAX_CUES = 15000
-_cache: dict[tuple, tuple] = {}
-_lock = threading.Lock()
-_workers = threading.BoundedSemaphore(2)
 
 
 class ImportBody(BaseModel):
@@ -233,33 +230,39 @@ def fetch_public(video_id: str, language: str) -> dict:
         return package(video_id, 0, chosen.language_code, fetched.to_raw_data(), title=title, generated=chosen.is_generated, tracks=available)
 
 
+def fetch_guarded(video_id: str, language: str):
+    def worker():
+        try:
+            child = subprocess.run([sys.executable, str(Path(__file__).resolve()), '--fetch-worker', video_id, language], capture_output=True, text=True, timeout=45, check=True)
+            result = json.loads(child.stdout)
+            if not isinstance(result, dict) or ('error' not in result and not result.get('segments')):
+                raise ValueError('Invalid caption response')
+            return result
+        except subprocess.TimeoutExpired:
+            return {'error':'timeout','message':'YouTube took too long to respond. No automatic retry was sent.'}
+        except (subprocess.CalledProcessError,ValueError):
+            return {'error':'import_failed','message':'Captions could not be loaded. No automatic retry was sent.'}
+    return CaptionGuard().get(video_id,language,worker)
+
+
+@router.get('/status')
+def caption_status():
+    return CaptionGuard().status()
+
+
 def import_video(body: ImportBody):
     try:
         video_id, start = parse_video_url(body.url)
     except ValueError as e:
         raise HTTPException(400, {"code": "invalid_link", "message": str(e)}) from None
-    key = (video_id, body.language)
-    with _lock:
-        cached = _cache.get(key)
-    if cached and time.monotonic()-cached[0] < 3600:
-        return {**cached[1], "start_hint": start, "cached": True}
-    if not _workers.acquire(blocking=False):
-        raise HTTPException(429, {"code":"busy", "message":"Two videos are loading. Please try again shortly."})
-    try:
-        child = subprocess.run([sys.executable, str(Path(__file__).resolve()), video_id, body.language], capture_output=True, text=True, timeout=45, check=True)
-        result = json.loads(child.stdout)
-    except subprocess.TimeoutExpired:
-        raise HTTPException(504, {"code":"timeout", "message":"YouTube took too long to respond. Retry, or use an SRT / VTT caption file."}) from None
-    except (subprocess.CalledProcessError, json.JSONDecodeError):
-        raise HTTPException(502, {"code":"import_failed", "message":"Captions could not be loaded. Retry, or use an SRT / VTT caption file."}) from None
-    finally:
-        _workers.release()
+    result = fetch_guarded(video_id, body.language)
     if "error" in result:
-        raise HTTPException(422, {"code": result["error"], "message":result["message"], "tracks":result.get("tracks",[])})
-    with _lock:
-        if len(_cache) >= 32: _cache.pop(next(iter(_cache)))
-        _cache[key] = (time.monotonic(), result)
-    return {**result, "start_hint": start, "cached": False}
+        code = result['error']
+        status = 429 if code in ('requests_paused','request_busy','request_rate_limited') else 503 if code=='cache_unavailable' else 504 if code=='timeout' else 502 if code=='import_failed' else 422
+        detail = {**result,'code':code,'tracks':result.get('tracks',[])}
+        headers = {'Retry-After':str(result['retry_after'])} if result.get('retry_after') else None
+        raise HTTPException(status,detail,headers=headers)
+    return {**result, "start_hint": start, "cached": result.get('cached',False)}
 
 
 @router.post("/import")
@@ -271,14 +274,25 @@ def import_endpoint(body: ImportBody):
 def subtitles_endpoint(body: SubtitleBody):
     try:
         video_id, start = parse_video_url(body.url)
-        return package(video_id, start, body.language, parse_subtitles(body.subtitles), source="uploaded")
+        result = package(video_id, start, body.language, parse_subtitles(body.subtitles), source="uploaded")
+        try:
+            CaptionGuard().save(video_id,body.language,result)
+        except (sqlite3.Error,OSError):
+            # User-provided captions require no upstream request and stay usable.
+            result['cache_warning'] = 'Server storage is unavailable; keep the caption file for later.'
+        return result
     except (ValueError, KeyError, TypeError) as e:
         raise HTTPException(400, {"code":"invalid_subtitles", "message":str(e)}) from None
 
 
 if __name__ == "__main__":
     try:
-        result = fetch_public(sys.argv[1], sys.argv[2])
+        if len(sys.argv)==4 and sys.argv[1]=='--fetch-worker':
+            # Private child: parent holds the shared lease and enforces timeout.
+            result = fetch_public(sys.argv[2],sys.argv[3])
+        else:
+            video_id, start = parse_video_url(sys.argv[1])
+            result = fetch_guarded(video_id,sys.argv[2])
     except Exception as e:
         code = type(e).__name__
         if code in ("RequestBlocked", "IpBlocked"):

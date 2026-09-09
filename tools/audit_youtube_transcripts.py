@@ -30,8 +30,8 @@ for vid in videos:
   data=json.loads(p.stdout)
   if 'error' in data:
    records.append({'id':vid,'error':data['error']});print(vid,data['error'],flush=True)
-   if data['error'] in ('IpBlocked','RequestBlocked'):
-    records.extend({'id':remaining,'error':'NotAttemptedAfterBlock'} for remaining in videos[len(records):]);break
+   if data['error'] in ('IpBlocked','RequestBlocked','requests_paused','request_rate_limited','request_busy','cache_unavailable'):
+    records.extend({'id':remaining,'error':'NotAttemptedAfterRequestGuard'} for remaining in videos[len(records):]);break
    continue
   segments=data['segments'];text=' '.join(s['text'] for s in segments)
   counts={k:len(re.findall(v,text,re.I if k!='abbreviation' else 0)) for k,v in patterns.items()}

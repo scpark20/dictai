@@ -4,6 +4,8 @@
 
 ### One workspace for conversations, books and YouTube listening practice
 
+YouTube caption fetching now uses a [shared persistent request guard](YOUTUBE-REQUEST-GUARD.md): captions survive server restarts, duplicate imports share one request, and detected blocking pauses new requests without affecting cached practice.
+
 **A1–C2 courses · English and Korean · browser speech recognition · multi-chapter books**
 
 ![Python](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)

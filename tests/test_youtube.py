@@ -1,4 +1,6 @@
 import json
+import os
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -24,6 +26,22 @@ We heard the rain.
 '''
 
 class CaptionTests(unittest.TestCase):
+    def setUp(self):
+        self.cache_dir = tempfile.TemporaryDirectory(prefix='dictai-caption-test-')
+        self.cache_path = Path(self.cache_dir.name)/'captions.sqlite3'
+        self.cache_env = patch.dict(os.environ, {'DICTAI_YOUTUBE_CACHE_DB':str(self.cache_path)})
+        self.cache_env.start()
+
+    def tearDown(self):
+        self.cache_env.stop()
+        self.cache_dir.cleanup()
+
+    def reset_caption_cache(self):
+        if self.cache_path.exists():
+            with sqlite3.connect(self.cache_path) as db:
+                for table in ('captions','failures','request_guard'):
+                    db.execute('DELETE FROM '+table)
+
     def test_urls(self):
         for url in ('https://www.youtube.com/watch?v=jNQXAC9IVRw', 'https://youtu.be/jNQXAC9IVRw', 'https://youtube.com/shorts/jNQXAC9IVRw','https://m.youtube.com/live/jNQXAC9IVRw','jNQXAC9IVRw'):
             self.assertEqual(yt.parse_video_url(url)[0], 'jNQXAC9IVRw')
@@ -52,7 +70,7 @@ class CaptionTests(unittest.TestCase):
     def test_api_cache_error_timeout(self):
         app=FastAPI();app.include_router(yt.router)
         payload=yt.package('jNQXAC9IVRw',0,'en',yt.parse_subtitles(SRT))
-        yt._cache.clear()
+        self.reset_caption_cache()
         with TestClient(app) as c:
             self.assertEqual(c.post('/api/youtube/import',json={'url':'http://127.0.0.1'}).status_code,400)
             with patch.object(yt.subprocess,'run',return_value=subprocess.CompletedProcess([],0,json.dumps(payload))) as worker:
@@ -60,13 +78,22 @@ class CaptionTests(unittest.TestCase):
                 self.assertEqual(a['start_hint'],5)
                 b=c.post('/api/youtube/import',json={'url':'https://youtu.be/jNQXAC9IVRw?t=12'}).json()
                 self.assertTrue(b['cached']);self.assertEqual(b['start_hint'],12);self.assertEqual(worker.call_count,1)
-            yt._cache.clear()
+            self.reset_caption_cache()
             with patch.object(yt.subprocess,'run',side_effect=subprocess.TimeoutExpired('test',45)):
                 self.assertEqual(c.post('/api/youtube/import',json={'url':'jNQXAC9IVRw'}).status_code,504)
+            self.reset_caption_cache()
             with patch.object(yt.subprocess,'run',return_value=subprocess.CompletedProcess([],0,json.dumps({'error':'RequestBlocked','message':'Blocked'}))):
-                self.assertEqual(c.post('/api/youtube/import',json={'url':'jNQXAC9IVRw'}).status_code,422)
+                blocked=c.post('/api/youtube/import',json={'url':'jNQXAC9IVRw'})
+                self.assertEqual(blocked.status_code,429)
+                self.assertEqual(blocked.json()['detail']['code'],'requests_paused')
+                self.assertIn('Retry-After',blocked.headers)
+            with patch.object(yt.subprocess,'run',side_effect=AssertionError('Must not contact upstream')):
+                self.assertTrue(c.get('/api/youtube/status').json()['paused'])
+                self.assertEqual(c.post('/api/youtube/import',json={'url':'hVimVzgtD6w'}).status_code,429)
             r=c.post('/api/youtube/subtitles',json={'url':'jNQXAC9IVRw','subtitles':SRT})
             self.assertEqual(r.status_code,200);self.assertEqual(r.json()['source'],'uploaded')
+            with patch.object(yt.subprocess,'run',side_effect=AssertionError('Cache must work while blocked')):
+                self.assertTrue(c.post('/api/youtube/import',json={'url':'jNQXAC9IVRw'}).json()['cached'])
             self.assertEqual(c.post('/api/youtube/subtitles',json={'url':'jNQXAC9IVRw','subtitles':'text'}).status_code,400)
 
     def test_existing_book_isolation(self):
