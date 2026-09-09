@@ -13,7 +13,10 @@
   const responseText=await fetch(trackUrl,{credentials:'include',referrer:location.href}).then(async r=>{if(!r.ok)throw new Error(`Caption request failed (${r.status}).`);return r.text();});
   if(new URL(location.href).searchParams.get('v')!==videoId)return {videoId,error:'The video changed while captions were loading.'};
   if(responseText.length>2000000)return {videoId,error:'This transcript is too large.'};
-  const payload=JSON.parse(responseText),cues=[];
+  if(!responseText.trim())return {videoId,error:'This video does not provide usable captions.'};
+  let payload;
+  try{payload=JSON.parse(responseText);}catch{return {videoId,error:'YouTube returned an unreadable caption response.'};}
+  const cues=[];
   for(const event of payload.events||[]){
     const text=(event.segs||[]).map(s=>s.utf8||'').join('').replace(/\n/g,' ').replace(/\s+/g,' ').trim();
     if(!text)continue;

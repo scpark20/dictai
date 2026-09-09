@@ -40,6 +40,13 @@ test('caption reader stops on missing or foreign caption sources',async()=>{
   fixture=captionDOM({trackURL:'https://evil.example/caption'});result=await fixture.dom.window.eval(pageCaptions);assert.match(result.error,/unsupported/);assert.equal(fixture.calls(),0);fixture.dom.window.close();
 });
 
+test('caption reader reports an empty response as unavailable captions',async()=>{
+  const fixture=captionDOM();fixture.dom.window.fetch=async()=>({ok:true,text:async()=>''});
+  const result=await fixture.dom.window.eval(pageCaptions);
+  assert.equal(result.error,'This video does not provide usable captions.');
+  fixture.dom.window.close();
+});
+
 test('content script mounts one automatic panel and requests one scan',async()=>{
   const dom=new JSDOM('<video></video>',{url:'https://www.youtube.com/watch?v=jNQXAC9IVRw',runScripts:'outside-only',pretendToBeVisual:true});
   const w=dom.window;let runtimeListener,messageListener,scanCalls=0;
