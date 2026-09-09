@@ -12,10 +12,24 @@
     finally{clearTimeout(timeout);}
   };
   const clean=value=>String(value||'').replace(/\n/g,' ').replace(/\s+/g,' ').trim();
+  const protectedToken=()=>{
+    const saved=window.__DICTAI_YOUTUBE_POT__?.[videoId]?.token;if(saved)return saved;
+    for(const entry of performance.getEntriesByType?.('resource')||[]){
+      try{const url=new URL(entry.name);if(url.origin===location.origin&&url.pathname==='/api/timedtext'&&url.searchParams.get('v')===videoId&&url.searchParams.get('pot'))return url.searchParams.get('pot');}catch{}
+    }
+    return null;
+  };
+  const waitForProtectedToken=async()=>{
+    for(let attempt=0;attempt<12;attempt++){const token=protectedToken();if(token)return token;await new Promise(resolve=>setTimeout(resolve,250));}
+    return null;
+  };
   const timedText=async track=>{
     const trackUrl=new URL(track.baseUrl,location.origin);
     if(trackUrl.origin!==location.origin||trackUrl.pathname!=='/api/timedtext')throw new Error('YouTube returned an unsupported caption source.');
-    if(trackUrl.searchParams.get('exp')==='xpe')return null;
+    if(trackUrl.searchParams.get('exp')==='xpe'){
+      const token=await waitForProtectedToken();if(!token)return null;
+      trackUrl.searchParams.set('c','WEB');trackUrl.searchParams.set('pot',token);
+    }
     trackUrl.searchParams.set('fmt','json3');
     const result=await timeoutFetch(trackUrl,{credentials:'include',referrer:location.href});
     if(!result.ok)throw new Error(`Caption request failed (${result.status}).`);
@@ -37,15 +51,20 @@
   const transcriptCues=async()=>{
     const apiKey=window.ytcfg?.get?.('INNERTUBE_API_KEY'),context=window.ytcfg?.get?.('INNERTUBE_CONTEXT');
     if(!apiKey||!context)return null;
+    const configuredName=window.ytcfg?.get?.('INNERTUBE_CONTEXT_CLIENT_NAME');
+    const clientName=String(configuredName||(/^WEB/.test(context.client?.clientName||'')?1:context.client?.clientName||1));
+    const clientVersion=String(context.client?.clientVersion||window.ytcfg?.get?.('INNERTUBE_CLIENT_VERSION')||'');
+    const headers={'content-type':'application/json; charset=UTF-8','x-goog-api-format-version':'2','x-youtube-client-name':clientName,'x-youtube-client-version':clientVersion,'x-youtube-bootstrap-logged-in':String(Boolean(window.ytcfg?.get?.('LOGGED_IN')))};
+    const visitorData=context.client?.visitorData||window.ytcfg?.get?.('VISITOR_DATA');if(visitorData)headers['x-goog-visitor-id']=visitorData;
     const watchData=window.ytInitialData||document.querySelector('ytd-watch-flexy')?.data||document.querySelector('ytd-app')?.data;
     let endpoint=findValue(watchData,'getTranscriptEndpoint');
     if(!endpoint?.params){
-      const next=await timeoutFetch(`/youtubei/v1/next?prettyPrint=false&key=${encodeURIComponent(apiKey)}`,{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({context,videoId})});
+      const next=await timeoutFetch(`/youtubei/v1/next?prettyPrint=false&key=${encodeURIComponent(apiKey)}`,{method:'POST',credentials:'include',headers,body:JSON.stringify({context,videoId})});
       if(!next.ok)return null;endpoint=findValue(await next.json(),'getTranscriptEndpoint');
     }
     if(!endpoint?.params)return null;
-    const result=await timeoutFetch(`/youtubei/v1/get_transcript?prettyPrint=false&key=${encodeURIComponent(apiKey)}`,{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({context,params:endpoint.params})});
-    if(!result.ok)throw new Error(`Transcript request failed (${result.status}).`);
+    const result=await timeoutFetch(`/youtubei/v1/get_transcript?prettyPrint=false&key=${encodeURIComponent(apiKey)}`,{method:'POST',credentials:'include',headers,body:JSON.stringify({context,params:endpoint.params})});
+    if(!result.ok){const detail=clean(await result.text()).slice(0,160);throw new Error(`Transcript request failed (${result.status})${detail?`: ${detail}`:'.'}`);}
     const data=await result.json(),renderers=[];const queue=[data],seen=new Set();
     while(queue.length){const node=queue.shift();if(!node||typeof node!=='object'||seen.has(node))continue;seen.add(node);if(node.transcriptSegmentRenderer)renderers.push(node.transcriptSegmentRenderer);for(const value of Object.values(node))if(value&&typeof value==='object')queue.push(value);}
     const cues=[];

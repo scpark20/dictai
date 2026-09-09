@@ -5,19 +5,30 @@ import {JSDOM} from 'jsdom';
 
 const root=new URL('../browser-extension/',import.meta.url);
 const manifest=JSON.parse(await readFile(new URL('manifest.json',root),'utf8'));
+const poTokenHook=await readFile(new URL('po-token-hook.js',root),'utf8');
 const pageCaptions=await readFile(new URL('page-captions.js',root),'utf8');
 const contentScript=await readFile(new URL('youtube-content.js',root),'utf8');
 const panelHTML=await readFile(new URL('panel.html',root),'utf8');
 const panelScript=await readFile(new URL('panel.js',root),'utf8');
 
 test('manifest is a minimal YouTube-only LR surface',()=>{
-  assert.equal(manifest.version,'2.1.0');
+  assert.equal(manifest.version,'2.2.0');
   assert.deepEqual(manifest.permissions,['scripting']);
   assert.deepEqual(manifest.host_permissions,['https://www.youtube.com/*']);
-  assert.equal(manifest.content_scripts.length,1);
+  assert.equal(manifest.content_scripts.length,2);
   assert.equal(manifest.content_scripts[0].matches[0],'https://www.youtube.com/*');
+  assert.equal(manifest.content_scripts[0].run_at,'document_start');
+  assert.equal(manifest.content_scripts[0].world,'MAIN');
   assert.ok(manifest.web_accessible_resources[0].resources.includes('panel.html'));
   assert.equal(manifest.action.default_popup,undefined);
+});
+
+test('page-world hook records YouTube caption protection tokens',()=>{
+  const dom=new JSDOM('',{url:'https://www.youtube.com/watch?v=jNQXAC9IVRw',runScripts:'outside-only'}),w=dom.window;
+  w.Request=class Request{constructor(url){this.url=url;}};
+  w.XMLHttpRequest.prototype.open=()=>{};w.fetch=async()=>({ok:true});w.eval(poTokenHook);
+  const request=new w.XMLHttpRequest();request.open('GET','https://www.youtube.com/api/timedtext?v=jNQXAC9IVRw&pot=protected-token');
+  assert.equal(w.__DICTAI_YOUTUBE_POT__.jNQXAC9IVRw.token,'protected-token');dom.window.close();
 });
 
 function captionDOM({tracks=true,trackURL='https://www.youtube.com/api/timedtext?lang=en'}={}){
@@ -61,7 +72,16 @@ test('PO-token protected timedtext falls back to the current YouTube transcript 
   w.fetch=async(url,options)=>{calls.push({url:String(url),options});return {ok:true,json:async()=>({actions:[{updateEngagementPanelAction:{content:{transcriptRenderer:{content:{transcriptSearchPanelRenderer:{body:{transcriptSegmentListRenderer:{initialSegments:[{transcriptSegmentRenderer:{startMs:'1000',endMs:'3000',snippet:{runs:[{text:'Protected captions work.'}]}}}]}}}}}}}}]})};};
   const result=await w.eval(pageCaptions);
   assert.equal(calls.length,1);assert.match(calls[0].url,/youtubei\/v1\/get_transcript/);assert.equal(JSON.parse(calls[0].options.body).params,'fixture-params');
+  assert.equal(calls[0].options.headers['x-youtube-client-name'],'1');assert.equal(calls[0].options.headers['x-youtube-client-version'],'1');
   assert.deepEqual(JSON.parse(JSON.stringify(result.cues)),[{start:1,duration:2,text:'Protected captions work.'}]);fixture.dom.window.close();
+});
+
+test('PO-token protected timedtext reuses the token observed by the YouTube player',async()=>{
+  const fixture=captionDOM({trackURL:'https://www.youtube.com/api/timedtext?v=jNQXAC9IVRw&lang=en&exp=xpe'}),w=fixture.dom.window;const calls=[];
+  w.__DICTAI_YOUTUBE_POT__={jNQXAC9IVRw:{token:'player-token'}};
+  w.fetch=async url=>{calls.push(String(url));return {ok:true,text:async()=>JSON.stringify({events:[{tStartMs:0,dDurationMs:1000,segs:[{utf8:'Token path.'}]}]})};};
+  const result=await w.eval(pageCaptions),url=new URL(calls[0]);
+  assert.equal(url.searchParams.get('c'),'WEB');assert.equal(url.searchParams.get('pot'),'player-token');assert.equal(result.cues[0].text,'Token path.');fixture.dom.window.close();
 });
 
 test('content script mounts one automatic panel and requests one scan',async()=>{
