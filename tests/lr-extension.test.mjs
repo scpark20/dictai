@@ -11,7 +11,7 @@ const panelHTML=await readFile(new URL('panel.html',root),'utf8');
 const panelScript=await readFile(new URL('panel.js',root),'utf8');
 
 test('manifest is a minimal YouTube-only LR surface',()=>{
-  assert.equal(manifest.version,'2.0.0');
+  assert.equal(manifest.version,'2.1.0');
   assert.deepEqual(manifest.permissions,['scripting']);
   assert.deepEqual(manifest.host_permissions,['https://www.youtube.com/*']);
   assert.equal(manifest.content_scripts.length,1);
@@ -43,15 +43,25 @@ test('caption reader stops on missing or foreign caption sources',async()=>{
 test('caption reader reports an empty response as unavailable captions',async()=>{
   const fixture=captionDOM();fixture.dom.window.fetch=async()=>({ok:true,text:async()=>''});
   const result=await fixture.dom.window.eval(pageCaptions);
-  assert.equal(result.error,'This video does not provide usable captions.');
+  assert.equal(result.error,'YouTube protected this caption track and did not expose a transcript.');
   fixture.dom.window.close();
 });
 
 test('caption reader turns a stalled request into a clear timeout',async()=>{
   const fixture=captionDOM();fixture.dom.window.fetch=async()=>{const error=new Error('aborted');error.name='AbortError';throw error;};
   const result=await fixture.dom.window.eval(pageCaptions);
-  assert.equal(result.error,'YouTube caption request timed out.');
+  assert.equal(result.error,'YouTube protected this caption track and did not expose a transcript.');
   fixture.dom.window.close();
+});
+
+test('PO-token protected timedtext falls back to the current YouTube transcript panel',async()=>{
+  const fixture=captionDOM({trackURL:'https://www.youtube.com/api/timedtext?lang=en&exp=xpe'}),w=fixture.dom.window;const calls=[];
+  w.ytcfg={get:key=>key==='INNERTUBE_API_KEY'?'fixture-key':key==='INNERTUBE_CONTEXT'?{client:{clientName:'WEB',clientVersion:'1'}}:null};
+  w.ytInitialData={engagementPanels:[{engagementPanelSectionListRenderer:{content:{continuationItemRenderer:{continuationEndpoint:{getTranscriptEndpoint:{params:'fixture-params'}}}}}}]};
+  w.fetch=async(url,options)=>{calls.push({url:String(url),options});return {ok:true,json:async()=>({actions:[{updateEngagementPanelAction:{content:{transcriptRenderer:{content:{transcriptSearchPanelRenderer:{body:{transcriptSegmentListRenderer:{initialSegments:[{transcriptSegmentRenderer:{startMs:'1000',endMs:'3000',snippet:{runs:[{text:'Protected captions work.'}]}}}]}}}}}}}}]})};};
+  const result=await w.eval(pageCaptions);
+  assert.equal(calls.length,1);assert.match(calls[0].url,/youtubei\/v1\/get_transcript/);assert.equal(JSON.parse(calls[0].options.body).params,'fixture-params');
+  assert.deepEqual(JSON.parse(JSON.stringify(result.cues)),[{start:1,duration:2,text:'Protected captions work.'}]);fixture.dom.window.close();
 });
 
 test('content script mounts one automatic panel and requests one scan',async()=>{
