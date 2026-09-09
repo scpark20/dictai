@@ -1,11 +1,14 @@
 import {timeLabel} from './youtube-core.mjs?v=shared-1';
-import {createYouTubeProvider} from './practice-provider.mjs?v=shared-1';
+import {createYouTubeProvider} from './practice-provider.mjs?v=local-1';
+import {parseVideo,parseSubtitles,packageCaptions} from './local-captions.mjs?v=local-1';
+import {extensionRequest,receiveCaptions} from './browser-bridge.mjs?v=local-1';
 
 const $ = id => document.getElementById(id);
 const state = {data:null,index:0,request:0,busy:false};
 let player=null, playerReady=false, playerLoad=null, stopAt=null, clipLoading=false;
 let timer=null, readyTimeout=null;
 let playbackRate=1;
+let pendingImport=null;
 const provider = createYouTubeProvider({
   select(index) {state.index=index;$('clipTime').textContent=`${timeLabel(current().start)} – ${timeLabel(current().end)}`;cueCurrent();},
   stop:stopClip, play(rate) {playbackRate=rate;replay();},
@@ -102,7 +105,9 @@ function activate(data, request) {
   $('originalLink').href=`https://www.youtube.com/watch?v=${data.video_id}`;
   options(data.tracks,data.language);
   message('importStatus',`${data.count} clips loaded. Choose a sentence or play the current clip.`,'success');
+  if(data.timing_estimated)message('importStatus',`${data.count} clips loaded locally. Clip ends use the next displayed timestamp; they may include a pause.`,'success');
   try{localStorage.setItem('dictai:youtube:last',JSON.stringify(data));}catch{message('importStatus','This transcript could not be saved for automatic restoration.','warning');}
+  try{localStorage.setItem(`dictai:youtube:caption:${data.video_id}:${data.language}`,JSON.stringify(data));}catch{message('importStatus','Loaded, but browser storage is full. This transcript may not survive closing the page.','warning');}
   void mountPlayer(request);
 }
 async function loadVideo(manual=false) {
@@ -110,24 +115,41 @@ async function loadVideo(manual=false) {
   if(state.busy)return;
   const request=++state.request;state.busy=true;stopClip();
   $('loadButton').disabled=true;$('useSubtitles').disabled=true;$('workspace').inert=true;
-  $('loadButton').textContent='Loading…';
-  message('importStatus',manual?'Reading timed captions…':'Reading available captions from YouTube…');
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),50000);
-  const slow=setTimeout(()=>message('importStatus','Still waiting for YouTube captions… This can take up to 45 seconds.'),10000);
+  $('loadButton').textContent='Opening…';pendingImport=null;
+  message('importStatus',manual?'Reading captions in your browser…':'Connecting to the browser extension…');
   try{
-    const body={url,language:$('captionLanguage').value};if(manual)body.subtitles=$('subtitleText').value;
-    const response=await fetch(`/api/youtube/${manual?'subtitles':'import'}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
-    const data=await response.json();
-    if(!response.ok){const detail=data.detail;if(detail?.tracks?.length)options(detail.tracks);throw new Error(detail?.message||'Check the video link and caption input, then try again.');}
-    activate(data,request);
+    const parsed=parseVideo(url),language=$('captionLanguage').value;
+    if(manual){
+      const data=await packageCaptions({...parsed,language,cues:parseSubtitles($('subtitleText').value),source:'browser-file'});
+      activate(data,request);
+    }else{
+      const result=await extensionRequest('open',{videoId:parsed.videoId,language},8000);
+      pendingImport={...parsed,language,request,requestId:result.requestId};
+      message('importStatus','On YouTube: show the transcript in your chosen language, then click the DictAI extension → Send displayed transcript. No server request is made.');
+    }
   }catch(error){
-    message('importStatus',error.name==='AbortError'?'Caption loading timed out. Retry or use an SRT / VTT file.':error.message,'error');
-    $('manualDetails').open=true;
+    message('importStatus',error.message,'error');
+    if(!manual)$('extensionSetup').open=true;
   }finally{
-    clearTimeout(timeout);clearTimeout(slow);state.busy=false;$('workspace').inert=false;
-    $('loadButton').disabled=false;$('useSubtitles').disabled=false;$('loadButton').textContent='Load video →';
+    state.busy=false;$('workspace').inert=false;
+    $('loadButton').disabled=false;$('useSubtitles').disabled=false;$('loadButton').textContent='Open YouTube →';
   }
 }
+receiveCaptions(async payload=>{
+  const expected=pendingImport;
+  if(!expected||state.busy||expected.request!==state.request||payload?.videoId!==expected.videoId||payload?.requestId!==expected.requestId)throw new Error('This import is no longer active. Open the video from DictAI again.');
+  const data=await packageCaptions({...payload,start:expected.start,language:expected.language});
+  if(pendingImport!==expected||expected.request!==state.request)throw new Error('A newer import has replaced this request.');
+  activate(data,expected.request);pendingImport=null;
+});
+$('restoreCaption').addEventListener('click',()=>{
+  try{
+    const {videoId,start}=parseVideo($('videoUrl').value),language=$('captionLanguage').value;
+    const data=JSON.parse(localStorage.getItem(`dictai:youtube:caption:${videoId}:${language}`)||'null');
+    if(!data)throw new Error('No saved captions for this video and language in this browser.');
+    pendingImport=null;activate({...data,start_hint:start},++state.request);
+  }catch(error){message('importStatus',error.message,'error');}
+});
 $('importForm').addEventListener('submit',e=>{e.preventDefault();void loadVideo();});
 $('useSubtitles').addEventListener('click',()=>void loadVideo(true));
 $('subtitleFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(file.size>2000000){message('importStatus','Use a caption file smaller than 2 MB.','error');return;}$('subtitleText').value=await file.text();});
@@ -135,6 +157,8 @@ window.addEventListener('pagehide',()=>{stopClip();clearInterval(timer);clearTim
 
 await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/practice/app.js?v=shared-1';script.onload=resolve;script.onerror=reject;document.body.append(script);});
 const voiceLoader=document.createElement('script');voiceLoader.src='/practice/persistent-model-loader.js?v=shared-1';document.body.append(voiceLoader);
+$('properNounButton').title='Local name hints use capitalization and titles; they may miss or include words. No text is sent to the server.';
+void extensionRequest('hello').then(()=>{$('extensionState').textContent='Browser extension connected';}).catch(()=>{$('extensionState').textContent='Chrome / Edge extension required for automatic import';});
 
 try{
   const last=JSON.parse(localStorage.getItem('dictai:youtube:last')||'null');

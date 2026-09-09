@@ -4,7 +4,7 @@
 
 ### One workspace for conversations, books and YouTube listening practice
 
-YouTube caption fetching now uses a [shared persistent request guard](YOUTUBE-REQUEST-GUARD.md): captions survive server restarts, duplicate imports share one request, and detected blocking pauses new requests without affecting cached practice.
+YouTube practice now runs [in the user's browser](YOUTUBE-BROWSER-LOCAL.md): a small Chrome/Edge extension reads the transcript displayed on YouTube, and DictAI handles captions, matching and progress locally. The website serves code, not caption-fetch requests. Existing shared Voice / Again / Next controls are retained. The [request guard](YOUTUBE-REQUEST-GUARD.md) remains for legacy server clients only.
 
 **A1–C2 courses · English and Korean · browser speech recognition · multi-chapter books**
 

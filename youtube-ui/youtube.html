@@ -3,9 +3,15 @@
       <form id="importForm" class="import-form">
         <label class="url-field"><span>YouTube link</span><input id="videoUrl" type="text" inputmode="url" placeholder="Paste a YouTube link…" maxlength="2000" required autocomplete="off"></label>
         <label><span>Captions</span><select id="captionLanguage"><option value="en">English</option><option value="ko">한국어</option></select></label>
-        <button id="loadButton" class="primary" type="submit">Load video →</button>
+        <button id="loadButton" class="primary" type="submit">Open YouTube →</button>
       </form>
-      <p id="importStatus" class="status" role="status" aria-live="polite">Use a video with captions. Original video audio — no generated voices.</p>
+      <p id="importStatus" class="status" role="status" aria-live="polite">Captions, answers and progress stay in this browser. Original YouTube audio.</p>
+      <div class="browser-tools"><span id="extensionState" role="status">Checking browser extension…</span><button id="restoreCaption" type="button">Use saved captions</button></div>
+      <details id="extensionSetup">
+        <summary>Browser extension setup</summary>
+        <ol><li><a href="/youtube-assets/dictai-caption-bridge.zip" download>Download DictAI Caption Bridge</a> and unzip it.</li><li>In Chrome or Edge, open Extensions → Manage extensions. Enable Developer mode → Load unpacked → choose the unzipped folder containing manifest.json.</li><li>Reload DictAI in that browser. Paste a link and choose Open YouTube.</li><li>On YouTube, expand the description → Show transcript. Select your caption language and leave timestamps visible. Click the DictAI extension → Send displayed transcript.</li></ol>
+        <p>The extension reads only the displayed transcript when you click Send. It does not fetch hidden caption endpoints or copy cookies. If YouTube does not show a transcript, use a caption file below. Built-in app browsers may not support extensions.</p>
+      </details>
       <details id="manualDetails">
         <summary>Have a caption file? Use SRT / VTT</summary>
         <div class="manual-import">

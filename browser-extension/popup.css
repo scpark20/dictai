@@ -1,0 +1,1 @@
+body{width:300px;margin:0;padding:20px;font:16px/1.5 system-ui;color:#172641;background:#f5f9ff}h1{margin:0;color:#1260c8;font-size:24px}p{margin:12px 0}button{width:100%;padding:12px;border:0;border-radius:12px;color:white;background:#1877e8;font:600 16px system-ui;cursor:pointer}button:disabled{opacity:.6}#status{font-size:14px;overflow-wrap:anywhere}.error{color:#b42318}

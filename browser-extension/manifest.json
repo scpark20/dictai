@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "DictAI Caption Bridge",
+  "version": "1.0.0",
+  "description": "Send the transcript displayed on YouTube to your local DictAI practice page. No server caption requests.",
+  "minimum_chrome_version": "106",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {"service_worker": "background.js", "type": "module"},
+  "action": {"default_popup": "popup.html", "default_title": "Send YouTube transcript to DictAI"},
+  "content_scripts": [{
+    "matches": ["https://192.168.0.68/*", "http://127.0.0.1/*", "http://localhost/*"],
+    "js": ["bridge.js"], "all_frames": true, "run_at": "document_start"
+  }]
+}

@@ -102,7 +102,7 @@ $('thresholdSetting').value='0.81';$('applyVoiceSettings').click();
 assert.equal(w.testPractice.state.voiceEnabled,true);
 w.testPractice.state.voiceEnabled=false;$('applyVoiceSettings').click();assert.equal(w.testPractice.state.voiceEnabled,false);
 assert.equal(unexpectedCalls,0,'YouTube never sends Book/Conversation API mutations');
-assert.ok(namesCalls>0);
+assert.equal(namesCalls,0,'Names runs locally without sending caption text');
 assert.equal(d.querySelectorAll('#answerForm').length,1);
 assert.equal(d.querySelectorAll('#voiceToggle').length,1);
 w.dispatchEvent(new w.Event('pagehide'));w.close();

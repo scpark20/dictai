@@ -1,5 +1,7 @@
 # YouTube dictation
 
+**Current import mode: browser-local.** Install the [Caption Bridge](YOUTUBE-BROWSER-LOCAL.md) once in Chrome/Edge. The server serves assets only for this flow; it receives no transcript, file upload, Names text, answer or progress requests from the YouTube UI. Legacy server API details below are compatibility documentation, not the current browser import path.
+
 Open **YouTube** between Conversation and Book, or visit `/youtube` directly. Both keep the main sidebar. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
 
 The address field sits above the video and the shared Book/Conversation practice card. The timeline, transcript list and range controls stay removed. Navigate with Previous / Next or enter a sentence number. The shared speed row uses YouTube-supported rates (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. Voice uses the same English recognition models, settings, microphone pipeline and independent draft handling as Book/Conversation. `/youtube?embed=1` assembles the shared practice template plus video controls; `/youtube` retains the complete app shell. See [the shared-engine contract](SHARED-PRACTICE.md).
@@ -8,10 +10,10 @@ The address field sits above the video and the shared Book/Conversation practice
 
 English numeric and orthographic alternatives are accepted without rewriting captions. Examples: $25 / twenty-five dollars, 2026 / twenty twenty-six, 3:30 / three thirty, and didn't / did not. Numeric expressions remain atomic, incomplete alternatives stay in the input on Space, and Enter explicitly submits. See [audit, acceptance policy, guardrails and migration](YOUTUBE-MULTI-ANSWER.md). Book/Conversation and ASR are unchanged.
 
-1. Load the original captions, preferring creator-provided captions in the requested language. No translation is generated. Other available caption languages are shown if the selected one is missing.
+1. Open the video from DictAI, display its transcript on YouTube in the selected language, and click the extension to send it back. Original text is retained; no translation is generated. Displayed timestamps give approximate clip ends. Saved captions and SRT/VTT files are also read locally.
 2. Start from the saved sentence or the timestamp in the pasted link, then use Previous / Next to move through the full video in order.
 3. Replay that clip using the official YouTube iframe player. The original video audio is used: no download, TTS generation or GPU job.
-4. The answer row follows the existing Book / Conversation layout: Type a word with an in-field Space / Enter hint, Names and Give Up alongside it, and joined Again / Next buttons in the same row on completion. Type words or paste a phrase. Space / Enter submits; each occurrence of a repeated word needs an entry. Case, ordinary punctuation and common title forms are normalized for matching, while caption wording is preserved. Names uses the same English spaCy PERSON/PROPN criteria as the Book metadata builder; it never replaces the typed draft.
+4. The answer row follows the existing Book / Conversation layout: Type a word with an in-field Space / Enter hint, Names and Give Up alongside it, and joined Again / Next buttons in the same row on completion. Type words or paste a phrase. Space / Enter submits; each occurrence of a repeated word needs an entry. Case, ordinary punctuation and common title forms are normalized for matching, while caption wording is preserved. YouTube Names now uses local capitalization/title hints (with possible omissions/false positives), not server spaCy; it never replaces the typed draft.
 5. Solving keeps the screen in place, briefly celebrates, and exposes Again / Next. Tapping a word or revealing an answer marks it as revealed rather than solved. Next proceeds through the full video; Previous / Next also allow manual navigation.
 
 Answers stay hidden until solved or revealed. There is no transcript list or Show script control.

@@ -1,4 +1,5 @@
-import {tokens, migrateOpened, mapLegacyIndices, TOKEN_VERSION} from './youtube-core.mjs?v=shared-1';
+import {tokens, migrateOpened, TOKEN_VERSION} from './youtube-core.mjs?v=shared-1';
+import {localNameIndices} from './local-names.mjs?v=local-1';
 import * as answerVariants from '../practice-ui/answer-variants.mjs';
 import {progressKey, indexAtTime} from './youtube-core.mjs?v=shared-1';
 
@@ -55,17 +56,8 @@ export function createYouTubeProvider(media, storage = localStorage) {
         usedAnswer = Boolean(answers[index]?.includes('revealed'));
         const id = `youtube-${generation}-${index}`;
         attempts.set(id, {index, words:tokens(segment.text)});
-        const capturedGeneration = generation, capturedIndex = index;
         if (data.language.startsWith('en') && !names.has(index)) {
-          // Names loading never blocks typing or completion.
-          void fetch('/api/youtube/names', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:segment.text}), signal:AbortSignal.timeout(10000)})
-            .then(async response => { if (!response.ok) throw new Error('Names unavailable'); return response.json(); })
-            .then(result => {
-              if (capturedGeneration !== generation) return;
-              const indices = mapLegacyIndices(segment.text, result.indices || []);
-              names.set(capturedIndex, indices);
-              callbacks.names?.(id, indices);
-            }).catch(() => { if (capturedGeneration === generation) callbacks.names?.(id, null); });
+          names.set(index,localNameIndices(segment.text));
         }
         return {attempt_id:id, level, text:segment.text, word_count:tokens(segment.text).length, target_language:options.body?.target_language, proper_noun_indices:names.get(index) || []};
       }
