@@ -78,13 +78,14 @@ async function mountPlayer(request) {
         playerReady=true;$('replayButton').disabled=false;
         const rates=player.getAvailablePlaybackRates?.()||[1];
         $('playbackRate').replaceChildren(...rates.map(rate=>{const option=document.createElement('option');option.value=rate;option.textContent=`${rate}×`;option.selected=rate===1;return option;}));
-        cueCurrent();message('playerStatus','Ready. Press Replay clip to listen.');
+        $('playbackButtons').querySelectorAll('[data-rate]').forEach(button=>{button.disabled=!rates.includes(Number(button.dataset.rate));button.setAttribute('aria-pressed',String(Number(button.dataset.rate)===1));});
+        cueCurrent();message('playerStatus','Ready. Choose a playback speed below to replay this clip.');
       },onError:playerError,onStateChange:e=>{
         if(e.data===YT.PlayerState.PLAYING){clipLoading=false;message('playerStatus',stopAt!==null?'Playing this clip…':'Playing video…');}
         if(e.data===YT.PlayerState.BUFFERING)message('playerStatus','Buffering video…');
         if(e.data===YT.PlayerState.ENDED){stopAt=null;message('playerStatus','Clip finished.');}
         if(e.data===YT.PlayerState.PAUSED)message('playerStatus','Paused.');
-      },onAutoplayBlocked:()=>{clipLoading=false;message('playerStatus','Press the play button inside the video once, then Replay clip.');}}
+      },onAutoplayBlocked:()=>{clipLoading=false;message('playerStatus','Press play inside the video once, then use a playback speed button below.');}}
     });
     readyTimeout=setTimeout(()=>{if(!playerReady&&request===state.request)message('playerStatus','The embedded video is not responding. Open it on YouTube, or reload this video to retry.','error');},18000);
     clearInterval(timer);
@@ -177,7 +178,7 @@ function options(tracks, chosen) {
 function activate(data, request) {
   if(request!==state.request)return;
   stopClip();state.data=data;loadProgress(data);celebrated=isComplete(state.index);
-  $('workspace').hidden=false;$('videoTitle').textContent=data.title;
+  $('workspace').hidden=false;$('emptyStage').hidden=true;$('videoTitle').textContent=data.title;
   $('originalLink').href=`https://www.youtube.com/watch?v=${data.video_id}`;
   options(data.tracks,data.language);
   $('captionNote').textContent=data.source==='uploaded'?'Your caption file · Original wording and timestamps.':`${data.generated?'Auto-generated captions · May contain recognition errors.':'Creator-provided captions.'} ${data.count} practice clips.`;
@@ -218,6 +219,7 @@ $('rangeForm').addEventListener('submit',e=>{e.preventDefault();try{setRange(par
 $('fullRange').addEventListener('click',()=>{if(state.data)setRange(0,state.data.end+.01);});
 $('useCurrentTime').addEventListener('click',()=>{if(!playerReady){message('rangeStatus','Wait for the video player to load.','error');return;}const i=indexAtTime(state.data.segments,player.getCurrentTime());setRange(state.data.segments[i].start,state.data.end+.01);});
 $('replayButton').addEventListener('click',replay);
+$('playbackButtons').addEventListener('click',event=>{const button=event.target.closest('[data-rate]');if(!button||button.disabled)return;$('playbackRate').value=button.dataset.rate;$('playbackButtons').querySelectorAll('[data-rate]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));replay();});
 $('playbackRate').addEventListener('change',()=>{if(playerReady)player.setPlaybackRate(Number($('playbackRate').value));});
 function submitAnswer(){
   if(!current()||isComplete(state.index))return;

@@ -259,13 +259,22 @@ languages.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
-document.querySelector('#youtubePath').addEventListener('click', () => {
+function setPracticePath(path) {
+  state.path = path;
+  document.body.dataset.practiceMode = path;
+  document.querySelector('#youtubePath').setAttribute('aria-pressed', String(path === 'youtube'));
+  history.replaceState(null, '', path === 'youtube' ? '/?mode=youtube' : '/');
+}
+
+function openYouTube() {
+  setPracticePath('youtube');
   practiceCourseLevel.textContent = '▶';
   practiceCourseTopic.textContent = 'YouTube';
   practiceCourseCount.textContent = 'Original video · Timed captions';
-  practiceFrame.src = './youtube?embed=1';
+  if (!practiceFrame.src.endsWith('/youtube?embed=1')) practiceFrame.src = '/youtube?embed=1';
   practiceFrame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-});
+}
+document.querySelector('#youtubePath').addEventListener('click', openYouTube);
 
 async function openConversation(button) {
   const requestedTopic = button.dataset.topic;
@@ -285,6 +294,7 @@ async function openConversation(button) {
     return;
   }
   topicList.querySelectorAll(".topic-card").forEach((item) => item.classList.remove("is-selected"));
+  setPracticePath('conversation');
   button.classList.add("is-selected");
   button.disabled = false;
   practiceCourseLevel.textContent = state.level;
@@ -324,6 +334,7 @@ bookList.addEventListener("click", async (event) => {
     if (!response.ok) throw new Error("Book selection failed");
     const selected = await response.json();
     bookList.querySelectorAll(".chapter-card").forEach((item) => item.classList.remove("is-selected"));
+    setPracticePath('book');
     chapterButton.classList.add("is-selected");
     practiceCourseLevel.textContent = "A1";
     practiceCourseTopic.textContent = `Harry Potter 5 · Chapter ${chapter}`;
@@ -334,3 +345,5 @@ bookList.addEventListener("click", async (event) => {
     chapterButton.disabled = false;
   }
 });
+
+if (location.pathname.replace(/\/$/, '') === '/youtube' || new URLSearchParams(location.search).get('mode') === 'youtube') openYouTube();

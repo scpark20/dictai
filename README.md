@@ -22,7 +22,7 @@ DictAI is a listening and dictation workspace with a course menu on the left and
 
 - **Conversation** — short two-speaker exercises organized by CEFR level and topic.
 - **Book** — long-form dictation organized by title and chapter, with direct sentence navigation.
-- **YouTube** — paste a video link, select a caption language and time range, then solve the original audio in chronological clips. [YouTube guide](YOUTUBE.md)
+- **YouTube** — integrated between Conversation and Book in the main sidebar. Paste a video link above the full-width player, then solve chronological clips in the familiar answer card below. Timeline and time-range controls expand when needed. [YouTube guide](YOUTUBE.md)
 
 Conversation and Book use the same current DictAI practice interface, keyboard matching, speech recognition controls, hints, playback speeds, and completion flow. YouTube retains the familiar answer row (Space / Enter, Names / Give Up, Again / Next), with an original-video player and time-indexed caption list. YouTube currently uses typed answers; it does not synthesize replacement audio.
 

@@ -1,6 +1,8 @@
 # YouTube dictation
 
-Open **YouTube** above Conversation and Book, or visit `/youtube` directly. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
+Open **YouTube** between Conversation and Book, or visit `/youtube` directly. Both keep the main sidebar. Paste a `watch`, `youtu.be`, Shorts or live-video link. Links with `t=` or `start=` open the corresponding caption.
+
+The integrated layout places the address field above the full-width video and the familiar dictation card below it. Timeline and time-range controls are collapsed until needed. The bottom speed row replays the current clip at a YouTube-supported rate (0.5, 0.75, 1, 1.25 or 1.5); unsupported rates stay disabled. YouTube remains type-only; Book/Conversation voice settings are unchanged. `/youtube?embed=1` serves only the inner workspace, while `/youtube` serves the complete app shell.
 
 ## Learning flow
 
@@ -35,6 +37,8 @@ The optional English Names helper reuses the existing `spacy` runtime and the of
 Use the existing 8771 deployment. Preserve the Chapter 10 repaired-audio service overrides. A new worktree needs the same ASR mounts as the existing server. No change to system startup policy is required.
 
 ## Checks
+
+- `node tests/youtube-layout.test.mjs`: sidebar order, direct YouTube entry, Book/Conversation switching, address/video/practice ordering, collapsed timeline and the speed row. This is a mocked DOM unit test, not browser visual QA.
 
 - `python tests/test_youtube.py -v`: URL validation, caption grouping, rolling-caption overlap, original title/contraction spelling, SRT/VTT parsing, import timeout/errors/cache and Chapter 11 progress isolation.
 - `node --test tests/youtube-core.test.mjs`: answer matching, repeated words, aliases, time parsing, range ordering and per-video progress keys.

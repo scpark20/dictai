@@ -78,8 +78,14 @@ class CaptionTests(unittest.TestCase):
                 with TestClient(server.app,base_url='https://testserver') as c:
                     self.assertEqual(c.post('/api/book',json={'chapter':11}).json()['count'],181)
                     c.post('/api/level',json={'level':18})
-                    for path in ('/','/youtube','/youtube-assets/youtube.js','/youtube-assets/youtube-core.mjs','/practice/'):
+                    for path in ('/','/youtube','/youtube/','/youtube?embed=1','/youtube-assets/youtube.js','/youtube-assets/youtube-core.mjs','/practice/'):
                         self.assertEqual(c.get(path).status_code,200)
+                    shell=c.get('/youtube').text
+                    self.assertIn('id="bookList"',shell)
+                    self.assertIn('src="/youtube?embed=1"',shell)
+                    frame=c.get('/youtube?embed=1').text
+                    self.assertIn('id="youtubePlayer"',frame)
+                    self.assertNotIn('id="bookList"',frame)
                     self.assertEqual(c.post('/api/youtube/subtitles',json={'url':'jNQXAC9IVRw','subtitles':SRT}).status_code,200)
                     self.assertEqual(c.get('/api/bootstrap').json()['level'],18)
                     self.assertEqual(c.get('/api/bootstrap').json()['chapter'],11)

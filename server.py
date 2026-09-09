@@ -937,14 +937,19 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 
 
 @app.get("/youtube/")
-def youtube_page() -> FileResponse:
-    return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+def youtube_page(request: Request) -> Response:
+    if request.query_params.get("embed") == "1":
+        return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+    source = (ROOT / "index.html").read_text(encoding="utf-8")
+    source = source.replace('href="./', 'href="/').replace('src="./', 'src="/')
+    source = source.replace('src="/practice/"', 'src="/youtube?embed=1"')
+    return Response(source, media_type="text/html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
 
 
 @app.get("/{name}")
-def static(name: str) -> FileResponse:
+def static(name: str, request: Request) -> FileResponse:
     if name == "youtube":
-        return FileResponse(ROOT / "youtube-ui" / "youtube.html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+        return youtube_page(request)
     if name not in {"index.html", "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js", "build-status.html", "build-status.js", "build-status.css", "tts-eval.html", "tts-eval.js", "tts-eval.css"}:
         raise HTTPException(404)
     return FileResponse(ROOT / name)
