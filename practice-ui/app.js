@@ -1,16 +1,19 @@
 "use strict";
 
+// Content providers supply data/media only. All modes use this UI and lifecycle.
+const practiceProvider = window.dictaiPracticeProvider || null;
+let answerVariants = null;
+
 const LEASE_REFRESH_MS = 4 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 90000;
 const AUDIO_READY_TIMEOUT_MS = 15000;
 const MAX_AUDIO_BLOB_BYTES = 8 * 1024 * 1024;
 const PROBLEM_RETRY_DELAYS_MS = [700, 1400];
-const DEFAULT_MAX_LEVEL = 191;
-const SENTENCE_POSITION_KEY = "harry-potter-concise-ch5-current-sentence";
+const DEFAULT_MAX_LEVEL = 10000;
 const VOICE_SETTINGS_KEY = "dictai-voice-settings";
 const VOICE_RESTORE_KEY = "dictai-restore-voice-after-settings";
 const DEFAULT_VOICE_SETTINGS = Object.freeze({ model: "full", beam: 12, threshold: 0.72, candidate: 0.08 });
-const PLAYBACK_RATES = Object.freeze([0.5, 0.8, 1.0, 1.2, 1.5]);
+const PLAYBACK_RATES = Object.freeze(practiceProvider?.playbackRates || [0.5, 0.8, 1.0, 1.2, 1.5]);
 const DEFAULT_TARGET_LANGUAGE = "ko";
 const REVEAL_TRANSLATION_MAX_LENGTH = 600;
 const REVEAL_PHRASE_MAX_LENGTH = 120;
@@ -45,6 +48,7 @@ const API = {
 
 const state = {
   level: null,
+  positionKey: null,
   maxLevel: DEFAULT_MAX_LEVEL,
   maxWords: null,
   speedLevel: 3,
@@ -140,6 +144,7 @@ const elements = {
   answerInputWrap: document.querySelector("#answerInputWrap"),
   answerInput: document.querySelector("#answerInput"),
   answerFeedback: document.querySelector("#answerFeedback"),
+  properNounHints: document.querySelector("#properNounHints"),
   revealButton: document.querySelector("#revealButton"),
   revealLabel: document.querySelector("#revealLabel"),
   nextButton: document.querySelector("#nextButton"),
@@ -166,6 +171,8 @@ const elements = {
   candidateSetting: document.querySelector("#candidateSetting"),
   candidateValue: document.querySelector("#candidateValue"),
   applyVoiceSettings: document.querySelector("#applyVoiceSettings"),
+  voiceOptionsButton: document.querySelector("#voiceOptionsButton"),
+  voiceSettingsPanel: document.querySelector("#voiceSettings"),
 };
 
 const voiceRestoreValue = sessionStorage.getItem(VOICE_RESTORE_KEY);
@@ -226,7 +233,8 @@ function setStatus(message) {
 
 function savedSentencePosition() {
   try {
-    const saved = Number(window.localStorage.getItem(SENTENCE_POSITION_KEY));
+    if (!state.positionKey) return null;
+    const saved = Number(window.localStorage.getItem(state.positionKey));
     return Number.isInteger(saved) && saved >= 1 && saved <= state.maxLevel ? saved : null;
   } catch (_error) {
     return null;
@@ -235,7 +243,7 @@ function savedSentencePosition() {
 
 function saveSentencePosition(level) {
   try {
-    window.localStorage.setItem(SENTENCE_POSITION_KEY, String(level));
+    if (state.positionKey) window.localStorage.setItem(state.positionKey, String(level));
   } catch (_error) {
     // Server-side progress remains the fallback when browser storage is unavailable.
   }
@@ -301,7 +309,8 @@ function renderSpeedControl() {
     button.disabled = disabled;
     button.setAttribute("aria-pressed", String(selected));
     const playbackRate = playbackRateForLevel(level);
-    button.textContent = playbackRate.toFixed(1);
+    button.textContent = String(playbackRate === 1 ? '1.0' : playbackRate);
+    if (practiceProvider?.availableRates) button.disabled ||= !practiceProvider.availableRates.includes(playbackRate);
     let action = "Play sentence";
     if (mode === "unavailable") action = "Sentence unavailable";
     if (mode === "loading") action = "Preparing audio";
@@ -437,6 +446,15 @@ function downsampleVoice(input, inputRate, outputRate = 16000) {
 
 function acceptVoiceTranscript(text, endpoint = false) {
   if (!state.problem || state.completing || state.problemLoading) return;
+  // Voice recognition owns only voice state. Never consume or clear a draft
+  // that the learner is entering through the independent keyboard channel.
+  const typedDraft = elements.answerInput.value;
+  if (practiceProvider) {
+    // Evaluate the complete evolving transcript for multiword numeric aliases.
+    const result = answerVariants.submitWords(state.problem.displayWords, providerOpened(), text, {deferIncomplete:!endpoint, language:practiceProvider.data.language});
+    const indices = result.opened.flatMap((value, i) => value && !state.solved.has(i) ? [i] : []);
+    if (indices.length) { flashVoiceCandidate(indices); showRecognizedVoiceWord(text); markSolved(indices, false); }
+  }
   const previous = entryWords(state.voiceLastTranscript);
   const current = entryWords(text);
   let shared = 0;
@@ -445,6 +463,7 @@ function acceptVoiceTranscript(text, endpoint = false) {
     if (state.completing) break;
     commitVoiceWord(word);
   }
+  elements.answerInput.value = typedDraft;
   state.voiceLastTranscript = endpoint ? "" : String(text || "");
 }
 
@@ -531,7 +550,7 @@ async function startVoiceRecognition() {
 }
 
 function problemRequestBody(targetLanguage = currentTargetLanguage()) {
-  return { target_language: normaliseTargetLanguage(targetLanguage) };
+  return { target_language: normaliseTargetLanguage(targetLanguage), ...(practiceProvider ? {level:state.nextProblemLevel ?? state.level} : {}) };
 }
 
 function createProblemLoadingContext(level, version) {
@@ -579,6 +598,7 @@ function setTargetLanguage(value) {
 }
 
 function setAnalysisControlsAvailable(enabled) {
+  if (practiceProvider) enabled = false;
   const available = Boolean(enabled);
   elements.revealControls.hidden = !available;
   elements.analysisButton.disabled = !available || state.analysisPending;
@@ -785,6 +805,7 @@ function renderRevealAnalysis(analysis, targetLanguage, independent = false) {
 }
 
 async function apiRequest(path, options = {}) {
+  if (practiceProvider) return practiceProvider.request(path, options);
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -792,7 +813,7 @@ async function apiRequest(path, options = {}) {
     const response = await fetch(path, {
       method: options.method || "GET",
       credentials: "same-origin",
-      cache: "no-store",
+      cache: "default",
       headers: options.body ? { "Content-Type": "application/json" } : undefined,
       body: options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
@@ -901,6 +922,7 @@ function hasRetainedCurrentAudio(problem = state.problem, version = state.proble
 }
 
 function prepareCompletionReplay(problem = state.problem, version = state.problemVersion) {
+  if (practiceProvider) { practiceProvider.stop(); setAudioControlMode(practiceProvider.ready ? 'ready' : 'loading'); return; }
   const audio = elements.audio;
   const hasCurrentAudio = hasRetainedCurrentAudio(problem, version);
 
@@ -992,6 +1014,14 @@ function retryProblemAudio(problem, version, context) {
 }
 
 function configureCurrentAudio(problem, version, problemLoadingContext = null, take = state.voiceTake) {
+  if (practiceProvider) {
+    practiceProvider.select(problem.level);
+    state.audioReady = practiceProvider.ready;
+    setAudioControlMode(state.audioReady ? 'ready' : 'loading');
+    finishProblemLoading(problem, version, problemLoadingContext);
+    restoreProviderProgress();
+    return;
+  }
   // Download the complete clip while the attempt is active. The retained Blob
   // remains replayable after completion even though the server closes the
   // attempt's authenticated audio route immediately.
@@ -1185,7 +1215,7 @@ function configureCurrentAudio(problem, version, problemLoadingContext = null, t
       const loadTake = async (takeIndex) => {
         const response = await fetch(API.audio(problem.attemptId, takeIndex), {
           credentials: "same-origin",
-          cache: "no-store",
+          cache: "default",
           signal: fetchController.signal,
         });
         if (!response.ok) throw new ApiError("Could not load the original audio.", response.status);
@@ -1224,6 +1254,7 @@ function configureCurrentAudio(problem, version, problemLoadingContext = null, t
 }
 
 function resetProblemSurface() {
+  practiceProvider?.stop();
   stopWordSuccessTicks();
   window.clearInterval(state.leaseTimer);
   state.leaseTimer = 0;
@@ -1289,6 +1320,8 @@ function resetProblemSurface() {
   elements.properNounButton.disabled = true;
   elements.properNounButton.hidden = false;
   elements.properNounButton.textContent = "Names";
+  elements.properNounHints.replaceChildren();
+  elements.properNounHints.hidden = true;
   elements.revealLabel.textContent = "Give Up";
   elements.nextButton.hidden = true;
   elements.nextButton.disabled = true;
@@ -1374,6 +1407,10 @@ const COLLOQUIAL_EXPANSIONS = Object.freeze({
 const ONE_WORD_ALIASES = Object.freeze({
   ok: Object.freeze(["okay"]),
   okay: Object.freeze(["ok"]),
+  mr: Object.freeze(["mister"]),
+  mister: Object.freeze(["mr"]),
+  mrs: Object.freeze(["missus"]),
+  missus: Object.freeze(["mrs"]),
 });
 
 function standardiseWordPunctuation(value) {
@@ -1821,7 +1858,7 @@ function validateProblem(payload, expectedTargetLanguage) {
   if (payload?.target_language !== expectedTargetLanguage) {
     throw new ApiError("The translation language could not be verified.");
   }
-  const displayWords = extractSentenceWords(payload.text);
+  const displayWords = practiceProvider ? practiceProvider.tokens(payload.text) : extractSentenceWords(payload.text);
   if (displayWords.length !== wordCount) {
     throw new ApiError("The sentence word structure could not be verified.");
   }
@@ -1874,7 +1911,9 @@ function sizeWordSlot(slotElement, word) {
 function createWordSlot(index) {
   const slotElement = document.createElement("div");
   slotElement.className = "word-slot";
-  sizeWordSlot(slotElement, state.problem?.displayWords[index]);
+  // Unanswered slots must not reveal the answer's character count through width.
+  // sizeWordSlot runs only after the answer is solved or revealed.
+  slotElement.style.setProperty("--slot-width", "52px");
   slotElement.setAttribute("role", "button");
   slotElement.tabIndex = 0;
   slotElement.setAttribute("aria-label", `Word ${index + 1}, unsolved`);
@@ -1896,6 +1935,7 @@ function createWordSlot(index) {
     element: slotElement,
     wordValue,
     value: "",
+    revealedLetterIndices: null,
     partial: null,
     wordParts: null,
   };
@@ -1950,6 +1990,8 @@ function renderSplitSlot(slotIndex) {
   const slot = state.slots[slotIndex];
   const partial = slot?.partial;
   if (!slot || !partial || !partial.expansions.length) return;
+  slot.revealedLetterIndices = null;
+  slot.element.classList.remove("has-letter-hint");
   const partCount = partial.expansions[0].length;
 
   slot.wordParts?.remove();
@@ -2120,6 +2162,7 @@ function commitAnswerWord(
     || elements.answerInput.disabled
   ) return false;
 
+  if (practiceProvider) return commitVariantAnswer(rawValue, trigger, suppressTick);
   const typedWords = entryWords(rawValue);
   if (!typedWords.length) {
     if (String(rawValue || "").trim()) showEntryWrong("Enter an English word or short phrase.");
@@ -2176,6 +2219,51 @@ function commitAnswerWord(
   const typedLabel = typedWords.join(" ");
   showEntryWrong(`No remaining slot matches “${typedLabel}”.`);
   return false;
+}
+
+function providerOpened() {
+  return state.problem.displayWords.map((_word, i) => state.revealed.has(i) ? 'revealed' : state.solved.has(i) ? 'solved' : null);
+}
+
+function saveProviderProgress() {
+  if (practiceProvider && state.problem) practiceProvider.save(state.problem.level, providerOpened());
+}
+
+function restoreProviderProgress() {
+  const saved = practiceProvider?.opened(state.problem.level);
+  if (!saved) return;
+  state.usedAnswer = saved.includes('revealed');
+  saved.forEach((value, i) => { if (value) markSolved([i], value === 'revealed'); });
+  if (state.solved.size === state.problem.wordCount) {
+    window.clearTimeout(state.completionStartTimer);
+    state.completionStartTimer = 0;
+    // Restoring a completed clip must not play another success celebration.
+    state.completionPending = false;
+    state.completing = true;
+    elements.answerEntry.classList.add('is-completing');
+    elements.answerInputWrap.hidden = true;
+    elements.properNounButton.hidden = true;
+    elements.revealButton.hidden = true;
+    elements.redoButton.hidden = false;
+    elements.nextButton.hidden = false;
+    void completeProblem(state.problem, state.problemVersion, state.problem.displayWords, state.usedAnswer, true);
+  }
+}
+
+function commitVariantAnswer(rawValue, trigger, suppressTick) {
+  const result = answerVariants.submitWords(state.problem.displayWords, providerOpened(), rawValue, {deferIncomplete:trigger === 'space', language:practiceProvider.data.language});
+  const indices = result.opened.flatMap((value, i) => value && !state.solved.has(i) ? [i] : []);
+  if (result.pending || result.matched) elements.answerInput.value = (result.remaining || (result.pending ? String(rawValue).trim() : '')) + (result.pending ? ' ' : '');
+  if (indices.length) {
+    flashEntryCorrect();
+    if (!suppressTick && state.solved.size + indices.length < state.problem.wordCount) playWordSuccessTick();
+    markSolved(indices, false);
+  }
+  if (!state.completionPending && !state.completing) {
+    if (result.pending) elements.answerFeedback.textContent = 'Keep typing the expression, or press Enter to submit.';
+    else if (!result.matched) showEntryWrong(result.duplicate && !result.missed ? 'Already entered.' : 'No remaining slot matches this word or expression.');
+  }
+  return Boolean(result.matched);
 }
 
 function commitVoiceWord(rawValue) {
@@ -2295,6 +2383,8 @@ function markSolved(indices, revealed) {
     if (!slot || state.solved.has(index)) return;
     const word = state.problem.displayWords[index];
     clearSplitSlot(slot, true);
+    slot.revealedLetterIndices = null;
+    slot.element.classList.remove("has-letter-hint");
     slot.value = String(word);
     slot.wordValue.textContent = String(word);
     slot.element.setAttribute("aria-label", `Word ${index + 1}, answer ${word}`);
@@ -2310,11 +2400,10 @@ function markSolved(indices, revealed) {
     keepSolvedSlotVisible(slot.element);
   });
   if (!solvedIndices.length) return;
+  saveProviderProgress();
 
   if (state.solved.size === state.problem.wordCount) {
-    elements.answerFeedback.textContent = "Sentence complete.";
     state.completionPending = true;
-    elements.card.classList.add("is-completion-pending");
     elements.answerInput.disabled = true;
     window.clearTimeout(state.completionStartTimer);
     state.completionStartTimer = window.setTimeout(() => {
@@ -2349,7 +2438,34 @@ function revealWordByClick(index) {
   dismissSlotClickHint();
   state.wordRevealRequired = true;
   void ensureWordRevealRecorded(problem);
-  markSolved([index], true);
+  const slot = state.slots[index];
+  if (!slot) return;
+  const characters = Array.from(String(problem.displayWords[index] || ""));
+  const revealable = characters.flatMap((character, position) =>
+    /[\p{L}\p{N}]/u.test(character) ? [position] : []);
+  if (!revealable.length) {
+    markSolved([index], true);
+    return;
+  }
+  if (!slot.revealedLetterIndices) slot.revealedLetterIndices = new Set();
+  const hidden = revealable.filter((position) => !slot.revealedLetterIndices.has(position));
+  if (!hidden.length) return;
+  const position = hidden[Math.floor(Math.random() * hidden.length)];
+  slot.revealedLetterIndices.add(position);
+  if (slot.revealedLetterIndices.size === revealable.length) {
+    markSolved([index], true);
+    return;
+  }
+  const masked = characters.map((character, characterIndex) =>
+    !/[\p{L}\p{N}]/u.test(character) || slot.revealedLetterIndices.has(characterIndex)
+      ? character : "_").join("");
+  slot.wordValue.textContent = masked;
+  slot.element.classList.add("has-letter-hint");
+  slot.element.style.setProperty("--slot-width", `${Math.max(52, Math.ceil(characters.length * 9.5 + 32))}px`);
+  slot.element.setAttribute("aria-label", `Word ${index + 1}, hint ${masked}`);
+  const message = `${slot.revealedLetterIndices.size} of ${revealable.length} letters shown.`;
+  elements.answerFeedback.textContent = message;
+  setStatus(message);
 }
 
 function revealProperNouns() {
@@ -2363,26 +2479,47 @@ function revealProperNouns() {
     || elements.properNounButton.disabled
   ) return;
 
-  const indices = problem.properNounIndices.filter((index) => !state.solved.has(index));
+  const indices = [...new Set(problem.properNounIndices)]
+    .filter((index) => Number.isInteger(index) && problem.displayWords[index]);
   if (!indices.length) {
     elements.properNounButton.disabled = true;
-    elements.properNounButton.textContent = problem.properNounIndices.length
-      ? "Names shown"
-      : "No names";
-    const message = problem.properNounIndices.length
-      ? "The proper nouns in this sentence are already open."
-      : "No proper nouns were detected in this sentence.";
+    elements.properNounButton.textContent = "No names";
+    elements.properNounHints.replaceChildren();
+    elements.properNounHints.hidden = true;
+    const message = "No proper nouns were detected in this sentence.";
     elements.answerFeedback.textContent = message;
     setStatus(message);
     return;
   }
-
-  state.usedAnswer = true;
-  state.wordRevealRequired = true;
-  void ensureWordRevealRecorded(problem);
-  elements.properNounButton.disabled = true;
+  const sorted = [...indices].sort((left, right) => left - right);
+  const groups = [];
+  sorted.forEach((index) => {
+    const previous = groups.at(-1);
+    if (previous && previous.at(-1) === index - 1) previous.push(index);
+    else groups.push([index]);
+  });
+  const names = groups.map((group) => group
+    .map((index) => String(problem.displayWords[index]))
+    .join(" "));
+  for (let index = names.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [names[index], names[swap]] = [names[swap], names[index]];
+  }
+  const label = document.createElement("span");
+  label.className = "proper-noun-hints-label";
+  label.textContent = "Names in this sentence";
+  const chips = names.map((name) => {
+    const chip = document.createElement("b");
+    chip.textContent = name;
+    return chip;
+  });
+  elements.properNounHints.replaceChildren(label, ...chips);
+  elements.properNounHints.hidden = false;
   elements.properNounButton.textContent = "Names shown";
-  markSolved(indices, true);
+  elements.properNounButton.disabled = true;
+  const message = `${names.length} proper-noun hint${names.length === 1 ? "" : "s"} shown.`;
+  elements.answerFeedback.textContent = message;
+  setStatus(message);
 }
 
 function dismissSlotClickHint() {
@@ -2459,6 +2596,8 @@ async function revealAllAnswers() {
       const revealedWord = reveal.answers[index];
       const wasSolved = solvedBeforeReveal.has(index);
       const priorPartial = slot.partial;
+      slot.revealedLetterIndices = null;
+      slot.element.classList.remove("has-letter-hint");
       slot.value = revealedWord;
       slot.wordValue.textContent = revealedWord;
       sizeWordSlot(slot.element, revealedWord);
@@ -2583,6 +2722,19 @@ async function requestCompletionAnalysis(
   }
 }
 
+function renderCompletionActions(ready) {
+  elements.answerEntry.classList.add('is-completing');
+  elements.answerInputWrap.hidden = true;
+  elements.revealButton.hidden = true;
+  elements.properNounButton.hidden = true;
+  elements.redoButton.hidden = false;
+  elements.redoButton.disabled = !ready;
+  elements.nextButton.hidden = false;
+  const lastClip = practiceProvider && state.problem.level >= state.maxLevel;
+  elements.nextButton.disabled = !ready || Boolean(lastClip);
+  elements.nextButton.textContent = !ready ? 'Completing…' : lastClip ? 'Video complete ✓' : 'Next →';
+}
+
 function beginCompletion(usedAnswer = state.usedAnswer) {
   const problem = state.problem;
   const version = state.problemVersion;
@@ -2590,10 +2742,14 @@ function beginCompletion(usedAnswer = state.usedAnswer) {
   state.completionPending = false;
   elements.card.classList.remove("is-completion-pending");
   state.completing = true;
+  const quietSuccess = !usedAnswer;
   const voiceContextForChime = !usedAnswer && state.voiceAudioContext?.state === "running"
     ? state.voiceAudioContext
     : null;
-  if (voiceContextForChime) {
+  if (quietSuccess) {
+    // A correct answer keeps the exercise exactly where it is. Recognition is
+    // ignored while completing and is cleaned up on the next navigation.
+  } else if (voiceContextForChime) {
     window.clearTimeout(state.voiceCompletionStopTimer);
     state.voiceCompletionStopTimer = window.setTimeout(() => {
       state.voiceCompletionStopTimer = 0;
@@ -2604,36 +2760,27 @@ function beginCompletion(usedAnswer = state.usedAnswer) {
   }
   state.speedReplayIntent = null;
   state.completionReady = false;
-  elements.answerEntry.classList.add("is-completing");
   updateLevelInputDisabled();
   state.usedAnswer = usedAnswer;
   const answers = Object.freeze(problem.displayWords.map((word) => String(word)));
   state.completionAnswers = answers;
-  elements.answerInput.value = "";
   elements.answerInput.disabled = true;
-  elements.answerInputWrap.hidden = true;
-  elements.revealButton.hidden = true;
-  elements.properNounButton.hidden = true;
-  elements.nextButton.hidden = false;
-  elements.nextButton.disabled = true;
-  elements.nextButton.textContent = "Completing…";
-  elements.redoButton.hidden = false;
-  elements.redoButton.disabled = true;
+  if (!quietSuccess) elements.answerInput.value = "";
+  renderCompletionActions(false);
   setAnalysisControlsAvailable(false);
   prepareCompletionReplay(problem, version);
-  elements.card.classList.toggle("is-success", !usedAnswer);
   elements.card.classList.toggle("is-reveal-complete", usedAnswer);
   if (usedAnswer) {
     elements.answerFeedback.textContent = "Answer revealed. Review the full sentence.";
     setStatus("Processing the revealed answer.");
   } else {
-    elements.answerFeedback.textContent = "Sentence complete. Confirming the result.";
-    setStatus("Correct. Confirming the result.");
-    launchCompletionConfetti();
-    playSuccessChime(voiceContextForChime);
-    holdCompletionReplayForChime(problem, version);
+    // An unavailable audio/animation effect must never block Again / Next.
+    try {
+      launchCompletionConfetti();
+      playSuccessChime(voiceContextForChime);
+    } catch (_error) { /* Completion remains functional without effects. */ }
   }
-  void completeProblem(problem, version, answers, usedAnswer);
+  void completeProblem(problem, version, answers, usedAnswer, quietSuccess);
 }
 
 function launchCompletionConfetti() {
@@ -2662,6 +2809,7 @@ async function completeProblem(
   version = state.problemVersion,
   answers = state.slots.map((slot) => slot.value),
   usedAnswer = state.usedAnswer,
+  quietSuccess = false,
 ) {
   if (!problem) return;
 
@@ -2672,7 +2820,7 @@ async function completeProblem(
     // If the original clip is still loading, let it finish before closing the
     // attempt so the completed screen can retain it for replay.
     // A ready/failed/already-absent source returns immediately.
-    await waitForCompletionAudio(problem, version);
+    if (!quietSuccess && !practiceProvider) await waitForCompletionAudio(problem, version);
     if (state.problem !== problem || state.problemVersion !== version || !state.completing) return;
     const result = await apiRequest(API.complete(problem.attemptId), {
       method: "POST",
@@ -2697,10 +2845,15 @@ async function completeProblem(
         : `Answer revealed. Staying on sentence ${nextLevel}.`
       : `Solved. Next is sentence ${nextLevel}.`;
     state.completionReady = true;
+    saveProviderProgress();
+    renderCompletionActions(true);
+    if (quietSuccess) {
+      elements.answerFeedback.textContent = completionMessage;
+      setStatus("Complete. Move to the next sentence when ready.");
+      setAnalysisControlsAvailable(true);
+      return;
+    }
     elements.answerFeedback.textContent = completionMessage;
-    elements.nextButton.textContent = "Next →";
-    elements.nextButton.disabled = false;
-    elements.redoButton.disabled = false;
     setStatus(serverUsedAnswer
       ? "The answer is revealed. Open the answer guide if needed."
       : "Complete. Move to the next sentence when ready.");
@@ -2710,13 +2863,14 @@ async function completeProblem(
     if (state.problem !== problem || state.problemVersion !== version) return;
     const retry = error.status === 404 || error.status === 409
       ? () => loadProblem()
-      : () => completeProblem(problem, version, answers, usedAnswer);
+      : () => completeProblem(problem, version, answers, usedAnswer, quietSuccess);
     showError("Completion stopped", error.message, retry);
   }
 }
 
 async function playSentence() {
   if (!state.problem || state.problemLoading || state.levelChanging) return;
+  if (practiceProvider) { practiceProvider.play(playbackRateForLevel()); return; }
 
   primeChimeContext();
   const problem = state.problem;
@@ -2816,6 +2970,7 @@ async function refreshProblemLease(problem = state.problem, version = state.prob
 }
 
 function startProblemLease(problem, version) {
+  if (practiceProvider) return;
   window.clearInterval(state.leaseTimer);
   state.leaseTimer = window.setInterval(() => {
     void refreshProblemLease(problem, version);
@@ -2824,9 +2979,9 @@ function startProblemLease(problem, version) {
 
 function strictRequestedLevel(value) {
   const text = String(value || "").trim();
-  if (!/^\d{1,3}$/.test(text)) return null;
+  if (!/^\d+$/.test(text)) return null;
   const level = Number(text);
-  return Number.isInteger(level) && level <= state.maxLevel ? level : null;
+  return Number.isSafeInteger(level) && level >= 1 && level <= state.maxLevel ? level : null;
 }
 
 function validateLevelChangePayload(payload, requestedLevel) {
@@ -2972,15 +3127,21 @@ async function loadProblem(
 }
 
 async function bootstrap(retryCount = 0) {
+  if (practiceProvider && !practiceProvider.data) { resetProblemSurface(); hideStatePanel(); elements.card.hidden = true; return; }
+  elements.card.hidden = false;
   setAnalysisControlsAvailable(false);
   showLoading("Checking the current sentence", "Please wait.");
 
   try {
+    if (practiceProvider && !answerVariants) answerVariants = await practiceProvider.answerVariants;
     const payload = await apiRequest(API.bootstrap);
     const maxWords = integerBetween(payload?.max_words, 0, 1, 1000);
     if (!maxWords) throw new ApiError("The sentence length limit could not be verified.");
     state.maxWords = maxWords;
     state.maxLevel = integerBetween(payload?.max_level, DEFAULT_MAX_LEVEL, 1, DEFAULT_MAX_LEVEL);
+    state.positionKey = practiceProvider ? null : payload?.book && payload?.chapter
+      ? `dictai-position:book:${String(payload.book).toLowerCase().replace(/[^a-z0-9]+/g, "-")}:chapter:${payload.chapter}`
+      : `dictai-position:conversation:${payload?.learning_language || "en"}:${payload?.course_level || "A1"}:${payload?.topic || "default"}`;
     const serverLevel = integerBetween(payload?.level, 1, 1, state.maxLevel);
     const initialLevel = savedSentencePosition() ?? serverLevel;
     if (initialLevel !== serverLevel) {
@@ -3198,6 +3359,7 @@ elements.answerInput.addEventListener("beforeinput", (event) => {
   commitAnswerWord(elements.answerInput.value, trigger);
 });
 elements.answerInput.addEventListener("paste", (event) => {
+  if (practiceProvider) return; // Keep the full expression intact for numeric aliases.
   if (
     state.problemLoading
     || state.levelChanging
@@ -3242,6 +3404,7 @@ elements.redoButton.addEventListener("click", () => {
     || elements.redoButton.disabled
   ) return;
   const currentLevel = state.problem.level;
+  practiceProvider?.reset(currentLevel);
   state.completionReady = false;
   state.analysisRequestToken += 1;
   state.analysisPending = false;
@@ -3257,6 +3420,11 @@ elements.voiceToggle.addEventListener("change", () => {
   } else {
     void stopVoiceRecognition("Off");
   }
+});
+elements.voiceOptionsButton.addEventListener("click", () => {
+  const willOpen = elements.voiceSettingsPanel.hidden;
+  elements.voiceSettingsPanel.hidden = !willOpen;
+  elements.voiceOptionsButton.setAttribute("aria-expanded", String(willOpen));
 });
 const voiceSettingBindings = [
   [elements.beamSetting, elements.beamValue, 0],
@@ -3338,4 +3506,22 @@ document.addEventListener("visibilitychange", () => {
 });
 
 renderVoiceSettings();
+if (practiceProvider) {
+  practiceProvider.connect({
+    reload: () => { ++state.levelNavigationId; ++state.problemVersion; return bootstrap(); },
+    media: (ready, playing) => {
+      state.audioReady = ready;
+      state.voicePausedForTts = playing;
+      if (!playing) state.voiceLastTranscript = '';
+      setAudioControlMode(ready ? (playing ? 'playing' : 'ready') : 'loading');
+    },
+    names: (attemptId, indices) => {
+      if (state.problem?.attemptId !== attemptId || state.completing) return;
+      if (indices === null) { elements.properNounButton.textContent = 'Names unavailable'; return; }
+      state.problem.properNounIndices = indices;
+      elements.properNounButton.disabled = false;
+      elements.properNounButton.textContent = 'Names';
+    },
+  });
+}
 void bootstrap();

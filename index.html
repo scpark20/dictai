@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f5f7" />
     <title>DictAI</title>
-    <link rel="stylesheet" href="./styles.css?v=dev-29" />
+    <link rel="stylesheet" href="./styles.css?v=chapter-dropdown-4" />
+    <link rel="stylesheet" href="/youtube-assets/shell.css?v=integrated-2" />
   </head>
   <body data-level="A1">
     <div class="app-layout">
@@ -46,6 +47,12 @@
           <div class="mini-list" id="topicList"></div>
         </div>
         <div class="path-group">
+          <button class="path path-button" id="youtubePath" type="button" aria-label="Open YouTube practice" aria-pressed="false">
+            <span class="path-icon" aria-hidden="true">▶</span>
+            <span><strong>YouTube</strong><small>Video listening practice</small></span>
+          </button>
+        </div>
+        <div class="path-group">
           <div class="path">
             <span class="path-icon book-icon" aria-hidden="true">▤</span>
             <span><strong>Book</strong><small>Stories and novels</small></span>
@@ -58,11 +65,11 @@
       <header class="practice-context">
         <span id="practiceCourseLevel">A1</span>
         <strong id="practiceCourseTopic">Greetings</strong>
-        <small>5 conversations</small>
+        <small id="practiceCourseCount">1 sample conversation</small>
       </header>
-      <iframe id="practiceFrame" title="DictAI practice" src="./practice/"></iframe>
+      <iframe id="practiceFrame" title="DictAI practice" src="./practice/" allow="microphone 'self'; autoplay; fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
     </section>
     </div>
-    <script src="./app.js?v=dev-29"></script>
+    <script src="./app.js?v=chapter-dropdown-4"></script>
   </body>
 </html>

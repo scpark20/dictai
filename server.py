@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import random
 import re
 import sqlite3
@@ -14,43 +15,195 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from dictai_pipeline import load_validated_manifest, validate_proper_nouns, next_conversation_index
+from youtube_api import router as youtube_router
 
 ROOT = Path(__file__).resolve().parent
 PRACTICE_ROOT = ROOT / "practice-ui"
-ASR_WASM_ROOT = Path("/home/scpark/dictai/asr-wasm")
-MANIFEST = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json")
+
+
+def configured_path(name: str, default: str | Path) -> Path:
+    return Path(os.environ.get(name, str(default))).expanduser().resolve()
+
+
+LOCAL_DATA_ROOT = configured_path("DICTAI_LOCAL_DATA_ROOT", ROOT.parent / "data")
+LOCAL_CHAPTER_ROOT = LOCAL_DATA_ROOT / "chapters"
+ASR_WASM_ROOT = configured_path("DICTAI_ASR_WASM_ROOT", LOCAL_DATA_ROOT / "asr-wasm")
+MANIFEST = configured_path("DICTAI_CH3_MANIFEST", LOCAL_CHAPTER_ROOT / "ch03" / "manifest.json")
 PROPER_NOUNS = ROOT / "data" / "ch003-proper-nouns.json"
-AUDIO_ROOT = Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/runtime/accepted-takes/ch003")
-CYCLING_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio")
-SECOND_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/chapter3-audio-b")
+AUDIO_ROOT = configured_path("DICTAI_CH3_ACCEPTED_AUDIO_ROOT", LOCAL_CHAPTER_ROOT / "ch03" / "audio-a")
+CYCLING_AUDIO_ROOT = configured_path("DICTAI_CH3_AUDIO_ROOT", LOCAL_CHAPTER_ROOT / "ch03" / "audio-a")
+SECOND_AUDIO_ROOT = configured_path("DICTAI_CH3_AUDIO_SECOND_ROOT", LOCAL_CHAPTER_ROOT / "ch03" / "audio-b")
 HARRY_CHAPTERS = {
     3: {
         "title": "The Advanced Guard",
-        "manifest": Path("/home/scpark/4repeat/jobs/ch003-the-advanced-guard/manifest/ch003.json"),
-        "audio": Path("/home/scpark/harry-dictation-data/chapter3-audio"),
-        "audio_second": Path("/home/scpark/harry-dictation-data/chapter3-audio-b"),
-        "proper_nouns": Path("/home/scpark/apps/harry-baseline/data/ch003-proper-nouns.json"),
+        "manifest": configured_path("DICTAI_CH3_MANIFEST", MANIFEST),
+        "audio": configured_path("DICTAI_CH3_AUDIO_ROOT", CYCLING_AUDIO_ROOT),
+        "audio_second": configured_path("DICTAI_CH3_AUDIO_SECOND_ROOT", SECOND_AUDIO_ROOT),
+        "proper_nouns": configured_path("DICTAI_CH3_PROPER_NOUNS", "/home/scpark/apps/harry-baseline/data/ch003-proper-nouns.json"),
     },
     4: {
         "title": "Number Twelve, Grimmauld Place",
-        "manifest": Path("/home/scpark/4repeat/jobs/ch004-number-twelve-grimmauld-place/manifest/ch004.json"),
-        "audio": Path("/home/scpark/harry-dictation-data/chapter4-audio"),
-        "audio_second": Path("/home/scpark/harry-dictation-data/chapter4-audio-b"),
-        "proper_nouns": Path("/home/scpark/apps/harry-baseline/data/ch004-proper-nouns.json"),
+        "manifest": configured_path("DICTAI_CH4_MANIFEST", "/home/scpark/4repeat/jobs/ch004-number-twelve-grimmauld-place/manifest/ch004.json"),
+        "audio": configured_path("DICTAI_CH4_AUDIO_ROOT", "/home/scpark/harry-dictation-data/chapter4-audio"),
+        "audio_second": configured_path("DICTAI_CH4_AUDIO_SECOND_ROOT", "/home/scpark/harry-dictation-data/chapter4-audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH4_PROPER_NOUNS", "/home/scpark/apps/harry-baseline/data/ch004-proper-nouns.json"),
     },
     5: {
         "title": "The Order of the Phoenix",
-        "manifest": Path("/home/scpark/dictai/data/ch005.json"),
-        "audio": Path("/home/scpark/harry-concise-ch5/audio-a"),
-        "audio_second": Path("/home/scpark/harry-concise-ch5/audio-b"),
-        "proper_nouns": Path("/home/scpark/dictai/data/ch005-proper-nouns.json"),
+        "manifest": configured_path("DICTAI_CH5_MANIFEST", "/home/scpark/dictai/data/ch005.json"),
+        "audio": configured_path("DICTAI_CH5_AUDIO_ROOT", "/home/scpark/harry-concise-ch5/audio-a"),
+        "audio_second": configured_path("DICTAI_CH5_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch5/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH5_PROPER_NOUNS", "/home/scpark/dictai/data/ch005-proper-nouns.json"),
+    },
+    6: {
+        "title": "The Noble and Most Ancient House of Black",
+        "manifest": configured_path("DICTAI_CH6_MANIFEST", "/home/scpark/dictai/data/ch006.json"),
+        "audio": configured_path("DICTAI_CH6_AUDIO_ROOT", "/home/scpark/harry-concise-ch6/audio-a"),
+        "audio_second": configured_path("DICTAI_CH6_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch6/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH6_PROPER_NOUNS", "/home/scpark/dictai/data/ch006-proper-nouns.json"),
+    },
+    7: {
+        "title": "The Ministry of Magic",
+        "manifest": configured_path("DICTAI_CH7_MANIFEST", "/home/scpark/harry-concise-ch7/ch007.json"),
+        "audio": configured_path("DICTAI_CH7_AUDIO_ROOT", "/home/scpark/harry-concise-ch7/audio-a"),
+        "audio_second": configured_path("DICTAI_CH7_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch7/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH7_PROPER_NOUNS", "/home/scpark/harry-concise-ch7/ch007-proper-nouns.json"),
+    },
+    8: {
+        "title": "The Hearing",
+        "manifest": configured_path("DICTAI_CH8_MANIFEST", "/home/scpark/harry-concise-ch8/ch008.json"),
+        "audio": configured_path("DICTAI_CH8_AUDIO_ROOT", "/home/scpark/harry-concise-ch8/audio-a"),
+        "audio_second": configured_path("DICTAI_CH8_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch8/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH8_PROPER_NOUNS", "/home/scpark/harry-concise-ch8/ch008-proper-nouns.json"),
+    },
+    9: {
+        "title": "The Woes of Mrs. Weasley",
+        "manifest": configured_path("DICTAI_CH9_MANIFEST", "/home/scpark/harry-concise-ch9/ch009.json"),
+        "audio": configured_path("DICTAI_CH9_AUDIO_ROOT", "/home/scpark/harry-concise-ch9/audio-a"),
+        "audio_second": configured_path("DICTAI_CH9_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch9/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH9_PROPER_NOUNS", "/home/scpark/harry-concise-ch9/ch009-proper-nouns.json"),
+    },
+    10: {
+        "title": "Luna Lovegood",
+        "manifest": configured_path("DICTAI_CH10_MANIFEST", "/home/scpark/harry-concise-ch10/ch010.json"),
+        "audio": configured_path("DICTAI_CH10_AUDIO_ROOT", "/home/scpark/harry-concise-ch10/audio-a"),
+        "audio_second": configured_path("DICTAI_CH10_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch10/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH10_PROPER_NOUNS", "/home/scpark/harry-concise-ch10/ch010-proper-nouns.json"),
+    },
+    11: {
+        "title": "The Sorting Hat's New Song",
+        "manifest": configured_path("DICTAI_CH11_MANIFEST", "/home/scpark/harry-concise-ch11/ch011.json"),
+        "audio": configured_path("DICTAI_CH11_AUDIO_ROOT", "/home/scpark/harry-concise-ch11-ambient-100/audio-a"),
+        "audio_second": configured_path("DICTAI_CH11_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch11-ambient-100/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH11_PROPER_NOUNS", "/home/scpark/harry-concise-ch11/ch011-proper-nouns.json"),
+    },
+    12: {
+        "title": "Professor Umbridge",
+        "manifest": configured_path("DICTAI_CH12_MANIFEST", "/home/scpark/harry-concise-ch12/ch012.json"),
+        "audio": configured_path("DICTAI_CH12_AUDIO_ROOT", "/home/scpark/harry-concise-ch12-ambient-100/audio-a"),
+        "audio_second": configured_path("DICTAI_CH12_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch12-ambient-100/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH12_PROPER_NOUNS", "/home/scpark/harry-concise-ch12/ch012-proper-nouns.json"),
+    },
+    13: {
+        "title": "Detention with Dolores",
+        "manifest": configured_path("DICTAI_CH13_MANIFEST", "/home/scpark/harry-concise-ch13/ch013.json"),
+        "audio": configured_path("DICTAI_CH13_AUDIO_ROOT", "/home/scpark/harry-concise-ch13-ambient-100/audio-a"),
+        "audio_second": configured_path("DICTAI_CH13_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch13-ambient-100/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH13_PROPER_NOUNS", "/home/scpark/harry-concise-ch13/ch013-proper-nouns.json"),
+    },
+    14: {
+        "title": "Percy and Padfoot",
+        "manifest": configured_path("DICTAI_CH14_MANIFEST", "/home/scpark/harry-concise-ch14/ch014.json"),
+        "audio": configured_path("DICTAI_CH14_AUDIO_ROOT", "/home/scpark/harry-concise-ch14-ambient-100/audio-a"),
+        "audio_second": configured_path("DICTAI_CH14_AUDIO_SECOND_ROOT", "/home/scpark/harry-concise-ch14-ambient-100/audio-b"),
+        "proper_nouns": configured_path("DICTAI_CH14_PROPER_NOUNS", "/home/scpark/harry-concise-ch14/ch014-proper-nouns.json"),
     },
 }
-GREETINGS_AUDIO_ROOT = Path("/home/scpark/harry-dictation-data/a1-greetings")
-CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation")
+HARRY_CHAPTER_TITLES = {
+    15: "The Hogwarts High Inquisitor",
+    16: "In the Hog's Head",
+    17: "Educational Decree Number Twenty-Four",
+    18: "Dumbledore's Army",
+    19: "The Lion and the Serpent",
+    20: "Hagrid's Tale",
+    21: "The Eye of the Snake",
+    22: "St. Mungo's Hospital for Magical Maladies and Injuries",
+    23: "Christmas on the Closed Ward",
+    24: "Occlumency",
+    25: "The Beetle at Bay",
+    26: "Seen and Unforeseen",
+    27: "The Centaur and the Sneak",
+    28: "Snape's Worst Memory",
+    29: "Career Advice",
+    30: "Grawp",
+    31: "O.W.L.s",
+    32: "Out of the Fire",
+    33: "Fight and Flight",
+    34: "The Department of Mysteries",
+    35: "Beyond the Veil",
+    36: "The Only One He Ever Feared",
+    37: "The Lost Prophecy",
+    38: "The Second War Begins",
+}
+for chapter_number, chapter_title in HARRY_CHAPTER_TITLES.items():
+    chapter_root = Path(f"/home/scpark/harry-concise-ch{chapter_number}")
+    audio_root = Path(f"/home/scpark/harry-concise-ch15-38-ambient-batch/ch{chapter_number:02d}")
+    HARRY_CHAPTERS[chapter_number] = {
+        "title": chapter_title,
+        "manifest": configured_path(
+            f"DICTAI_CH{chapter_number}_MANIFEST",
+            chapter_root / f"ch{chapter_number:03d}.json",
+        ),
+        "audio": configured_path(f"DICTAI_CH{chapter_number}_AUDIO_ROOT", audio_root / "audio-a"),
+        "audio_second": configured_path(
+            f"DICTAI_CH{chapter_number}_AUDIO_SECOND_ROOT",
+            audio_root / "audio-b",
+        ),
+        "proper_nouns": configured_path(
+            f"DICTAI_CH{chapter_number}_PROPER_NOUNS",
+            chapter_root / f"ch{chapter_number:03d}-proper-nouns.json",
+        ),
+    }
+for chapter_number, chapter in HARRY_CHAPTERS.items():
+    canonical_root = LOCAL_CHAPTER_ROOT / f"ch{chapter_number:02d}"
+    local_audio = (
+        LOCAL_DATA_ROOT / f"chapter{chapter_number}-audio"
+        if chapter_number in (3, 4)
+        else canonical_root / "audio-a"
+    )
+    local_audio_second = (
+        LOCAL_DATA_ROOT / f"chapter{chapter_number}-audio-b"
+        if chapter_number in (3, 4)
+        else canonical_root / "audio-b"
+    )
+    chapter["manifest"] = configured_path(
+        f"DICTAI_CH{chapter_number}_MANIFEST",
+        canonical_root / "manifest.json",
+    )
+    chapter["audio"] = configured_path(
+        f"DICTAI_CH{chapter_number}_AUDIO_ROOT",
+        local_audio,
+    )
+    chapter["audio_second"] = configured_path(
+        f"DICTAI_CH{chapter_number}_AUDIO_SECOND_ROOT",
+        local_audio_second,
+    )
+    chapter["proper_nouns"] = configured_path(
+        f"DICTAI_CH{chapter_number}_PROPER_NOUNS",
+        canonical_root / "proper-nouns.json",
+    )
+GREETINGS_AUDIO_ROOT = configured_path("DICTAI_GREETINGS_AUDIO_ROOT", "/home/scpark/harry-dictation-data/a1-greetings")
+CONVERSATION_ROOT = configured_path("DICTAI_CONVERSATION_ROOT", "/home/scpark/echostep-data/conversation")
 CONVERSATION_CATALOG_PATH = CONVERSATION_ROOT / "catalog.json"
-KOREAN_CONVERSATION_ROOT = Path("/home/scpark/echostep-data/conversation-ko")
+KOREAN_CONVERSATION_ROOT = configured_path("DICTAI_KOREAN_CONVERSATION_ROOT", "/home/scpark/echostep-data/conversation-ko")
+REFERENCE_VOICE_ROOT = configured_path(
+    "DICTAI_REFERENCE_VOICE_ROOT",
+    LOCAL_DATA_ROOT / "references" / "ambient-bank",
+)
+REFERENCE_VOICE_AUDIT = REFERENCE_VOICE_ROOT.parent / "speech-audit.json"
 DB = ROOT / "progress.sqlite3"
 SPEAKER_CYCLE = ("M1", "F1", "M2", "F2")
 WORD_RE = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
@@ -84,11 +237,7 @@ GREETING_VOICE_PAIRS = [
     ("BM", "AF"), ("AM", "BM"), ("BF", "AF"), ("BM", "BF"), ("AF", "AM"),
 ]
 def load_sentences() -> list[dict]:
-    source = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    unique: dict[str, dict] = {}
-    for block in source["blocks"]:
-        unique.setdefault(block["sentence_id"], block)
-    rows = sorted(unique.values(), key=lambda item: item["sentence_ordinal"])
+    _source, rows = load_validated_manifest(MANIFEST)
     if len(rows) != 641:
         raise RuntimeError(f"expected 641 sentences, found {len(rows)}")
     return rows
@@ -98,13 +247,15 @@ SENTENCES = load_sentences()
 
 
 def load_harry_chapter(chapter: dict) -> None:
-    source = json.loads(chapter["manifest"].read_text(encoding="utf-8"))
-    unique = {block["sentence_id"]: block for block in source["blocks"]}
-    chapter["sentences"] = sorted(unique.values(), key=lambda item: item["sentence_ordinal"])
+    source, rows = load_validated_manifest(chapter["manifest"])
+    chapter["sentences"] = rows
     proper_path = chapter["proper_nouns"]
-    chapter["proper_noun_metadata"] = (
-        json.loads(proper_path.read_text(encoding="utf-8")).get("sentences", {})
-        if proper_path.is_file() else {}
+    proper_payload = json.loads(proper_path.read_text(encoding="utf-8")) if proper_path.is_file() else {"sentences": {}}
+    chapter["proper_noun_metadata"] = validate_proper_nouns(
+        proper_payload,
+        rows,
+        label=str(proper_path),
+        strict=int(source.get("text_contract_version", 0) or 0) >= 1,
     )
 
 
@@ -120,6 +271,8 @@ SELECTED_COURSES: dict[str, tuple[str, str, str]] = {}
 SELECTED_BOOKS: dict[str, int] = {}
 LOCK = threading.RLock()
 app = FastAPI(title="Harry Potter Chapter 3 Dictation")
+app.include_router(youtube_router)
+app.mount("/youtube-assets", StaticFiles(directory=ROOT / "youtube-ui"), name="youtube-assets")
 app.mount("/asr-wasm", StaticFiles(directory=ASR_WASM_ROOT), name="asr-wasm")
 app.mount("/asr-wasm-ko", StaticFiles(directory=ROOT / "asr-wasm-ko"), name="asr-wasm-ko")
 
@@ -248,11 +401,26 @@ KOREAN_WHISPER_LOADER = r'''"use strict";
 
 @app.middleware("http")
 async def no_store(request: Request, call_next):
+    session_id = request.cookies.get("dictai_session", "")
+    if not re.fullmatch(r"[a-f0-9]{32}", session_id):
+        session_id = uuid.uuid4().hex
+    request.state.dictai_session = session_id
     response = await call_next(request)
     if request.url.path.startswith(("/asr-wasm/", "/asr-wasm-ko/")):
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    elif request.url.path.startswith("/api/problem/") and request.url.path.endswith("/audio"):
+        response.headers["Cache-Control"] = "private, max-age=3600"
     else:
         response.headers["Cache-Control"] = "no-store, max-age=0"
+    if request.cookies.get("dictai_session") != session_id:
+        response.set_cookie(
+            "dictai_session",
+            session_id,
+            max_age=60 * 60 * 24 * 365,
+            httponly=True,
+            samesite="lax",
+            secure=request.url.scheme == "https",
+        )
     return response
 
 
@@ -282,7 +450,7 @@ class VoiceDebugBody(BaseModel):
     transcript: str = ""
     before: int = 0
     after: int = 0
-    matched: list[str] = []
+    matched: list[str] = Field(default_factory=list)
 
 
 def conversation_catalog(language: str = "en") -> dict:
@@ -293,11 +461,32 @@ def conversation_catalog(language: str = "en") -> dict:
 
 
 def selected_course(request: Request) -> tuple[str, str, str]:
-    return SELECTED_COURSES.get(visitor(request), ("en", "A1", "Greetings"))
+    key = visitor(request)
+    if key in SELECTED_COURSES:
+        return SELECTED_COURSES[key]
+    saved = saved_selection(key)
+    if saved and saved[0] == "conversation":
+        language, level, topic = saved[1], saved[2], saved[3]
+        try:
+            if topic in conversation_catalog(language)[level]:
+                return language, level, topic
+        except (HTTPException, KeyError):
+            pass
+    catalog = conversation_catalog("en")
+    level = "A1"
+    return "en", level, next(iter(catalog[level]))
 
 
 def selected_book(request: Request) -> int | None:
-    return SELECTED_BOOKS.get(visitor(request))
+    key = visitor(request)
+    if key in SELECTED_BOOKS:
+        return SELECTED_BOOKS[key]
+    saved = saved_selection(key)
+    if saved and saved[0] == "book" and saved[4] in HARRY_CHAPTERS:
+        SELECTED_BOOKS[key] = saved[4]
+        return saved[4]
+    SELECTED_BOOKS[key] = 3
+    return 3
 
 
 def progress_key(request: Request) -> str:
@@ -310,7 +499,10 @@ def progress_key(request: Request) -> str:
 
 
 def visitor(request: Request) -> str:
-    return request.client.host if request.client else "unknown"
+    session_id = getattr(request.state, "dictai_session", "")
+    if re.fullmatch(r"[a-f0-9]{32}", session_id):
+        return f"session:{session_id}"
+    return f"legacy-ip:{request.client.host}" if request.client else "unknown"
 
 
 def db_level(key: str, max_level: int = 5) -> int:
@@ -326,6 +518,21 @@ def set_level(key: str, level: int) -> None:
         db.execute(
             "INSERT INTO progress(visitor,level) VALUES(?,?) ON CONFLICT(visitor) DO UPDATE SET level=excluded.level",
             (key, level),
+        )
+
+
+def saved_selection(key: str) -> tuple[str, str, str, str, int | None] | None:
+    with sqlite3.connect(DB) as db:
+        db.execute("CREATE TABLE IF NOT EXISTS selection(visitor TEXT PRIMARY KEY, mode TEXT NOT NULL, language TEXT, course_level TEXT, topic TEXT, chapter INTEGER)")
+        return db.execute("SELECT mode,language,course_level,topic,chapter FROM selection WHERE visitor=?", (key,)).fetchone()
+
+
+def save_selection(key: str, mode: str, language: str = "", course_level: str = "", topic: str = "", chapter: int | None = None) -> None:
+    with sqlite3.connect(DB) as db:
+        db.execute("CREATE TABLE IF NOT EXISTS selection(visitor TEXT PRIMARY KEY, mode TEXT NOT NULL, language TEXT, course_level TEXT, topic TEXT, chapter INTEGER)")
+        db.execute(
+            "INSERT INTO selection(visitor,mode,language,course_level,topic,chapter) VALUES(?,?,?,?,?,?) ON CONFLICT(visitor) DO UPDATE SET mode=excluded.mode,language=excluded.language,course_level=excluded.course_level,topic=excluded.topic,chapter=excluded.chapter",
+            (key, mode, language, course_level, topic, chapter),
         )
 
 
@@ -353,7 +560,8 @@ def bootstrap(request: Request) -> dict:
             "chapter_title": chapter["title"],
         }
     language, course_level, topic = selected_course(request)
-    return {"level": db_level(progress_key(request)), "max_level": 5, "max_words": 100, "learning_language": language, "course_level": course_level, "topic": topic}
+    maximum = len(conversation_catalog(language)[course_level][topic])
+    return {"level": db_level(progress_key(request), maximum), "max_level": maximum, "max_words": 100, "learning_language": language, "course_level": course_level, "topic": topic}
 
 
 @app.post("/api/course")
@@ -371,8 +579,10 @@ def select_course(body: CourseBody, request: Request) -> dict:
         raise HTTPException(404, "Topic not found.")
     SELECTED_COURSES[visitor(request)] = (body.language, body.level, topic)
     SELECTED_BOOKS.pop(visitor(request), None)
-    set_level(progress_key(request), random.randint(1, 5))
-    return {"level": body.level, "topic": topic, "count": 5}
+    save_selection(visitor(request), "conversation", body.language, body.level, topic)
+    count = len(topics[topic])
+    set_level(progress_key(request), random.randint(1, count))
+    return {"level": body.level, "topic": topic, "count": count}
 
 
 @app.post("/api/book")
@@ -380,6 +590,8 @@ def select_book(body: BookBody, request: Request) -> dict:
     if body.chapter not in HARRY_CHAPTERS:
         raise HTTPException(404, "Chapter not found.")
     SELECTED_BOOKS[visitor(request)] = body.chapter
+    SELECTED_COURSES.pop(visitor(request), None)
+    save_selection(visitor(request), "book", chapter=body.chapter)
     chapter = HARRY_CHAPTERS[body.chapter]
     return {
         "book": "Harry Potter 5",
@@ -416,7 +628,7 @@ def build_status() -> dict:
         "audio_target": 641,
         "audio_second_completed": generated_second,
         "audio_second_target": 641,
-        "app_url": "https://192.168.0.68:8771/",
+        "app_url": "http://127.0.0.1:8773/",
         "app_ready": True,
     }
 
@@ -424,7 +636,11 @@ def build_status() -> dict:
 @app.post("/api/level")
 def change_level(body: LevelBody, request: Request) -> dict:
     chapter_number = selected_book(request)
-    maximum = len(HARRY_CHAPTERS[chapter_number]["sentences"]) if chapter_number is not None else 5
+    if chapter_number is not None:
+        maximum = len(HARRY_CHAPTERS[chapter_number]["sentences"])
+    else:
+        language, course_level, topic = selected_course(request)
+        maximum = len(conversation_catalog(language)[course_level][topic])
     if not 1 <= body.level <= maximum:
         raise HTTPException(400, f"The sentence number must be between 1 and {maximum}.")
     set_level(progress_key(request), body.level)
@@ -462,10 +678,11 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
             "proper_noun_indices": proper_noun_indices,
         }
 
-    level = db_level(progress_key(request))
     language, course_level, topic = selected_course(request)
     root = KOREAN_CONVERSATION_ROOT if language == "ko" else CONVERSATION_ROOT
-    item = conversation_catalog(language)[course_level][topic][level - 1]
+    items = conversation_catalog(language)[course_level][topic]
+    level = db_level(progress_key(request), len(items))
+    item = items[level - 1]
     text = item["text"]
     proper_noun_indices = []
     speaker = "A+B"
@@ -478,6 +695,7 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "visitor": key,
         "progress_key": progress_key(request),
         "mode": "conversation",
+        "conversation_count": len(items),
         "level": level,
         "text": text,
         "answers": LEARNING_WORD_RE.findall(text),
@@ -499,8 +717,12 @@ def create_problem(body: LanguageBody, request: Request) -> dict:
         "target_language": body.target_language,
         "proper_noun_indices": proper_noun_indices,
         "dialogue_turns": [
-            {"speaker": "A", "text": item["turns"][0], "word_count": len(LEARNING_WORD_RE.findall(item["turns"][0]))},
-            {"speaker": "B", "text": item["turns"][1], "word_count": len(LEARNING_WORD_RE.findall(item["turns"][1]))},
+            {
+                "speaker": (item.get("turn_speakers") or ["A", "B"])[index % len(item.get("turn_speakers") or ["A", "B"])],
+                "text": turn,
+                "word_count": len(LEARNING_WORD_RE.findall(turn)),
+            }
+            for index, turn in enumerate(item["turns"])
         ],
     }
 
@@ -522,7 +744,7 @@ def problem_audio(attempt_id: str, request: Request, take: int = 0) -> FileRespo
     allowed = any(audio.is_relative_to(root.resolve()) for root in attempt["allowed_roots"])
     if not audio.is_file() or not allowed:
         raise HTTPException(503, "Audio for this sentence is not ready yet.")
-    return FileResponse(audio, media_type="audio/wav", headers={"Cache-Control": "no-store"})
+    return FileResponse(audio, media_type="audio/wav")
 
 
 @app.post("/api/problem/{attempt_id}/touch")
@@ -550,8 +772,7 @@ def complete(attempt_id: str, body: CompleteBody, request: Request) -> dict:
         maximum = len(HARRY_CHAPTERS[attempt["chapter"]]["sentences"])
         next_level = min(maximum, attempt["level"] + 1)
     else:
-        choices = [number for number in range(1, 6) if number != attempt["level"]]
-        next_level = random.choice(choices)
+        next_level = next_conversation_index(attempt["level"], attempt["conversation_count"])
     set_level(attempt["progress_key"], next_level)
     return {"completed": True, "used_answer": attempt["revealed"], "next_level": next_level}
 
@@ -572,6 +793,112 @@ def index() -> FileResponse:
 @app.get("/build-status/")
 def status_page() -> FileResponse:
     return FileResponse(ROOT / "build-status.html")
+
+
+@app.get("/tts-eval")
+@app.get("/tts-eval/")
+def tts_eval_page() -> FileResponse:
+    return FileResponse(ROOT / "tts-eval.html")
+
+
+@app.get("/tts-eval/manifest.json")
+def tts_eval_manifest() -> FileResponse:
+    return FileResponse(CONVERSATION_ROOT / "tts-eval" / "manifest.json", media_type="application/json")
+
+
+@app.get("/tts-eval/audio/{model}/{name}")
+def tts_eval_audio(model: str, name: str) -> FileResponse:
+    if not re.fullmatch(r"[a-z0-9-]+", model) or not re.fullmatch(r"[a-z0-9-]+\.wav", name):
+        raise HTTPException(404)
+    root = (CONVERSATION_ROOT / "tts-eval" / "audio").resolve()
+    audio = (root / model / name).resolve()
+    if not audio.is_relative_to(root) or not audio.is_file():
+        raise HTTPException(404)
+    return FileResponse(audio, media_type="audio/wav")
+
+
+@app.get("/reference-voices")
+@app.get("/reference-voices/")
+def reference_voices_page() -> FileResponse:
+    return FileResponse(ROOT / "reference-voices.html")
+
+
+@app.get("/api/reference-voices")
+def reference_voices_manifest() -> dict:
+    approved_ids = None
+    audit_summary = None
+    if REFERENCE_VOICE_AUDIT.is_file():
+        try:
+            audit = json.loads(REFERENCE_VOICE_AUDIT.read_text(encoding="utf-8"))
+            approved_ids = {row["id"] for row in audit.get("results", []) if row.get("passed")}
+            audit_summary = {
+                "detector": audit.get("detector"),
+                "tested": audit.get("total", 0),
+                "passed": audit.get("passed", 0),
+                "rejected": audit.get("rejected", 0),
+            }
+        except (OSError, json.JSONDecodeError, KeyError):
+            approved_ids = None
+    items = []
+    for receipt in sorted(REFERENCE_VOICE_ROOT.glob("ref[0-9][0-9][0-9].json")):
+        if not re.fullmatch(r"ref\d{3}\.json", receipt.name):
+            continue
+        wav = receipt.with_suffix(".wav")
+        if not wav.is_file():
+            continue
+        try:
+            payload = json.loads(receipt.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        reference_id = receipt.stem
+        if approved_ids is not None and reference_id not in approved_ids:
+            continue
+        items.append({
+            "id": reference_id,
+            "number": int(reference_id[3:]),
+            "gender": payload.get("gender", "unknown"),
+            "accent": payload.get("accent", "unknown"),
+            "instruction": payload.get("instruction", ""),
+            "speed": payload.get("speed"),
+            "duration": round(float(payload.get("duration", 0)), 1),
+            "ambience": payload.get("ambience", {}),
+            "audio_processing": payload.get("audio_processing", {}),
+            "audio_url": f"/reference-voices/audio/{reference_id}.wav?v={str(payload.get('sha256', ''))[:12]}",
+        })
+
+    workers = []
+    for status_path in sorted(REFERENCE_VOICE_ROOT.glob("worker-*.json")):
+        try:
+            workers.append(json.loads(status_path.read_text(encoding="utf-8")))
+        except (OSError, json.JSONDecodeError):
+            pass
+    return {
+        "title": "100 New Voice References",
+        "target": 100,
+        "completed": len(items),
+        "generating": len(items) < 100 and any(worker.get("state") != "complete" for worker in workers),
+        "speech_check": audit_summary,
+        "reference_text": items and json.loads((REFERENCE_VOICE_ROOT / f"{items[0]['id']}.json").read_text(encoding="utf-8")).get("text", "") or "",
+        "items": items,
+    }
+
+
+@app.get("/reference-voices/audio/{name}")
+def reference_voice_audio(name: str) -> FileResponse:
+    if not re.fullmatch(r"ref\d{3}\.wav", name):
+        raise HTTPException(404)
+    audio = (REFERENCE_VOICE_ROOT / name).resolve()
+    if not audio.is_relative_to(REFERENCE_VOICE_ROOT) or not audio.is_file():
+        raise HTTPException(404)
+    if REFERENCE_VOICE_AUDIT.is_file():
+        try:
+            audit = json.loads(REFERENCE_VOICE_AUDIT.read_text(encoding="utf-8"))
+            approved_ids = {row["id"] for row in audit.get("results", []) if row.get("passed")}
+            if Path(name).stem not in approved_ids:
+                raise HTTPException(404)
+        except (OSError, json.JSONDecodeError, KeyError):
+            pass
+    return FileResponse(audio, media_type="audio/wav")
 
 
 @app.get("/practice")
@@ -596,23 +923,27 @@ def practice_static(name: str, request: Request) -> FileResponse:
     allowed = {
         "app.js", "styles.css", "wasm-asr-bootstrap.js",
         "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js",
+        "answer-variants.mjs",
     }
     if name not in allowed:
         raise HTTPException(404)
-    language = selected_course(request)[0]
+    # This portable package ships the Harry English course only. Static assets
+    # must not depend on the optional conversation catalog being installed.
+    language = "en"
     if name == "app.js":
         source = (PRACTICE_ROOT / name).read_text(encoding="utf-8")
         source = source.replace(
             "if (window.location.origin !== DEPLOYED_ORIGIN) {",
             "if (window.top === window.self && window.location.origin !== DEPLOYED_ORIGIN) {",
         )
-        source = source.replace(
-            "const match = normalised.match(/[a-z]+(?:['-][a-z]+)*/);",
-            "const match = normalised.match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/u);",
-        ).replace(
-            "return standardiseWordPunctuation(sentence).match(/[A-Za-z]+(?:['-][A-Za-z]+)*/g) || [];",
-            "return standardiseWordPunctuation(sentence).match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/gu) || [];",
-        )
+        if language == "ko":
+            source = source.replace(
+                "const match = normalised.match(/[a-z]+(?:['-][a-z]+)*/);",
+                "const match = normalised.match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/u);",
+            ).replace(
+                "return standardiseWordPunctuation(sentence).match(/[A-Za-z]+(?:['-][A-Za-z]+)*/g) || [];",
+                "return standardiseWordPunctuation(sentence).match(/[\\p{L}\\p{N}]+(?:['-][\\p{L}\\p{N}]+)*/gu) || [];",
+            )
         source = source.replace(
             "    properNounIndices,\n  };",
             "    properNounIndices,\n    dialogueTurns: Array.isArray(payload.dialogue_turns) ? payload.dialogue_turns : [],\n  };",
@@ -657,6 +988,9 @@ def practice_static(name: str, request: Request) -> FileResponse:
         if language == "ko":
             original_voice_handler = """function acceptVoiceTranscript(text, endpoint = false) {
   if (!state.problem || state.completing || state.problemLoading) return;
+  // Voice recognition owns only voice state. Never consume or clear a draft
+  // that the learner is entering through the independent keyboard channel.
+  const typedDraft = elements.answerInput.value;
   const previous = entryWords(state.voiceLastTranscript);
   const current = entryWords(text);
   let shared = 0;
@@ -665,10 +999,12 @@ def practice_static(name: str, request: Request) -> FileResponse:
     if (state.completing) break;
     commitVoiceWord(word);
   }
+  elements.answerInput.value = typedDraft;
   state.voiceLastTranscript = endpoint ? "" : String(text || "");
 }"""
             korean_voice_handler = """function acceptVoiceTranscript(text, endpoint = false) {
   if (!state.problem || state.completing || state.problemLoading) return;
+  const typedDraft = elements.answerInput.value;
   const transcript = String(text || "");
   const compact = transcript.normalize("NFKC").toLowerCase().replace(/[^\\p{L}\\p{N}]/gu, "");
   if (!compact || (!endpoint && compact === state.voiceLastTranscript)) return;
@@ -711,10 +1047,14 @@ def practice_static(name: str, request: Request) -> FileResponse:
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ transcript, before: solvedBefore, after: state.solved.size, matched: acceptedWords }),
   }).catch(() => {});
+  elements.answerInput.value = typedDraft;
   state.voiceLastTranscript = endpoint ? "" : compact;
 }"""
-            if original_voice_handler not in source:
-                raise RuntimeError("voice transcript handler was not found")
+            # Replace only this named handler; other providers may add a shared
+            # transcript hook without changing the Korean recognition adapter.
+            start = source.index("function acceptVoiceTranscript(")
+            end = source.index("\nasync function stopVoiceRecognition(", start)
+            original_voice_handler = source[start:end]
             source = source.replace(original_voice_handler, korean_voice_handler)
             source = source.replace("}, 700);", "}, 5000);")
         return Response(source, media_type="application/javascript")
@@ -748,16 +1088,17 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
 .page { display:grid; place-items:center; min-height:calc(100dvh - 64px); padding:22px 0 34px; }
 .practice-card,.practice-card.is-success,.practice-card.is-reveal-complete {
   width:100%; max-width:900px; padding:clamp(22px,3vw,38px); overflow:visible;
-  background:rgba(255,255,255,.92); border:1px solid rgba(var(--level-rgb),.16); border-radius:24px;
-  box-shadow:0 18px 52px rgba(var(--level-rgb),.11); backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.97); border:1px solid rgba(var(--level-rgb),.28); border-radius:24px;
+  box-shadow:0 22px 64px rgba(10,38,77,.16); backdrop-filter:blur(14px);
 }
 .voice-toggle { border-color:rgba(var(--level-rgb),.2); background:rgba(var(--level-rgb),.07); }
 .voice-check,.voice-setup-progress i,.chapter-progress-fill { background:var(--level-accent) !important; }
-.word-slot { border-color:rgba(var(--level-rgb),.18); background:#fff; }
-.word-slot.is-correct,.word-slot.is-revealed { color:var(--level-dark); background:var(--level-soft); }
+.word-slot:not(.is-solved):not(.is-revealed) { color:#536176; border-color:#c3ccd9; background:#eef2f7; }
+.word-slot.is-solved,.word-slot.is-split.is-solved:not(.is-revealed),.word-slot.is-split.is-mixed-result .word-part.is-part-solved { color:#087443; background:#dff6e9; border-color:#74c69a; }
+.word-slot.is-revealed,.word-slot.is-split.is-revealed,.word-slot.is-split.is-revealed .word-part,.word-slot.is-split.is-mixed-result .word-part.is-part-revealed { color:#9a4b00; background:#fff0d2; border-color:#f2a93b; }
 .answer-input-wrap:focus-within { border-color:var(--level-accent); box-shadow:0 0 0 4px rgba(var(--level-rgb),.10); }
 .proper-noun-button { color:var(--level-dark); border-color:rgba(var(--level-rgb),.24); background:var(--level-soft); }
-.playback-buttons .speed-button.is-selected,.playback-buttons .speed-button.is-playing { color:var(--level-dark); background:var(--level-soft); box-shadow:inset 0 0 0 1px rgba(var(--level-rgb),.24); }
+.playback-buttons .speed-button.is-selected,.playback-buttons .speed-button.is-playing { color:#fff; background:var(--level-accent); box-shadow:inset 0 0 0 2px var(--level-dark); }
 .speaker-turn.speaker-a { background:rgba(var(--level-rgb),.07); border-color:rgba(var(--level-rgb),.18); }
 .speaker-turn.speaker-b { background:rgba(var(--level-rgb),.14); border-color:rgba(var(--level-rgb),.27); }
 .speaker-a .speaker-label b { background:var(--level-accent); }
@@ -788,8 +1129,37 @@ body { padding:0; color:var(--ink); transition:background 320ms ease; }
     return FileResponse(PRACTICE_ROOT / name)
 
 
+@app.get("/practice-ui/answer-variants.mjs")
+def shared_answer_variants() -> FileResponse:
+    return FileResponse(PRACTICE_ROOT / "answer-variants.mjs", media_type="application/javascript")
+
+
+@app.get("/youtube/")
+def youtube_page(request: Request) -> Response:
+    if request.query_params.get("embed") == "1":
+        # One exercise template for Book, Conversation and YouTube. The fragment
+        # below contains only the video/link controls, never a copied answer UI.
+        source = (PRACTICE_ROOT / "index.html").read_text(encoding="utf-8")
+        source = source.replace('href="./styles.css', 'href="/practice/styles.css')
+        source = source.replace('<body>', '<body class="youtube-mode">')
+        source = source.replace('<main class="page" id="practice">', (ROOT / "youtube-ui" / "youtube.html").read_text(encoding="utf-8") + '<main class="page" id="practice">')
+        source = source.replace('<div class="listen-stage">', '<div class="youtube-navigation"><span id="clipTime" class="clip-time"></span></div><div class="listen-stage">')
+        source = source.replace('</head>', '<meta name="referrer" content="strict-origin-when-cross-origin"><link rel="stylesheet" href="/youtube-assets/youtube.css?v=lr-5"></head>')
+        source = re.sub(r'<script src="\./app\.js[^\"]*"></script>', '<script type="module" src="/youtube-assets/youtube.js?v=keyword-1"></script>', source)
+        source = re.sub(r'<script src="\./persistent-model-loader\.js[^\"]*"></script>', '', source)
+        source = source.replace('DictAI · Chapter 5 Dictation', 'YouTube · DictAI')
+        source = source.replace('href="./"', 'href="/" target="_top"')
+        return Response(source, media_type="text/html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+    source = (ROOT / "index.html").read_text(encoding="utf-8")
+    source = source.replace('href="./', 'href="/').replace('src="./', 'src="/')
+    source = source.replace('src="/practice/"', 'src="/youtube?embed=1"')
+    return Response(source, media_type="text/html", headers={"Referrer-Policy":"strict-origin-when-cross-origin"})
+
+
 @app.get("/{name}")
-def static(name: str) -> FileResponse:
-    if name not in {"index.html", "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js", "build-status.html", "build-status.js", "build-status.css"}:
+def static(name: str, request: Request) -> FileResponse:
+    if name == "youtube":
+        return youtube_page(request)
+    if name not in {"index.html", "app.js", "styles.css", "ch003.png", "wasm-asr-bootstrap.js", "persistent-model-loader.js", "model-cache-loader.js", "model-cache-sw.js", "build-status.html", "build-status.js", "build-status.css", "tts-eval.html", "tts-eval.js", "tts-eval.css", "reference-voices.html", "reference-voices.js", "reference-voices.css"}:
         raise HTTPException(404)
     return FileResponse(ROOT / name)

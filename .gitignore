@@ -4,8 +4,15 @@ __pycache__/
 *.pid
 *.sqlite3
 .venv-ner/
-tools/
+tools/*
+!tools/*.py
+!tools/*.sh
 certs/
 /asr-wasm
+/asr-wasm-ko
 asr-wasm-source/
 .DS_Store
+*.bak-*
+*.before-*
+*.orig
+/tname -I

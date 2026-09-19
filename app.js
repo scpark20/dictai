@@ -10,6 +10,7 @@ const conversationPath = document.querySelector("#conversationPath");
 const practiceFrame = document.querySelector("#practiceFrame");
 const practiceCourseLevel = document.querySelector("#practiceCourseLevel");
 const practiceCourseTopic = document.querySelector("#practiceCourseTopic");
+const practiceCourseCount = document.querySelector("#practiceCourseCount");
 const levelThemes = Object.freeze({
   A1: ["#1877e8", "#0c4fa3", "#eaf3ff", "24,119,232"],
   A2: ["#078c7b", "#045e54", "#e7f7f3", "7,140,123"],
@@ -33,28 +34,40 @@ practiceFrame.addEventListener("load", syncPracticeTheme);
 
 const topics = Object.freeze({
   A1: [
-    ["Greetings", "chat"], ["Daily Life", "sun"], ["Family", "people"], ["Food", "food"],
-    ["Shopping", "bag"], ["Random", "shuffle"],
+    ["Greetings", "chat"], ["Personal Information", "people"], ["Family & Friends", "people"],
+    ["Daily Routines", "sun"], ["Home & Things", "home"], ["Food & Drinks", "food"],
+    ["Shopping & Money", "bag"], ["Time & Plans", "calendar"], ["Places & Transport", "map"],
+    ["Needs & Help", "help"], ["Random", "shuffle"],
   ],
   A2: [
-    ["Travel", "plane"], ["Work Basics", "work"], ["Restaurants", "food"], ["Friends", "people"],
-    ["Directions", "map"], ["Random", "shuffle"],
+    ["Small Talk", "chat"], ["Friends & Plans", "calendar"], ["Home & Neighborhood", "home"],
+    ["Work & Study", "school"], ["Travel & Hotels", "plane"], ["Transport & Directions", "map"],
+    ["Restaurants & Services", "food"], ["Shopping & Returns", "bag"], ["Health & Appointments", "health"],
+    ["Phone & Online Life", "phone"], ["Random", "shuffle"],
   ],
   B1: [
-    ["Travel Experiences", "plane"], ["Workplace", "work"], ["Education", "school"],
-    ["Health & Fitness", "health"], ["Technology", "tech"], ["Random", "shuffle"],
+    ["Conversation Skills", "chat"], ["Stories & Experiences", "star"], ["Feelings & Reactions", "mind"],
+    ["Relationships", "people"], ["Work & Meetings", "work"], ["Education & Learning", "school"],
+    ["Travel & Problems", "plane"], ["Health & Lifestyle", "health"], ["Money & Services", "money"],
+    ["Technology & Media", "tech"], ["Random", "shuffle"],
   ],
   B2: [
-    ["Career", "work"], ["Culture", "culture"], ["Social Issues", "people"],
-    ["Environment", "leaf"], ["Personal Growth", "growth"], ["Random", "shuffle"],
+    ["Natural Conversation", "chat"], ["Stories & Humor", "star"], ["Relationships & Boundaries", "people"],
+    ["Opinions & Debate", "debate"], ["Persuasion & Negotiation", "balance"], ["Problems & Decisions", "mind"],
+    ["Work & Career", "work"], ["Media & Culture", "culture"], ["Society & Current Issues", "news"],
+    ["Digital & Modern Life", "tech"], ["Random", "shuffle"],
   ],
   C1: [
-    ["Professional Communication", "work"], ["Society & Policy", "policy"], ["Economics", "money"],
-    ["Ethics", "balance"], ["Global Affairs", "globe"], ["Random", "shuffle"],
+    ["Social Nuance", "people"], ["Emotion & Tact", "mind"], ["Professional Communication", "work"],
+    ["Meetings & Leadership", "debate"], ["Persuasion & Mediation", "balance"], ["Media & Current Affairs", "news"],
+    ["Politics & Public Policy", "policy"], ["History & Cultural Identity", "culture"], ["Economics & Law", "money"],
+    ["Science, Technology & Ethics", "science"], ["Random", "shuffle"],
   ],
   C2: [
-    ["Diplomacy & Geopolitics", "globe"], ["Law & Governance", "policy"], ["Economic Theory", "money"],
-    ["Philosophy", "mind"], ["Scientific Discourse", "science"], ["Random", "shuffle"],
+    ["Precision & Nuance", "mind"], ["Subtext & Irony", "chat"], ["Register & Style", "culture"],
+    ["Human Dynamics", "people"], ["Leadership & Consensus", "debate"], ["Diplomacy & Geopolitics", "globe"],
+    ["Politics, Power & Ideology", "policy"], ["Law, Justice & History", "balance"], ["Economics & Global Systems", "money"],
+    ["Science, Philosophy & Ethics", "science"], ["Random", "shuffle"],
   ],
 });
 const topicsKo = Object.freeze({
@@ -87,7 +100,7 @@ const topicIcons = Object.freeze({
 
 const books = Object.freeze({
   A1: [
-    { title: "Harry Potter 5", note: "Chapters 3–5", color: "#243b64", chapters: [3, 4, 5] },
+    { title: "Harry Potter 5", note: "Chapters 3–38", color: "#243b64", chapters: Array.from({ length: 36 }, (_, index) => index + 3) },
     { title: "The Tale of Peter Rabbit", note: "Gutenberg", color: "#6a994e" },
     { title: "The Velveteen Rabbit", note: "Gutenberg", color: "#9b6b76" },
     { title: "The Selfish Giant", note: "Gutenberg", color: "#6683a0" },
@@ -129,6 +142,45 @@ const books = Object.freeze({
     { title: "Frankenstein", note: "Gutenberg", color: "#386641" },
     { title: "The Great Gatsby", note: "Gutenberg", color: "#26355d" },
   ],
+});
+
+const chapterTitles = Object.freeze({
+  3: "The Advanced Guard",
+  4: "Number Twelve, Grimmauld Place",
+  5: "The Order of the Phoenix",
+  6: "The Noble and Most Ancient House of Black",
+  7: "The Ministry of Magic",
+  8: "The Hearing",
+  9: "The Woes of Mrs. Weasley",
+  10: "Luna Lovegood",
+  11: "The Sorting Hat's New Song",
+  12: "Professor Umbridge",
+  13: "Detention with Dolores",
+  14: "Percy and Padfoot",
+  15: "The Hogwarts High Inquisitor",
+  16: "In the Hog's Head",
+  17: "Educational Decree Number Twenty-Four",
+  18: "Dumbledore's Army",
+  19: "The Lion and the Serpent",
+  20: "Hagrid's Tale",
+  21: "The Eye of the Snake",
+  22: "St. Mungo's Hospital for Magical Maladies and Injuries",
+  23: "Christmas on the Closed Ward",
+  24: "Occlumency",
+  25: "The Beetle at Bay",
+  26: "Seen and Unforeseen",
+  27: "The Centaur and the Sneak",
+  28: "Snape's Worst Memory",
+  29: "Career Advice",
+  30: "Grawp",
+  31: "O.W.L.s",
+  32: "Out of the Fire",
+  33: "Fight and Flight",
+  34: "The Department of Mysteries",
+  35: "Beyond the Veil",
+  36: "The Only One He Ever Feared",
+  37: "The Lost Prophecy",
+  38: "The Second War Begins",
 });
 
 const coverArt = Object.freeze({
@@ -174,12 +226,17 @@ const coverArt = Object.freeze({
 
 function bookCard(book, index) {
   if (book.chapters) {
-    const chapters = book.chapters.map((chapter) => `<button class="chapter-card" type="button" data-chapter="${chapter}">Chapter ${chapter}</button>`).join("");
+    const chapters = book.chapters.map((chapter) => `<button class="chapter-option" type="button" role="option" data-chapter="${chapter}">
+      <span class="chapter-badge">${String(chapter).padStart(2, "0")}</span><span class="chapter-option-title">${chapterTitles[chapter] || `Chapter ${chapter}`}</span>
+    </button>`).join("");
     return `<div class="book-entry" style="--row:${index}">
       <button class="book-card book-card-expandable" type="button" data-book="harry-potter-5" aria-expanded="false" aria-label="${book.title}">
         <span class="book-cover" style="--cover:${book.color}" aria-hidden="true"><i class="cover-art">${coverArt[book.title] || ""}</i></span>
         <span class="book-name">${book.title}<small>${book.note}</small></span><span class="book-chevron">⌄</span>
-      </button><div class="chapter-list" hidden>${chapters}</div></div>`;
+      </button><div class="chapter-list" hidden><div class="chapter-dropdown">
+        <button class="chapter-trigger" type="button" aria-expanded="false"><span class="chapter-trigger-copy"><small>CHAPTER</small><strong>Choose a chapter</strong></span><span class="chapter-trigger-chevron">⌄</span></button>
+        <div class="chapter-menu" role="listbox" hidden>${chapters}</div>
+      </div></div></div>`;
   }
   const tag = book.href ? "a" : "button";
   const action = book.href ? `href="${book.href}"` : `type="button" aria-disabled="true"`;
@@ -230,6 +287,23 @@ languages.forEach((button) => button.addEventListener("click", () => {
 }));
 render();
 
+function setPracticePath(path) {
+  state.path = path;
+  document.body.dataset.practiceMode = path;
+  document.querySelector('#youtubePath').setAttribute('aria-pressed', String(path === 'youtube'));
+  history.replaceState(null, '', path === 'youtube' ? '/?mode=youtube' : '/');
+}
+
+function openYouTube() {
+  setPracticePath('youtube');
+  practiceCourseLevel.textContent = '▶';
+  practiceCourseTopic.textContent = 'YouTube';
+  practiceCourseCount.textContent = 'Original video · Timed captions';
+  if (!practiceFrame.src.endsWith('/youtube?embed=1')) practiceFrame.src = '/youtube?embed=1';
+  practiceFrame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+document.querySelector('#youtubePath').addEventListener('click', openYouTube);
+
 async function openConversation(button) {
   const requestedTopic = button.dataset.topic;
   button.disabled = true;
@@ -242,11 +316,13 @@ async function openConversation(button) {
     if (!response.ok) throw new Error("Course selection failed");
     const selected = await response.json();
     practiceCourseTopic.textContent = ["Random", "무작위"].includes(requestedTopic) ? `${requestedTopic} · ${selected.topic}` : selected.topic;
+    practiceCourseCount.textContent = `${selected.count} conversation${selected.count === 1 ? "" : "s"}`;
   } catch (error) {
     button.disabled = false;
     return;
   }
   topicList.querySelectorAll(".topic-card").forEach((item) => item.classList.remove("is-selected"));
+  setPracticePath('conversation');
   button.classList.add("is-selected");
   button.disabled = false;
   practiceCourseLevel.textContent = state.level;
@@ -271,12 +347,24 @@ bookList.addEventListener("click", async (event) => {
     const opening = chapterList.hidden;
     chapterList.hidden = !opening;
     bookButton.setAttribute("aria-expanded", String(opening));
+    if (opening) chapterList.querySelector(".chapter-trigger")?.focus();
     return;
   }
-  const chapterButton = event.target.closest(".chapter-card");
-  if (!chapterButton) return;
-  const chapter = Number(chapterButton.dataset.chapter);
-  chapterButton.disabled = true;
+  const chapterTrigger = event.target.closest(".chapter-trigger");
+  if (chapterTrigger) {
+    const menu = chapterTrigger.nextElementSibling;
+    const opening = menu.hidden;
+    menu.hidden = !opening;
+    chapterTrigger.setAttribute("aria-expanded", String(opening));
+    return;
+  }
+  const chapterOption = event.target.closest(".chapter-option");
+  if (!chapterOption) return;
+  const chapter = Number(chapterOption.dataset.chapter);
+  const dropdown = chapterOption.closest(".chapter-dropdown");
+  const selectedTrigger = dropdown.querySelector(".chapter-trigger");
+  const chapterMenu = dropdown.querySelector(".chapter-menu");
+  chapterOption.disabled = true;
   try {
     const response = await fetch("./api/book", {
       method: "POST",
@@ -285,13 +373,27 @@ bookList.addEventListener("click", async (event) => {
     });
     if (!response.ok) throw new Error("Book selection failed");
     const selected = await response.json();
-    bookList.querySelectorAll(".chapter-card").forEach((item) => item.classList.remove("is-selected"));
-    chapterButton.classList.add("is-selected");
+    bookList.querySelectorAll(".chapter-option").forEach((item) => item.classList.toggle("is-selected", item === chapterOption));
+    selectedTrigger.querySelector("strong").textContent = `${String(chapter).padStart(2, "0")} · ${chapterTitles[chapter] || `Chapter ${chapter}`}`;
+    chapterMenu.hidden = true;
+    selectedTrigger.setAttribute("aria-expanded", "false");
+    setPracticePath('book');
     practiceCourseLevel.textContent = "A1";
     practiceCourseTopic.textContent = `Harry Potter 5 · Chapter ${chapter}`;
+    practiceCourseCount.textContent = "Book dictation";
     practiceFrame.src = `./practice/?book=harry-potter-5&chapter=${chapter}&v=${Date.now()}`;
     practiceFrame.scrollIntoView({ behavior: "smooth", block: "nearest" });
   } finally {
-    chapterButton.disabled = false;
+    chapterOption.disabled = false;
   }
 });
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".chapter-dropdown")) return;
+  document.querySelectorAll(".chapter-menu:not([hidden])").forEach((menu) => {
+    menu.hidden = true;
+    menu.previousElementSibling?.setAttribute("aria-expanded", "false");
+  });
+});
+
+if (location.pathname.replace(/\/$/, '') === '/youtube' || new URLSearchParams(location.search).get('mode') === 'youtube') openYouTube();

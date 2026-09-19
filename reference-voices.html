@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f5f9" />
+    <title>100 Voice References · DictAI</title>
+    <link rel="stylesheet" href="/reference-voices.css?v=20260910-1" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">DictAI</a>
+      <span class="section-name">Voice Reference Lab</span>
+      <span class="profile" aria-hidden="true">S</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">NEW REFERENCE BANK · 2026.09.10</p>
+          <h1 id="page-title">서로 다른 화자 100개</h1>
+          <p class="description">서로 다른 화자와 25개 공간 분위기를 조합한 음성 100개를 비교합니다.</p>
+        </div>
+        <div class="count-panel" aria-live="polite">
+          <strong id="completedCount">0</strong><span>/ 100</span>
+          <small id="generationState">불러오는 중</small>
+        </div>
+      </section>
+
+      <section class="reference-copy" aria-labelledby="script-title">
+        <span id="script-title">공통 스크립트</span>
+        <p id="referenceText">새 음성을 불러오고 있습니다.</p>
+      </section>
+
+      <section class="toolbar" aria-label="음성 필터와 재생 도구">
+        <div class="filters" id="filters" role="group" aria-label="음성 그룹">
+          <button class="filter is-active" type="button" data-filter="all">전체 <span id="allCount">0</span></button>
+          <button class="filter" type="button" data-filter="male">남성</button>
+          <button class="filter" type="button" data-filter="female">여성</button>
+          <button class="filter" type="button" data-filter="voice">일반 발화</button>
+          <button class="filter" type="button" data-filter="whisper">속삭임</button>
+        </div>
+        <div class="actions">
+          <label class="search">
+            <span class="sr-only">번호 검색</span>
+            <input id="searchInput" placeholder="번호·공간 검색" autocomplete="off" />
+          </label>
+          <button class="play-all" id="playAll" type="button" disabled>
+            <span aria-hidden="true">▶</span> 전체 연속 재생
+          </button>
+        </div>
+      </section>
+
+      <div class="legend">
+        <span><i class="dot american"></i>미국</span><span><i class="dot australian"></i>호주</span>
+        <span><i class="dot british"></i>영국</span><span><i class="dot canadian"></i>캐나다</span>
+        <span><i class="dot chinese"></i>중국</span><span><i class="dot indian"></i>인도</span>
+        <span><i class="dot japanese"></i>일본</span><span><i class="dot korean"></i>한국</span>
+        <span><i class="dot portuguese"></i>포르투갈</span><span><i class="dot russian"></i>러시아</span>
+      </div>
+
+      <section class="voice-grid" id="voiceGrid" aria-label="100개 음성 샘플"></section>
+      <p class="empty" id="emptyState" hidden>조건에 맞는 음성이 없습니다.</p>
+    </main>
+
+    <aside class="now-playing" id="nowPlaying" hidden aria-live="polite">
+      <div class="now-meta">
+        <span>NOW PLAYING</span>
+        <strong id="nowTitle">Voice 001</strong>
+      </div>
+      <audio id="audioPlayer" controls preload="none"></audio>
+      <button id="stopPlayback" type="button">정지</button>
+    </aside>
+
+    <template id="voiceCardTemplate">
+      <article class="voice-card">
+        <button class="voice-play" type="button" aria-label="음성 재생">
+          <span class="play-icon" aria-hidden="true">▶</span>
+        </button>
+        <div class="voice-main">
+          <div class="voice-heading">
+            <strong class="voice-name"></strong>
+            <span class="voice-group"></span>
+          </div>
+          <p class="voice-traits"></p>
+        </div>
+        <span class="duration"></span>
+      </article>
+    </template>
+
+    <script src="/reference-voices.js?v=20260910-3" defer></script>
+  </body>
+</html>
